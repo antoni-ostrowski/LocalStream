@@ -1,4 +1,4 @@
-module desktop
+module localStream
 
 go 1.23
 
