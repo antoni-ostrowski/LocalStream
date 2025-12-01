@@ -29,7 +29,7 @@ func (a *App) onDomReady(ctx context.Context) {
 		runtime.Quit(ctx)
 		return
 	}
-
+	runtime.LogPrintf(a.ctx, "Prefs %v", a.config.Preferences)
 }
 
 //go:embed schema.sql
@@ -41,6 +41,7 @@ func (a *App) initAppResources() error {
 		runtime.LogErrorf(a.ctx, "Failed to init app resources at config: %v", err)
 		return err
 	}
+
 	a.config = configManager
 
 	dbManager, err := database.NewDBManager(a.ctx, a.config.Preferences.DatabasePath)

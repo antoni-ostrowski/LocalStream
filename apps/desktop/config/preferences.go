@@ -1,4 +1,4 @@
-package preferences
+package config
 
 import (
 	"context"
@@ -10,13 +10,14 @@ import (
 )
 
 type Preferences struct {
-	DatabasePath string `json:"databasePath"`
+	DatabasePath string   `json:"databasePath"`
+	SourceUrls   []string `json:"sourceUrls"`
 }
 
 const AppName = "localStream"
 const ConfigFileName = "config.json"
 
-func GetConfigFilePath(ctx context.Context) (string, error) {
+func GetConfigFilePath(ctx context.Context) (string, string, error) {
 	var configBaseDir string
 	xdgConfigHome := os.Getenv("XDG_CONFIG_HOME")
 
@@ -28,7 +29,7 @@ func GetConfigFilePath(ctx context.Context) (string, error) {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
 			runtime.LogErrorf(ctx, "Failed to find user home dir: %v", err)
-			return "", err
+			return "", "", err
 		}
 
 		configBaseDir = filepath.Join(homeDir, ".config")
@@ -44,11 +45,11 @@ func GetConfigFilePath(ctx context.Context) (string, error) {
 			runtime.LogInfof(ctx, "App config dir not found, creating...: %s", appConfigDir)
 			if err := os.MkdirAll(appConfigDir, 0755); err != nil {
 				runtime.LogErrorf(ctx, "Failed to create application config directory: %v", err)
-				return "", err
+				return "", "", err
 			}
 		} else {
 			runtime.LogErrorf(ctx, "Failed to resolve config directory: %v", err)
-			return "", err
+			return "", "", err
 		}
 
 	}
@@ -56,7 +57,7 @@ func GetConfigFilePath(ctx context.Context) (string, error) {
 	configFilePath := filepath.Join(appConfigDir, ConfigFileName)
 	runtime.LogInfof(ctx, "Resolved config file path: %s", configFilePath)
 
-	return configFilePath, nil
+	return appConfigDir, configFilePath, nil
 }
 
 func GetPreferencesFromConfigFile(ctx context.Context, configFilePath string) (Preferences, error) {
