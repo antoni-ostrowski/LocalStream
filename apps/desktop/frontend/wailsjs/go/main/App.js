@@ -9,11 +9,3 @@ export function Greet(arg1) {
 export function InitAppResources() {
   return window['go']['main']['App']['InitAppResources']();
 }
-
-export function LoadConfig() {
-  return window['go']['main']['App']['LoadConfig']();
-}
-
-export function Testt(arg1) {
-  return window['go']['main']['App']['Testt'](arg1);
-}

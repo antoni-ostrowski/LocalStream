@@ -1,49 +1,20 @@
-package config
+package preferences
 
 import (
 	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"sync"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
-
-const AppName = "localStream"
-const ConfigFileName = "config.json"
 
 type Preferences struct {
 	DatabasePath string `json:"databasePath"`
 }
 
-type Config struct {
-	mutex       sync.RWMutex
-	ctx         context.Context
-	preferences Preferences
-}
-
-var configInstance *Config
-var once sync.Once
-
-func initConfig(ctx context.Context) {
-	configInstance = &Config{}
-	runtime.LogPrint(ctx, "In-memory config Initialized successfully")
-}
-
-func GetConfigInstance(ctx context.Context) *Config {
-	once.Do(func() { initConfig((ctx)) })
-	return configInstance
-}
-
-func GetConfig() *Config {
-	return configInstance
-}
-
-func SetConfigsPreferences(ctx context.Context, newPreferences Preferences) *Config {
-	configInstance.preferences = newPreferences
-	return configInstance
-}
+const AppName = "localStream"
+const ConfigFileName = "config.json"
 
 func GetConfigFilePath(ctx context.Context) (string, error) {
 	var configBaseDir string
@@ -124,7 +95,7 @@ func handleCreatingDefaultConfig(ctx context.Context, configFilePath string) (Pr
 }
 
 func createDefaultPreferences(configFilePath string) Preferences {
-	defaultDBPath := filepath.Join(configFilePath, "localStream.sqlite")
+	defaultDBPath := filepath.Join(filepath.Dir(configFilePath), "localStream.sqlite")
 
 	return Preferences{
 		DatabasePath: defaultDBPath,

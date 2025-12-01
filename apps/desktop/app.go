@@ -2,13 +2,17 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"localStream/config"
+	"localStream/database"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type App struct {
-	ctx context.Context
+	ctx    context.Context
+	config *config.RuntimeConfigManager
+	db     *database.DBManager
 }
 
 func NewApp() *App {
@@ -24,35 +28,30 @@ func (a *App) Greet(someNum int) string {
 	return "fdjskl"
 }
 
+//go:embed schema.sql
+var ddl string
+
 func (a *App) InitAppResources() error {
-	config.GetConfigInstance(a.ctx)
-	preferences, err := a.LoadConfig()
-	if err != nil {
-		runtime.LogErrorf(a.ctx, "Failed to init app resources: %v", err)
+	configManager := config.GetConfigInstance(a.ctx)
+	if _, err := configManager.LoadConfig(a.ctx); err != nil {
+		runtime.LogErrorf(a.ctx, "Failed to init app resources at config: %v", err)
 		return err
 	}
-	config.SetConfigsPreferences(a.ctx, preferences)
+	a.config = configManager
+
+	dbManager, err := database.NewDBManager(a.ctx, a.config.Preferences.DatabasePath)
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "Failed to init app resources at db manager: %v", err)
+		return err
+	}
+
+	if err := dbManager.InitSchema(a.ctx, ddl); err != nil {
+		runtime.LogErrorf(a.ctx, "Failed to init app resources at db manager: %v", err)
+		return err
+	}
+
+	a.db = dbManager
 
 	runtime.LogInfo(a.ctx, "Successfully initialized app resources")
-	runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{Message: "App loaded config successfully"})
-
 	return nil
-}
-
-func (a *App) LoadConfig() (config.Preferences, error) {
-	configFilePath, err := config.GetConfigFilePath(a.ctx)
-	if err != nil {
-		runtime.LogErrorf(a.ctx, "Failed to load config at config file path: %v", err)
-		return config.Preferences{}, err
-	}
-
-	preferences, err := config.GetPreferencesFromConfigFile(a.ctx, configFilePath)
-	if err != nil {
-		runtime.LogErrorf(a.ctx, "Failed to load config at getting preferences: %v", err)
-		return config.Preferences{}, err
-	}
-
-	runtime.LogInfo(a.ctx, "Successfully loaded config from file")
-
-	return preferences, nil
 }
