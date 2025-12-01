@@ -19,19 +19,22 @@ func NewApp() *App {
 	return &App{}
 }
 
-func (a *App) startup(ctx context.Context) {
+func (a *App) onDomReady(ctx context.Context) {
 	a.ctx = ctx
-}
-
-func (a *App) Greet(someNum int) string {
-	runtime.LogPrint(a.ctx, "testing log print")
-	return "fdjskl"
+	err := a.initAppResources()
+	if err != nil {
+		runtime.MessageDialog(ctx,
+			runtime.MessageDialogOptions{Message: "app failed to init. try clearing the config directory and restarting the app", Type: runtime.ErrorDialog, Title: "app failed to init",
+				DefaultButton: "close app"})
+		runtime.Quit(ctx)
+		return
+	}
 }
 
 //go:embed schema.sql
 var ddl string
 
-func (a *App) InitAppResources() error {
+func (a *App) initAppResources() error {
 	configManager := config.GetConfigInstance(a.ctx)
 	if _, err := configManager.LoadConfig(a.ctx); err != nil {
 		runtime.LogErrorf(a.ctx, "Failed to init app resources at config: %v", err)
@@ -51,7 +54,11 @@ func (a *App) InitAppResources() error {
 	}
 
 	a.db = dbManager
-
 	runtime.LogInfo(a.ctx, "Successfully initialized app resources")
 	return nil
+}
+
+func (a *App) Greet(someNum int) string {
+	runtime.LogPrint(a.ctx, "testing log print")
+	return "fdjskl"
 }
