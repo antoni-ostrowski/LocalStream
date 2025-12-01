@@ -8,8 +8,46 @@ import (
 	"database/sql"
 )
 
-type Author struct {
-	ID   int64
-	Name string
-	Bio  sql.NullString
+type Favouritealbum struct {
+	ID        string        `json:"id"`
+	Createdat int64         `json:"createdat"`
+	Starred   sql.NullInt64 `json:"starred"`
+	Albumname string        `json:"albumname"`
+}
+
+type Favouriteartist struct {
+	ID        string        `json:"id"`
+	Createdat int64         `json:"createdat"`
+	Starred   sql.NullInt64 `json:"starred"`
+	Artist    string        `json:"artist"`
+}
+
+type Playlist struct {
+	ID        string         `json:"id"`
+	Createdat int64          `json:"createdat"`
+	Name      string         `json:"name"`
+	Coverpath sql.NullString `json:"coverpath"`
+	Starred   sql.NullInt64  `json:"starred"`
+}
+
+type Track struct {
+	ID           string         `json:"id"`
+	Createdat    int64          `json:"createdat"`
+	Path         string         `json:"path"`
+	Sourceurl    string         `json:"sourceurl"`
+	Title        string         `json:"title"`
+	Artist       string         `json:"artist"`
+	Album        string         `json:"album"`
+	Genre        sql.NullString `json:"genre"`
+	Year         sql.NullInt64  `json:"year"`
+	Durationinms sql.NullInt64  `json:"durationinms"`
+	Starred      sql.NullInt64  `json:"starred"`
+	Queueid      sql.NullString `json:"queueid"`
+}
+
+type TracksToPlaylist struct {
+	ID         string `json:"id"`
+	Createdat  int64  `json:"createdat"`
+	Trackid    string `json:"trackid"`
+	Playlistid string `json:"playlistid"`
 }

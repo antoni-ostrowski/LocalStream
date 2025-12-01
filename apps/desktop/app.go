@@ -29,6 +29,7 @@ func (a *App) onDomReady(ctx context.Context) {
 		runtime.Quit(ctx)
 		return
 	}
+
 }
 
 //go:embed schema.sql

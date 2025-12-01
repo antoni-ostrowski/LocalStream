@@ -18,7 +18,6 @@ type DBManager struct {
 func NewDBManager(ctx context.Context, dbFilePath string) (*DBManager, error) {
 	runtime.LogInfof(ctx, "attemtping to open db at %s", dbFilePath)
 	db, err := sql.Open("sqlite", dbFilePath)
-
 	if err != nil {
 		runtime.LogErrorf(ctx, "Failed to open database file %s: %v", dbFilePath, err)
 		return nil, fmt.Errorf("failed to open database: %w", err)
@@ -54,6 +53,7 @@ func (dm *DBManager) InitSchema(ctx context.Context, ddl string) error {
 		runtime.LogErrorf(ctx, "Failed to execute database schema DDL: %v", err)
 		return fmt.Errorf("schema init failed: %w", err)
 	}
+
 	runtime.LogInfo(ctx, "Database schema initialized successfully.")
 	return nil
 }
