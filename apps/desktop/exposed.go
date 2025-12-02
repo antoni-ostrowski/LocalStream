@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"localStream/internal/config"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -27,6 +28,10 @@ func (a *App) CreateSourceUrl() error {
 		Title: "Select directory with your music.",
 	})
 
+	if selectedDir == "" {
+		return errors.New("No directory provided!")
+	}
+
 	if err != nil {
 		runtime.LogErrorf(a.ctx, "Failed to select file from dialog: %v", err)
 		return err
@@ -36,6 +41,12 @@ func (a *App) CreateSourceUrl() error {
 	currentPrefs := a.config.Preferences
 	newPrefs := currentPrefs
 	newSourceUrls := append([]string{}, currentPrefs.SourceUrls...)
+	for _, existingDir := range newSourceUrls {
+		if existingDir == selectedDir {
+			runtime.LogWarningf(a.ctx, "Directory already added: %s", selectedDir)
+			return errors.New("music source directory already exists")
+		}
+	}
 	newSourceUrls = append(newSourceUrls, selectedDir)
 	newPrefs.SourceUrls = newSourceUrls
 
