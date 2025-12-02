@@ -9,55 +9,34 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
-import { useAppForm } from "@/lib/app-form/app-form"
-import { tryCatch } from "@/lib/utils"
-import { FolderOpen, Music, Plus, TrashIcon } from "lucide-react"
+import { useUpdatePreferences } from "@/src/api/mutations"
+import { queries } from "@/src/api/queries"
+import { CreateSourceUrl } from "@/wailsjs/go/main/App"
+import { config } from "@/wailsjs/go/models"
+import { useQuery } from "@tanstack/react-query"
+import { FolderOpen, Music, Plus, Trash } from "lucide-react"
+import { useState } from "react"
 import { toast } from "sonner"
-import z from "zod"
-
-const formSchema = z.object({
-  newMusicSource: z.string().min(1, "Empty file path!"),
-})
-
-type FormData = z.infer<typeof formSchema>
 
 export default function MusicSources() {
-  // const { data, error, isPending } = useQuery(
-  //   trpc.user.getPreferences.queryOptions(),
-  // )
-  //
-  // const { mutateAsync: addSourceFunc } = useMutation(
-  //   trpc.user.addSource.mutationOptions(),
-  // )
+  const {
+    data: preferences,
+    error,
+    isPending,
+  } = useQuery(queries.me.preferences())
 
-  const form = useAppForm({
-    defaultValues: {
-      newMusicSource: "",
-    } satisfies FormData as FormData,
-    validators: {
-      onSubmit: formSchema,
-    },
-    onSubmit: async ({ value }) => {
-      const [, err] = await tryCatch(
-        (async () => {
-          // return await addSourceFunc({ source: value.newMusicSource })
-        })(),
-      )
+  const [isMutating, setIsMutating] = useState(false)
 
-      if (err) {
-        toast.error("Failed to add music source.")
-        return
-      }
+  if (isPending) return null
 
-      toast.success("Created new music source.")
-
-      form.reset()
-    },
-  })
-  // if (isPending) return null
-  // if (error || !data) {
-  //   return <div className="text-destructive">Error fetching preferences</div>
-  // }
+  if (error) {
+    console.error(error)
+    return (
+      <div className="text-destructive">
+        Error fetching preferences, {error.message}
+      </div>
+    )
+  }
 
   return (
     <Card>
@@ -74,53 +53,54 @@ export default function MusicSources() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault()
-            // await form.handleSubmit()
-          }}
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <h1>Add New Source</h1>
-              </CardTitle>
-              <CardDescription>
-                <p className="text-muted-foreground text-sm">
-                  Make sure the directory path is accessible and contains music
-                  files.
-                </p>
-              </CardDescription>
-            </CardHeader>
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <h1>Add New Source</h1>
+            </CardTitle>
+            <CardDescription>
+              <p className="text-muted-foreground text-sm">
+                Make sure the directory path is accessible and contains music
+                files.
+              </p>
+            </CardDescription>
+          </CardHeader>
 
-            <CardContent>
-              <form.AppField name="newMusicSource">
-                {(field) => <field.InputField label="New music source" />}
-              </form.AppField>
-            </CardContent>
-            <CardFooter>
-              <Button
-                variant={"outline"}
-                type="submit"
-                className="flex items-center gap-2"
-              >
-                {form.state.isSubmitting ? (
-                  <>
-                    <Spinner />
-                    <p>Adding...</p>
-                  </>
-                ) : (
-                  <>
-                    <Plus className="h-4 w-4" />
-                    <p>Add Source</p>
-                  </>
-                )}
-              </Button>
-            </CardFooter>
-          </Card>
-        </form>
+          <CardFooter>
+            <Button
+              variant={"outline"}
+              type="submit"
+              className="flex items-center gap-2"
+              onClick={async () => {
+                setIsMutating(true)
+                try {
+                  await CreateSourceUrl()
+                } catch (e) {
+                  toast.error("Failed to add new source!", {
+                    description: e.message,
+                  })
+                }
+                setIsMutating(false)
+              }}
+            >
+              {isMutating ? (
+                <>
+                  <Spinner />
+                  <p>Adding...</p>
+                </>
+              ) : (
+                <>
+                  <Plus className="h-4 w-4" />
+                  <p>Add Source</p>
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
         <CardFooter className="w-full px-0">
-          {true && <ActiveSources sourceUrls={["test/url/ifdjlk"]} />}
+          {preferences.sourceUrls.length > 0 && (
+            <ActiveSources sourceUrls={preferences.sourceUrls} />
+          )}
         </CardFooter>
       </CardContent>
     </Card>
@@ -147,23 +127,28 @@ function ActiveSources({ sourceUrls }: { sourceUrls: string[] }) {
   )
 }
 function Source({ source }: { source: string }) {
-  // const { mutateAsync: deleteSource, isPending } = useMutation(
-  //   trpc.user.deleteSource.mutationOptions()
-  // )
+  const { data: preferences } = useQuery(queries.me.preferences())
+  const { mutate: updatePrefs, isPending: isMutating } = useUpdatePreferences()
+
+  function handleUpdate() {
+    if (!preferences) return
+    const newPrefs = {
+      databasePath: preferences.databasePath,
+      sourceUrls: preferences.sourceUrls.filter((a) => a !== source),
+    } as config.Preferences
+    console.log({ newPrefs })
+
+    updatePrefs(newPrefs)
+  }
+
   return (
     <>
       <div className="bg-muted/50 flex items-center gap-3 rounded-lg p-3">
         <Music className="text-muted-foreground h-4 w-4 shrink-0" />
         <span className="flex-1 truncate font-mono text-sm">{source}</span>
         <Badge>Active</Badge>
-        <Button
-          variant={"destructive"}
-          onClick={async () => {
-            // await deleteSource({ source })
-          }}
-        >
-          {/* {isPending ? <Spinner /> : <Trash />} */}
-          <TrashIcon />
+        <Button variant={"destructive"} onClick={handleUpdate}>
+          {isMutating ? <Spinner /> : <Trash />}
         </Button>
       </div>
     </>
