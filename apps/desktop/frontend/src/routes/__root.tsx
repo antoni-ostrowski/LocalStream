@@ -1,3 +1,8 @@
+import SidebarLeft from "@/components/sidebar/sidebar-left/sidebar-left"
+import SidebarRight from "@/components/sidebar/sidebar-right/sidebar-right"
+import { ThemeProvider } from "@/components/theme/theme-provider"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { Toaster } from "@/components/ui/sonner"
 import type { QueryClient } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router"
@@ -40,9 +45,24 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   return (
     <>
-      <Outlet />
-      <ReactQueryDevtools buttonPosition="top-right" />
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <div className={`flex min-h-screen flex-col`}>
+          <div className={`flex items-center gap-2 border-b`}>
+            <div className={`flex-1`}>
+              <SidebarProvider>
+                <SidebarLeft />
+                <SidebarInset>
+                  <Outlet />
+                  <Toaster />
+                </SidebarInset>
+                <SidebarRight />
+              </SidebarProvider>
+            </div>
+          </div>
+        </div>
+      </ThemeProvider>
       <TanStackRouterDevtools position="bottom-right" />
+      <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
     </>
   )
 }

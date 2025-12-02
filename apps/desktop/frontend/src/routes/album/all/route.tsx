@@ -1,0 +1,31 @@
+import FullScreenError from "@/components/full-screen-error"
+import FullScreenLoading from "@/components/full-screen-loading"
+import GridWrapper from "@/components/grid-wrapper"
+import PageTitleWrapper from "@/components/page-title-wrapper"
+import { createFileRoute } from "@tanstack/react-router"
+
+export const Route = createFileRoute("/album/all")({
+  component: RouteComponent,
+  pendingComponent: () => <FullScreenLoading />,
+  errorComponent: ({ error }) => (
+    <FullScreenError errorDetail={error.message} />
+  ),
+})
+
+function RouteComponent() {
+  // const { data } = useSuspenseQuery(trpc.album.listAlbums.queryOptions())
+  // console.log({ data })
+  // if (data.length === 0)
+  //   return <FullScreenError type="warning" errorMessage="No Albums found." />
+
+  return (
+    <PageTitleWrapper title="Albums">
+      <GridWrapper>
+        album list all
+        {/* {data.map((album) => ( */}
+        {/*   <GridAlbumCard key={crypto.randomUUID()} album={album} /> */}
+        {/* ))} */}
+      </GridWrapper>
+    </PageTitleWrapper>
+  )
+}
