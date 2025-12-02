@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	_ "embed"
-	"localStream/config"
-	"localStream/database"
+	"localStream/internal/config"
+	"localStream/internal/database"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )

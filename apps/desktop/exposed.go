@@ -1,7 +1,7 @@
 package main
 
 import (
-	"localStream/config"
+	"localStream/internal/config"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
