@@ -14,17 +14,18 @@ import { queries } from "@/src/api/queries"
 import { CreateSourceUrl } from "@/wailsjs/go/main/App"
 import { config } from "@/wailsjs/go/models"
 import { useQuery } from "@tanstack/react-query"
+import { useRouteContext } from "@tanstack/react-router"
 import { FolderOpen, Music, Plus, Trash } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
 export default function MusicSources() {
+  const { queryClient } = useRouteContext({ from: "__root__" })
   const {
     data: preferences,
     error,
     isPending,
   } = useQuery(queries.me.preferences())
-
   const [isMutating, setIsMutating] = useState(false)
 
   if (isPending) return null
@@ -36,6 +37,26 @@ export default function MusicSources() {
         Error fetching preferences, {error.message}
       </div>
     )
+  }
+
+  async function createNewSource() {
+    setIsMutating(true)
+    try {
+      await CreateSourceUrl()
+    } catch (e) {
+      if (e instanceof Error) {
+        toast.error("Failed to add new music source!", {
+          description: e.message,
+        })
+      }
+      setIsMutating(false)
+      return
+    }
+    setIsMutating(false)
+    await queryClient.invalidateQueries({
+      queryKey: queries.me.preferences().queryKey,
+    })
+    toast.success("Created new music source!")
   }
 
   return (
@@ -72,15 +93,7 @@ export default function MusicSources() {
               type="submit"
               className="flex items-center gap-2"
               onClick={async () => {
-                setIsMutating(true)
-                try {
-                  await CreateSourceUrl()
-                } catch (e) {
-                  toast.error("Failed to add new source!", {
-                    description: e.message,
-                  })
-                }
-                setIsMutating(false)
+                await createNewSource()
               }}
             >
               {isMutating ? (
@@ -136,7 +149,6 @@ function Source({ source }: { source: string }) {
       databasePath: preferences.databasePath,
       sourceUrls: preferences.sourceUrls.filter((a) => a !== source),
     } as config.Preferences
-    console.log({ newPrefs })
 
     updatePrefs(newPrefs)
   }

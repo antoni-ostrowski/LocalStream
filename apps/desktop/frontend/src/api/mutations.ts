@@ -11,6 +11,7 @@ export function useUpdatePreferences() {
     },
     onSuccess: async () => {
       await qc.invalidateQueries(queries.me.preferences())
+      toast.success("Updated preferences!")
     },
     mutationFn: (...newPrefs: Parameters<typeof UpdatePreferences>) =>
       UpdatePreferences(...newPrefs),
