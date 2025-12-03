@@ -23,7 +23,7 @@ func (s *TrackSyncMangaer) StartSync(ctx context.Context) error {
 
 	// insert tracks
 
-	// compare with local
+	// compare with local, update those that need it
 
 	return nil
 }

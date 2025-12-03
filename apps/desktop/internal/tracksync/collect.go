@@ -40,77 +40,11 @@ func (s *TrackSyncMangaer) collectTracks(ctx context.Context) ([]sqlcDb.Track, e
 		}
 	}()
 
-	// worker pool, a track processor
-	for i := 0; i < workersCount; i++ {
-		processWg.Add(1)
-		// set of a processing routine
-		go func(id int) {
-			defer processWg.Done()
-			// keep reading filePaths from chan and process them if theres no cancellations or timeouts
-			for filePath := range filePathCh {
-				select {
-				// this checks for cancellation (can be anything, e.g tiemout)
-				case <-ctx.Done():
-					return
-					// this starts the file processing
-				default:
-					track, err := s.processFile(filePath)
-					if err != nil {
-						// if its a 'light' err we contrinue to next filePath
-						if os.IsNotExist(err) || err.Error() == "mock metadata read failed" {
-							continue
-						}
-						// if err is something fatal we stop whole pipeline
-						select {
-						case errorCh <- fmt.Errorf("worker %d fatal error processing %s: %w", id, filePath, err):
-						default:
-						}
-						return
-					}
-					// if no errors processing the file, send the track obj to the channel
-					tracksCh <- track
-				}
+	s.startWorkers(ctx, workersCount, filePathCh, tracksCh, errorCh, &processWg)
 
-			}
+	s.startScanners(ctx, sourceDirs, filePathCh, errorCh, &processWg)
 
-		}(i)
-
-	}
-
-	//  fires source scanners (one routine for one source url, gets every possible tracks from source url)
-	processWg.Add(1)
-	go func() {
-		// scanner parent routine will manage scanners and close the filePathCh if they are all done sending to the filePathCh
-		defer close(filePathCh)
-		defer processWg.Done()
-
-		// scanner wg keeps tracks of scanner routines
-		scannerWg := &sync.WaitGroup{}
-
-		// set of one routine per sourceDir
-		for _, sourceDir := range sourceDirs {
-			scannerWg.Add(1)
-
-			go func(dirPath string) {
-				defer scannerWg.Done()
-
-				// scans whole tree of files from the dirPath
-				if err := s.scanSourceDirForFiles(ctx, dirPath, filePathCh); err != nil {
-					select {
-					case errorCh <- fmt.Errorf("scanner error for %s: %w", dirPath, err):
-					default:
-					}
-				}
-			}(sourceDir)
-			// passing explitly args to anon func ensuers
-			// every routines starts with correct data
-
-		}
-		// scanner parent routine waits for all the scanners to finish
-		scannerWg.Wait()
-	}()
-
-	// Dedicated goroutine to wait for all PROCESSING components to finish and close tracksCh
+	// Dedicated goroutine to wait for all processing components to finish and close tracksCh
 	go func() {
 		processWg.Wait() // Wait for Scanners and Workers
 		close(tracksCh)  // This unblocks the Collector
@@ -151,7 +85,95 @@ func (s *TrackSyncMangaer) collectTracks(ctx context.Context) ([]sqlcDb.Track, e
 	}
 }
 
+// startWorkers initializes and launches the worker pool (consumers).
+func (s *TrackSyncMangaer) startWorkers(
+	ctx context.Context,
+	workersCount int,
+	filePathCh <-chan string,
+	tracksCh chan<- sqlcDb.Track,
+	errorCh chan<- error,
+	processWg *sync.WaitGroup,
+) {
+	for i := 0; i < workersCount; i++ {
+		processWg.Add(1)
+		// set of a processing routine
+		go func(id int) {
+			defer processWg.Done()
+			// keep reading filePaths from chan and process them if theres no cancellations or timeouts
+			for filePath := range filePathCh {
+				select {
+				// this checks for cancellation (can be anything, e.g tiemout)
+				case <-ctx.Done():
+					return
+					// this starts the file processing
+				default:
+					track, err := s.processFile(filePath)
+					if err != nil {
+						// if its a 'light' err we contrinue to next filePath
+						if os.IsNotExist(err) || err.Error() == "mock metadata read failed" {
+							continue
+						}
+						// if err is something fatal we stop whole pipeline
+						select {
+						case errorCh <- fmt.Errorf("worker %d fatal error processing %s: %w", id, filePath, err):
+						default:
+						}
+						return
+					}
+					// if no errors processing the file, send the track obj to the channel
+					tracksCh <- track
+				}
+
+			}
+
+		}(i)
+
+	}
+}
+
+//	fires source scanners (one routine for one source url, gets every possible tracks from source url)
+//
+// startScanners initializes and launches the source directory scanners (producers).
+func (s *TrackSyncMangaer) startScanners(
+	ctx context.Context,
+	sourceDirs []string,
+	filePathCh chan<- string,
+	errorCh chan<- error,
+	processWg *sync.WaitGroup,
+) {
+	// scanner parent routine will manage scanners and close the filePathCh if they are all done sending to the filePathCh
+	processWg.Add(1)
+	go func() {
+		defer close(filePathCh) // Crucial: signals workers that no more paths are coming
+		defer processWg.Done()
+
+		// scanner wg keeps tracks of scanner routines
+		scanWg := &sync.WaitGroup{}
+		for _, dir := range sourceDirs {
+			scanWg.Add(1)
+			go func(dirPath string) {
+				defer scanWg.Done()
+				// 			// scans whole tree of files from the dirPath
+				if err := s.scanSourceDirForFiles(ctx, dirPath, filePathCh); err != nil {
+					select {
+					case errorCh <- fmt.Errorf("scanner error for %s: %w", dirPath, err):
+					default:
+					}
+				}
+			}(dir)
+			// passing explitly args to anon func ensuers
+			// every routines starts with correct data
+		}
+		scanWg.Wait() // Wait for all individual scanners to finish
+	}()
+}
+
 func (s *TrackSyncMangaer) scanSourceDirForFiles(ctx context.Context, root string, filePathChn chan<- string) error {
+	isMusicFile := func(path string) bool {
+		ext := filepath.Ext(path)
+		return ext == ".mp3" || ext == ".flac" || ext == ".ogg"
+	}
+
 	fmt.Printf("scan for  %s \n", root)
 	if _, err := os.Stat(root); os.IsNotExist(err) {
 		runtime.LogErrorf(ctx, "Root source dir doesnt exist %v", err)
@@ -172,7 +194,7 @@ func (s *TrackSyncMangaer) scanSourceDirForFiles(ctx context.Context, root strin
 		default:
 		}
 
-		if !d.IsDir() && s.isMusicFile(path) {
+		if !d.IsDir() && isMusicFile(path) {
 			fmt.Print("found a music file, sending to chan \n")
 			filePathChn <- path
 		}
@@ -181,11 +203,6 @@ func (s *TrackSyncMangaer) scanSourceDirForFiles(ctx context.Context, root strin
 	})
 
 	return err
-}
-
-func (s *TrackSyncMangaer) isMusicFile(path string) bool {
-	ext := filepath.Ext(path)
-	return ext == ".mp3" || ext == ".flac" || ext == ".ogg"
 }
 
 func (s *TrackSyncMangaer) processFile(path string) (sqlcDb.Track, error) {
