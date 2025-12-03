@@ -11,7 +11,7 @@ import (
 
 type Preferences struct {
 	DatabasePath string   `json:"databasePath"`
-	SourceUrls   []string `json:"sourceUrls"`
+	SourceDirs   []string `json:"sourceDirs"`
 }
 
 const AppName = "localStream"

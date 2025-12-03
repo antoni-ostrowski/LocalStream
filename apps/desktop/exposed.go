@@ -23,7 +23,7 @@ func (a *App) UpdatePreferences(newPrefs config.Preferences) error {
 	return nil
 }
 
-func (a *App) CreateSourceUrl() error {
+func (a *App) CreateSourceDir() error {
 	selectedDir, err := runtime.OpenDirectoryDialog(a.ctx, runtime.OpenDialogOptions{
 		Title: "Select directory with your music.",
 	})
@@ -40,15 +40,15 @@ func (a *App) CreateSourceUrl() error {
 	runtime.LogDebugf(a.ctx, "selected dir from dialog - %v", selectedDir)
 	currentPrefs := a.config.Preferences
 	newPrefs := currentPrefs
-	newSourceUrls := append([]string{}, currentPrefs.SourceUrls...)
-	for _, existingDir := range newSourceUrls {
+	newSourceDirs := append([]string{}, currentPrefs.SourceDirs...)
+	for _, existingDir := range newSourceDirs {
 		if existingDir == selectedDir {
 			runtime.LogWarningf(a.ctx, "Directory already added: %s", selectedDir)
 			return errors.New("music source directory already exists")
 		}
 	}
-	newSourceUrls = append(newSourceUrls, selectedDir)
-	newPrefs.SourceUrls = newSourceUrls
+	newSourceDirs = append(newSourceDirs, selectedDir)
+	newPrefs.SourceDirs = newSourceDirs
 
 	err = a.config.UpdatePreferences(a.ctx, newPrefs)
 

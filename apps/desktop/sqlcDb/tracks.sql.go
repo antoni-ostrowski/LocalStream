@@ -11,7 +11,7 @@ import (
 )
 
 const getTrackFromPath = `-- name: GetTrackFromPath :one
-SELECT id, createdat, path, sourceurl, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks WHERE path LIKE ?1
+SELECT id, createdat, path, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks WHERE path LIKE ?1
 `
 
 func (q *Queries) GetTrackFromPath(ctx context.Context, trackpath string) (Track, error) {
@@ -21,7 +21,6 @@ func (q *Queries) GetTrackFromPath(ctx context.Context, trackpath string) (Track
 		&i.ID,
 		&i.Createdat,
 		&i.Path,
-		&i.Sourceurl,
 		&i.Title,
 		&i.Artist,
 		&i.Album,
@@ -39,7 +38,7 @@ INSERT INTO tracks (
     id,
     createdAt,
     path,
-    sourceUrl,
+    -- sourceDir,
     title,
     artist,
     album,
@@ -52,6 +51,7 @@ INSERT INTO tracks (
     ?1,
     ?2,
     ?3,
+    -- sqlc.arg(sourceDir),
     ?4,
     ?5,
     ?6,
@@ -59,8 +59,7 @@ INSERT INTO tracks (
     ?8,
     ?9,
     ?10,
-    ?11,
-    ?12
+    ?11
 )
 `
 
@@ -68,7 +67,6 @@ type InsertTrackParams struct {
 	ID           string         `json:"id"`
 	Createdat    int64          `json:"createdat"`
 	Path         string         `json:"path"`
-	Sourceurl    string         `json:"sourceurl"`
 	Title        string         `json:"title"`
 	Artist       string         `json:"artist"`
 	Album        string         `json:"album"`
@@ -84,7 +82,6 @@ func (q *Queries) InsertTrack(ctx context.Context, arg InsertTrackParams) error 
 		arg.ID,
 		arg.Createdat,
 		arg.Path,
-		arg.Sourceurl,
 		arg.Title,
 		arg.Artist,
 		arg.Album,
@@ -98,7 +95,7 @@ func (q *Queries) InsertTrack(ctx context.Context, arg InsertTrackParams) error 
 }
 
 const listAllTracks = `-- name: ListAllTracks :many
-SELECT id, createdat, path, sourceurl, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks ORDER by title
+SELECT id, createdat, path, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks ORDER by title
 `
 
 func (q *Queries) ListAllTracks(ctx context.Context) ([]Track, error) {
@@ -114,7 +111,6 @@ func (q *Queries) ListAllTracks(ctx context.Context) ([]Track, error) {
 			&i.ID,
 			&i.Createdat,
 			&i.Path,
-			&i.Sourceurl,
 			&i.Title,
 			&i.Artist,
 			&i.Album,
@@ -138,7 +134,7 @@ func (q *Queries) ListAllTracks(ctx context.Context) ([]Track, error) {
 }
 
 const listFavTracks = `-- name: ListFavTracks :many
-SELECT id, createdat, path, sourceurl, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks WHERE starred IS NOT NULL ORDER by title
+SELECT id, createdat, path, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks WHERE starred IS NOT NULL ORDER by title
 `
 
 func (q *Queries) ListFavTracks(ctx context.Context) ([]Track, error) {
@@ -154,7 +150,6 @@ func (q *Queries) ListFavTracks(ctx context.Context) ([]Track, error) {
 			&i.ID,
 			&i.Createdat,
 			&i.Path,
-			&i.Sourceurl,
 			&i.Title,
 			&i.Artist,
 			&i.Album,
@@ -178,7 +173,7 @@ func (q *Queries) ListFavTracks(ctx context.Context) ([]Track, error) {
 }
 
 const listTracksByAlbum = `-- name: ListTracksByAlbum :many
-SELECT id, createdat, path, sourceurl, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks WHERE album =?1
+SELECT id, createdat, path, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks WHERE album =?1
 `
 
 func (q *Queries) ListTracksByAlbum(ctx context.Context, albumname string) ([]Track, error) {
@@ -194,7 +189,6 @@ func (q *Queries) ListTracksByAlbum(ctx context.Context, albumname string) ([]Tr
 			&i.ID,
 			&i.Createdat,
 			&i.Path,
-			&i.Sourceurl,
 			&i.Title,
 			&i.Artist,
 			&i.Album,
@@ -218,7 +212,7 @@ func (q *Queries) ListTracksByAlbum(ctx context.Context, albumname string) ([]Tr
 }
 
 const listTracksByArtist = `-- name: ListTracksByArtist :many
-SELECT id, createdat, path, sourceurl, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks WHERE artist LIKE ?1 ORDER by title
+SELECT id, createdat, path, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks WHERE artist LIKE ?1 ORDER by title
 `
 
 func (q *Queries) ListTracksByArtist(ctx context.Context, artist string) ([]Track, error) {
@@ -234,7 +228,6 @@ func (q *Queries) ListTracksByArtist(ctx context.Context, artist string) ([]Trac
 			&i.ID,
 			&i.Createdat,
 			&i.Path,
-			&i.Sourceurl,
 			&i.Title,
 			&i.Artist,
 			&i.Album,
@@ -262,7 +255,7 @@ SELECT
     t.id, 
     t.createdAt, 
     t.path, 
-    t.sourceUrl, 
+    -- t.sourceDir, 
     t.title, 
     t.artist, 
     t.album, 
@@ -294,7 +287,6 @@ func (q *Queries) ListTracksByPlaylist(ctx context.Context, playlistid string) (
 			&i.ID,
 			&i.Createdat,
 			&i.Path,
-			&i.Sourceurl,
 			&i.Title,
 			&i.Artist,
 			&i.Album,

@@ -21,7 +21,7 @@ export default function MusicSources() {
     error,
     isPending,
   } = useQuery(queries.me.preferences())
-
+  console.log({ preferences })
   const { mutate: createNewSource, isPending: isMutating } =
     useCreateNewSource()
 
@@ -88,8 +88,8 @@ export default function MusicSources() {
           </CardFooter>
         </Card>
         <CardFooter className="w-full px-0">
-          {preferences.sourceUrls.length > 0 && (
-            <ActiveSources sourceUrls={preferences.sourceUrls} />
+          {preferences.sourceDirs.length > 0 && (
+            <ActiveSources sourceDirs={preferences.sourceDirs} />
           )}
         </CardFooter>
       </CardContent>
@@ -97,7 +97,7 @@ export default function MusicSources() {
   )
 }
 
-function ActiveSources({ sourceUrls }: { sourceUrls: string[] }) {
+function ActiveSources({ sourceDirs }: { sourceDirs: string[] }) {
   return (
     <Card className="w-full">
       <CardHeader>
@@ -109,7 +109,7 @@ function ActiveSources({ sourceUrls }: { sourceUrls: string[] }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
-        {sourceUrls.map((source) => (
+        {sourceDirs.map((source) => (
           <Source source={source} key={`source-${crypto.randomUUID()}`} />
         ))}
       </CardContent>
@@ -124,7 +124,7 @@ function Source({ source }: { source: string }) {
     if (!preferences) return
     const newPrefs = {
       databasePath: preferences.databasePath,
-      sourceUrls: preferences.sourceUrls.filter((a) => a !== source),
+      sourceDirs: preferences.sourceDirs.filter((a) => a !== source),
     } as config.Preferences
 
     updatePrefs(newPrefs)

@@ -34,7 +34,6 @@ type Track struct {
 	ID           string         `json:"id"`
 	Createdat    int64          `json:"createdat"`
 	Path         string         `json:"path"`
-	Sourceurl    string         `json:"sourceurl"`
 	Title        string         `json:"title"`
 	Artist       string         `json:"artist"`
 	Album        string         `json:"album"`

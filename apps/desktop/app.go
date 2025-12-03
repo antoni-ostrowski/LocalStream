@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"localStream/internal/config"
 	"localStream/internal/database"
+	"localStream/internal/tracksync"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -56,11 +57,17 @@ func (a *App) initAppResources() error {
 	}
 
 	a.db = dbManager
+
+	trackSyncManager := &tracksync.TrackSyncMangaer{
+		Config: a.config,
+		Db:     a.db,
+	}
+	err = trackSyncManager.StartSync(a.ctx)
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "Failed to init app resources at track sync %v", err)
+		return err
+	}
+
 	runtime.LogInfo(a.ctx, "Successfully initialized app resources")
 	return nil
-}
-
-func (a *App) Greet(someNum int) string {
-	runtime.LogPrint(a.ctx, "testing log print")
-	return "fdjskl"
 }

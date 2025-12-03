@@ -1,4 +1,4 @@
-import { CreateSourceUrl, UpdatePreferences } from "@/wailsjs/go/main/App"
+import { CreateSourceDir, UpdatePreferences } from "@/wailsjs/go/main/App"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { queries } from "./queries"
@@ -28,6 +28,6 @@ export function useCreateNewSource() {
       await qc.invalidateQueries(queries.me.preferences())
       toast.success("Created new music source!")
     },
-    mutationFn: () => CreateSourceUrl(),
+    mutationFn: () => CreateSourceDir(),
   })
 }

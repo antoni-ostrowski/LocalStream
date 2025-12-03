@@ -2,7 +2,7 @@ export namespace config {
 	
 	export class Preferences {
 	    databasePath: string;
-	    sourceUrls: string[];
+	    sourceDirs: string[];
 	
 	    static createFrom(source: any = {}) {
 	        return new Preferences(source);
@@ -11,7 +11,7 @@ export namespace config {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.databasePath = source["databasePath"];
-	        this.sourceUrls = source["sourceUrls"];
+	        this.sourceDirs = source["sourceDirs"];
 	    }
 	}
 
