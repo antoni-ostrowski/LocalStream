@@ -12,13 +12,13 @@ import (
 
 const createFavArtist = `-- name: CreateFavArtist :exec
 INSERT INTO favouriteArtists
-(id, createdAt, starred, artist)
+(id, created_at, starred, artist)
 VALUES (?1, ?2, ?3, ?4)
 `
 
 type CreateFavArtistParams struct {
 	ID        string        `json:"id"`
-	Createdat int64         `json:"createdat"`
+	CreatedAt int64         `json:"created_at"`
 	Starred   sql.NullInt64 `json:"starred"`
 	Artist    string        `json:"artist"`
 }
@@ -26,7 +26,7 @@ type CreateFavArtistParams struct {
 func (q *Queries) CreateFavArtist(ctx context.Context, arg CreateFavArtistParams) error {
 	_, err := q.db.ExecContext(ctx, createFavArtist,
 		arg.ID,
-		arg.Createdat,
+		arg.CreatedAt,
 		arg.Starred,
 		arg.Artist,
 	)
@@ -34,7 +34,7 @@ func (q *Queries) CreateFavArtist(ctx context.Context, arg CreateFavArtistParams
 }
 
 const listFavArtists = `-- name: ListFavArtists :many
-SELECT id, createdat, starred, artist FROM favouriteArtists ORDER BY artist
+SELECT id, created_at, starred, artist FROM favouriteArtists ORDER BY artist
 `
 
 func (q *Queries) ListFavArtists(ctx context.Context) ([]Favouriteartist, error) {
@@ -48,7 +48,7 @@ func (q *Queries) ListFavArtists(ctx context.Context) ([]Favouriteartist, error)
 		var i Favouriteartist
 		if err := rows.Scan(
 			&i.ID,
-			&i.Createdat,
+			&i.CreatedAt,
 			&i.Starred,
 			&i.Artist,
 		); err != nil {

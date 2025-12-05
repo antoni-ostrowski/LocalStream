@@ -11,24 +11,25 @@ import (
 )
 
 const getTrackFromPath = `-- name: GetTrackFromPath :one
-SELECT id, createdat, path, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks WHERE path LIKE ?1
+SELECT id, created_at, path, title, artist, album, genre, year, duration_in_ms, starred, queue_id, is_missing FROM tracks WHERE path LIKE ?1
 `
 
-func (q *Queries) GetTrackFromPath(ctx context.Context, trackpath string) (Track, error) {
-	row := q.db.QueryRowContext(ctx, getTrackFromPath, trackpath)
+func (q *Queries) GetTrackFromPath(ctx context.Context, trackPath string) (Track, error) {
+	row := q.db.QueryRowContext(ctx, getTrackFromPath, trackPath)
 	var i Track
 	err := row.Scan(
 		&i.ID,
-		&i.Createdat,
+		&i.CreatedAt,
 		&i.Path,
 		&i.Title,
 		&i.Artist,
 		&i.Album,
 		&i.Genre,
 		&i.Year,
-		&i.Durationinms,
+		&i.DurationInMs,
 		&i.Starred,
-		&i.Queueid,
+		&i.QueueID,
+		&i.IsMissing,
 	)
 	return i, err
 }
@@ -36,7 +37,7 @@ func (q *Queries) GetTrackFromPath(ctx context.Context, trackpath string) (Track
 const insertTrack = `-- name: InsertTrack :exec
 INSERT INTO tracks (
     id,
-    createdAt,
+    created_at,
     path,
     -- sourceDir,
     title,
@@ -44,9 +45,10 @@ INSERT INTO tracks (
     album,
     genre,
     year,
-    durationInMs,
+    duration_in_ms,
     starred,
-    queueId
+    queue_id,
+    is_missing
 ) VALUES (
     ?1,
     ?2,
@@ -59,43 +61,46 @@ INSERT INTO tracks (
     ?8,
     ?9,
     ?10,
-    ?11
+    ?11,
+    ?12
 )
 `
 
 type InsertTrackParams struct {
 	ID           string         `json:"id"`
-	Createdat    int64          `json:"createdat"`
+	CreatedAt    int64          `json:"created_at"`
 	Path         string         `json:"path"`
 	Title        string         `json:"title"`
 	Artist       string         `json:"artist"`
 	Album        string         `json:"album"`
 	Genre        sql.NullString `json:"genre"`
 	Year         sql.NullInt64  `json:"year"`
-	Durationinms sql.NullInt64  `json:"durationinms"`
+	DurationInMs sql.NullInt64  `json:"duration_in_ms"`
 	Starred      sql.NullInt64  `json:"starred"`
-	Queueid      sql.NullString `json:"queueid"`
+	QueueID      sql.NullString `json:"queue_id"`
+	IsMissing    sql.NullBool   `json:"is_missing"`
 }
 
 func (q *Queries) InsertTrack(ctx context.Context, arg InsertTrackParams) error {
 	_, err := q.db.ExecContext(ctx, insertTrack,
 		arg.ID,
-		arg.Createdat,
+		arg.CreatedAt,
 		arg.Path,
 		arg.Title,
 		arg.Artist,
 		arg.Album,
 		arg.Genre,
 		arg.Year,
-		arg.Durationinms,
+		arg.DurationInMs,
 		arg.Starred,
-		arg.Queueid,
+		arg.QueueID,
+		arg.IsMissing,
 	)
 	return err
 }
 
 const listAllTracks = `-- name: ListAllTracks :many
-SELECT id, createdat, path, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks ORDER by title
+SELECT id, created_at, path, title, artist, album, genre, year, duration_in_ms, starred, queue_id, is_missing FROM tracks ORDER by title
 `
 
 func (q *Queries) ListAllTracks(ctx context.Context) ([]Track, error) {
@@ -109,16 +114,17 @@ func (q *Queries) ListAllTracks(ctx context.Context) ([]Track, error) {
 		var i Track
 		if err := rows.Scan(
 			&i.ID,
-			&i.Createdat,
+			&i.CreatedAt,
 			&i.Path,
 			&i.Title,
 			&i.Artist,
 			&i.Album,
 			&i.Genre,
 			&i.Year,
-			&i.Durationinms,
+			&i.DurationInMs,
 			&i.Starred,
-			&i.Queueid,
+			&i.QueueID,
+			&i.IsMissing,
 		); err != nil {
 			return nil, err
 		}
@@ -134,7 +140,7 @@ func (q *Queries) ListAllTracks(ctx context.Context) ([]Track, error) {
 }
 
 const listFavTracks = `-- name: ListFavTracks :many
-SELECT id, createdat, path, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks WHERE starred IS NOT NULL ORDER by title
+SELECT id, created_at, path, title, artist, album, genre, year, duration_in_ms, starred, queue_id, is_missing FROM tracks WHERE starred IS NOT NULL ORDER by title
 `
 
 func (q *Queries) ListFavTracks(ctx context.Context) ([]Track, error) {
@@ -148,16 +154,17 @@ func (q *Queries) ListFavTracks(ctx context.Context) ([]Track, error) {
 		var i Track
 		if err := rows.Scan(
 			&i.ID,
-			&i.Createdat,
+			&i.CreatedAt,
 			&i.Path,
 			&i.Title,
 			&i.Artist,
 			&i.Album,
 			&i.Genre,
 			&i.Year,
-			&i.Durationinms,
+			&i.DurationInMs,
 			&i.Starred,
-			&i.Queueid,
+			&i.QueueID,
+			&i.IsMissing,
 		); err != nil {
 			return nil, err
 		}
@@ -173,11 +180,11 @@ func (q *Queries) ListFavTracks(ctx context.Context) ([]Track, error) {
 }
 
 const listTracksByAlbum = `-- name: ListTracksByAlbum :many
-SELECT id, createdat, path, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks WHERE album =?1
+SELECT id, created_at, path, title, artist, album, genre, year, duration_in_ms, starred, queue_id, is_missing FROM tracks WHERE album = ?1
 `
 
-func (q *Queries) ListTracksByAlbum(ctx context.Context, albumname string) ([]Track, error) {
-	rows, err := q.db.QueryContext(ctx, listTracksByAlbum, albumname)
+func (q *Queries) ListTracksByAlbum(ctx context.Context, albumName string) ([]Track, error) {
+	rows, err := q.db.QueryContext(ctx, listTracksByAlbum, albumName)
 	if err != nil {
 		return nil, err
 	}
@@ -187,16 +194,17 @@ func (q *Queries) ListTracksByAlbum(ctx context.Context, albumname string) ([]Tr
 		var i Track
 		if err := rows.Scan(
 			&i.ID,
-			&i.Createdat,
+			&i.CreatedAt,
 			&i.Path,
 			&i.Title,
 			&i.Artist,
 			&i.Album,
 			&i.Genre,
 			&i.Year,
-			&i.Durationinms,
+			&i.DurationInMs,
 			&i.Starred,
-			&i.Queueid,
+			&i.QueueID,
+			&i.IsMissing,
 		); err != nil {
 			return nil, err
 		}
@@ -212,7 +220,7 @@ func (q *Queries) ListTracksByAlbum(ctx context.Context, albumname string) ([]Tr
 }
 
 const listTracksByArtist = `-- name: ListTracksByArtist :many
-SELECT id, createdat, path, title, artist, album, genre, year, durationinms, starred, queueid FROM tracks WHERE artist LIKE ?1 ORDER by title
+SELECT id, created_at, path, title, artist, album, genre, year, duration_in_ms, starred, queue_id, is_missing FROM tracks WHERE artist LIKE ?1 ORDER by title
 `
 
 func (q *Queries) ListTracksByArtist(ctx context.Context, artist string) ([]Track, error) {
@@ -226,16 +234,17 @@ func (q *Queries) ListTracksByArtist(ctx context.Context, artist string) ([]Trac
 		var i Track
 		if err := rows.Scan(
 			&i.ID,
-			&i.Createdat,
+			&i.CreatedAt,
 			&i.Path,
 			&i.Title,
 			&i.Artist,
 			&i.Album,
 			&i.Genre,
 			&i.Year,
-			&i.Durationinms,
+			&i.DurationInMs,
 			&i.Starred,
-			&i.Queueid,
+			&i.QueueID,
+			&i.IsMissing,
 		); err != nil {
 			return nil, err
 		}
@@ -253,7 +262,7 @@ func (q *Queries) ListTracksByArtist(ctx context.Context, artist string) ([]Trac
 const listTracksByPlaylist = `-- name: ListTracksByPlaylist :many
 SELECT
     t.id, 
-    t.createdAt, 
+    t.created_at, 
     t.path, 
     -- t.sourceDir, 
     t.title, 
@@ -261,21 +270,22 @@ SELECT
     t.album, 
     t.genre, 
     t.year, 
-    t.durationInMs, 
+    t.duration_in_ms, 
     t.starred, 
-    t.queueId
+    t.queue_id,
+    t.is_missing
 FROM 
     tracks_to_playlists AS ttp
 JOIN 
-    tracks AS t ON ttp.trackId = t.id
+    tracks AS t ON ttp.track_id = t.id
 WHERE 
-    ttp.playlistId = ?1
+    ttp.playlist_id = ?1
 ORDER BY 
     t.title
 `
 
-func (q *Queries) ListTracksByPlaylist(ctx context.Context, playlistid string) ([]Track, error) {
-	rows, err := q.db.QueryContext(ctx, listTracksByPlaylist, playlistid)
+func (q *Queries) ListTracksByPlaylist(ctx context.Context, playlistID string) ([]Track, error) {
+	rows, err := q.db.QueryContext(ctx, listTracksByPlaylist, playlistID)
 	if err != nil {
 		return nil, err
 	}
@@ -285,16 +295,17 @@ func (q *Queries) ListTracksByPlaylist(ctx context.Context, playlistid string) (
 		var i Track
 		if err := rows.Scan(
 			&i.ID,
-			&i.Createdat,
+			&i.CreatedAt,
 			&i.Path,
 			&i.Title,
 			&i.Artist,
 			&i.Album,
 			&i.Genre,
 			&i.Year,
-			&i.Durationinms,
+			&i.DurationInMs,
 			&i.Starred,
-			&i.Queueid,
+			&i.QueueID,
+			&i.IsMissing,
 		); err != nil {
 			return nil, err
 		}
@@ -315,5 +326,42 @@ UPDATE tracks SET starred = unixepoch() WHERE id = ?1
 
 func (q *Queries) StarTrack(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, starTrack, id)
+	return err
+}
+
+const updateTrack = `-- name: UpdateTrack :exec
+UPDATE tracks SET
+    title = ?1,
+    artist = ?2,
+    album = ?3,
+    genre = ?4,
+    year = ?5,
+    duration_in_ms = ?6,
+    is_missing = ?7
+WHERE id = ?8
+`
+
+type UpdateTrackParams struct {
+	Title        string         `json:"title"`
+	Artist       string         `json:"artist"`
+	Album        string         `json:"album"`
+	Genre        sql.NullString `json:"genre"`
+	Year         sql.NullInt64  `json:"year"`
+	DurationInMs sql.NullInt64  `json:"duration_in_ms"`
+	IsMissing    sql.NullBool   `json:"is_missing"`
+	ID           string         `json:"id"`
+}
+
+func (q *Queries) UpdateTrack(ctx context.Context, arg UpdateTrackParams) error {
+	_, err := q.db.ExecContext(ctx, updateTrack,
+		arg.Title,
+		arg.Artist,
+		arg.Album,
+		arg.Genre,
+		arg.Year,
+		arg.DurationInMs,
+		arg.IsMissing,
+		arg.ID,
+	)
 	return err
 }

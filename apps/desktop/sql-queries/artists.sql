@@ -3,5 +3,5 @@ SELECT * FROM favouriteArtists ORDER BY artist;
 
 -- name: CreateFavArtist :exec
 INSERT INTO favouriteArtists
-(id, createdAt, starred, artist)
-VALUES (sqlc.arg(id), sqlc.arg(createdAt), sqlc.arg(starred), sqlc.arg(artist));
+(id, created_at, starred, artist)
+VALUES (sqlc.arg(id), sqlc.arg(created_at), sqlc.arg(starred), sqlc.arg(artist));

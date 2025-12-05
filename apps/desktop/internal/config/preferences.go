@@ -97,9 +97,10 @@ func handleCreatingDefaultConfig(ctx context.Context, configFilePath string) (Pr
 
 func createDefaultPreferences(configFilePath string) Preferences {
 	defaultDBPath := filepath.Join(filepath.Dir(configFilePath), "localStream.sqlite")
-
+	defaultSourceDirs := make([]string, 0)
 	return Preferences{
 		DatabasePath: defaultDBPath,
+		SourceDirs:   defaultSourceDirs,
 	}
 }
 

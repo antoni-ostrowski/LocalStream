@@ -19,11 +19,14 @@ func (s *TrackSyncMangaer) StartSync(ctx context.Context) error {
 		runtime.LogErrorf(ctx, "Tracks collector failed %v", err)
 		return err
 	}
-	runtime.LogPrintf(ctx, "Tracks collected %v", tracks)
+	// runtime.LogPrintf(ctx, "Tracks collected %v", tracks)
 
-	// insert tracks
-
-	// compare with local, update those that need it
+	runtime.LogPrint(ctx, "satrt db sync")
+	err = s.SyncTracksWithDb(ctx, tracks)
+	if err != nil {
+		runtime.LogErrorf(ctx, "Tracks collector failed %v", err)
+		return err
+	}
 
 	return nil
 }

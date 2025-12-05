@@ -7,22 +7,22 @@ SELECT * FROM playlists WHERE starred IS NOT NULL ORDER BY name;
 -- name: CreatePlaylist :exec
 INSERT INTO playlists (
   id,
-  createdAt,
+  created_at,
   name,
-  coverPath,
+  cover_path,
   starred
 ) VALUES (
   sqlc.arg(id),
-  sqlc.arg(createdAt),
+  sqlc.arg(created_at),
   sqlc.arg(name),
-  sqlc.arg(coverPath),
+  sqlc.arg(cover_path),
   sqlc.arg(starred)
 );
 
 -- name: EditPlaylist :exec
 UPDATE playlists SET
     name = sqlc.arg(name),
-    coverPath = sqlc.arg(coverPath),
+    cover_path = sqlc.arg(cover_path),
     starred = sqlc.arg(starred)
 WHERE id = sqlc.arg(id);
 

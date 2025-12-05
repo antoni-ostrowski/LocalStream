@@ -10,43 +10,44 @@ import (
 
 type Favouritealbum struct {
 	ID        string        `json:"id"`
-	Createdat int64         `json:"createdat"`
+	CreatedAt int64         `json:"created_at"`
 	Starred   sql.NullInt64 `json:"starred"`
-	Albumname string        `json:"albumname"`
+	AlbumName string        `json:"album_name"`
 }
 
 type Favouriteartist struct {
 	ID        string        `json:"id"`
-	Createdat int64         `json:"createdat"`
+	CreatedAt int64         `json:"created_at"`
 	Starred   sql.NullInt64 `json:"starred"`
 	Artist    string        `json:"artist"`
 }
 
 type Playlist struct {
 	ID        string         `json:"id"`
-	Createdat int64          `json:"createdat"`
+	CreatedAt int64          `json:"created_at"`
 	Name      string         `json:"name"`
-	Coverpath sql.NullString `json:"coverpath"`
+	CoverPath sql.NullString `json:"cover_path"`
 	Starred   sql.NullInt64  `json:"starred"`
 }
 
 type Track struct {
 	ID           string         `json:"id"`
-	Createdat    int64          `json:"createdat"`
+	CreatedAt    int64          `json:"created_at"`
 	Path         string         `json:"path"`
 	Title        string         `json:"title"`
 	Artist       string         `json:"artist"`
 	Album        string         `json:"album"`
 	Genre        sql.NullString `json:"genre"`
 	Year         sql.NullInt64  `json:"year"`
-	Durationinms sql.NullInt64  `json:"durationinms"`
+	DurationInMs sql.NullInt64  `json:"duration_in_ms"`
 	Starred      sql.NullInt64  `json:"starred"`
-	Queueid      sql.NullString `json:"queueid"`
+	QueueID      sql.NullString `json:"queue_id"`
+	IsMissing    sql.NullBool   `json:"is_missing"`
 }
 
 type TracksToPlaylist struct {
 	ID         string `json:"id"`
-	Createdat  int64  `json:"createdat"`
-	Trackid    string `json:"trackid"`
-	Playlistid string `json:"playlistid"`
+	CreatedAt  int64  `json:"created_at"`
+	TrackID    string `json:"track_id"`
+	PlaylistID string `json:"playlist_id"`
 }

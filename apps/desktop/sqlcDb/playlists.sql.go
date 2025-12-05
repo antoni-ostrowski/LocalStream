@@ -13,9 +13,9 @@ import (
 const createPlaylist = `-- name: CreatePlaylist :exec
 INSERT INTO playlists (
   id,
-  createdAt,
+  created_at,
   name,
-  coverPath,
+  cover_path,
   starred
 ) VALUES (
   ?1,
@@ -28,18 +28,18 @@ INSERT INTO playlists (
 
 type CreatePlaylistParams struct {
 	ID        string         `json:"id"`
-	Createdat int64          `json:"createdat"`
+	CreatedAt int64          `json:"created_at"`
 	Name      string         `json:"name"`
-	Coverpath sql.NullString `json:"coverpath"`
+	CoverPath sql.NullString `json:"cover_path"`
 	Starred   sql.NullInt64  `json:"starred"`
 }
 
 func (q *Queries) CreatePlaylist(ctx context.Context, arg CreatePlaylistParams) error {
 	_, err := q.db.ExecContext(ctx, createPlaylist,
 		arg.ID,
-		arg.Createdat,
+		arg.CreatedAt,
 		arg.Name,
-		arg.Coverpath,
+		arg.CoverPath,
 		arg.Starred,
 	)
 	return err
@@ -57,14 +57,14 @@ func (q *Queries) DeletePlaylist(ctx context.Context, id string) error {
 const editPlaylist = `-- name: EditPlaylist :exec
 UPDATE playlists SET
     name = ?1,
-    coverPath = ?2,
+    cover_path = ?2,
     starred = ?3
 WHERE id = ?4
 `
 
 type EditPlaylistParams struct {
 	Name      string         `json:"name"`
-	Coverpath sql.NullString `json:"coverpath"`
+	CoverPath sql.NullString `json:"cover_path"`
 	Starred   sql.NullInt64  `json:"starred"`
 	ID        string         `json:"id"`
 }
@@ -72,7 +72,7 @@ type EditPlaylistParams struct {
 func (q *Queries) EditPlaylist(ctx context.Context, arg EditPlaylistParams) error {
 	_, err := q.db.ExecContext(ctx, editPlaylist,
 		arg.Name,
-		arg.Coverpath,
+		arg.CoverPath,
 		arg.Starred,
 		arg.ID,
 	)
@@ -80,7 +80,7 @@ func (q *Queries) EditPlaylist(ctx context.Context, arg EditPlaylistParams) erro
 }
 
 const getPlaylist = `-- name: GetPlaylist :one
-SELECT id, createdat, name, coverpath, starred FROM playlists WHERE id = ?1
+SELECT id, created_at, name, cover_path, starred FROM playlists WHERE id = ?1
 `
 
 func (q *Queries) GetPlaylist(ctx context.Context, id string) (Playlist, error) {
@@ -88,16 +88,16 @@ func (q *Queries) GetPlaylist(ctx context.Context, id string) (Playlist, error) 
 	var i Playlist
 	err := row.Scan(
 		&i.ID,
-		&i.Createdat,
+		&i.CreatedAt,
 		&i.Name,
-		&i.Coverpath,
+		&i.CoverPath,
 		&i.Starred,
 	)
 	return i, err
 }
 
 const listFavPlaylists = `-- name: ListFavPlaylists :many
-SELECT id, createdat, name, coverpath, starred FROM playlists WHERE starred IS NOT NULL ORDER BY name
+SELECT id, created_at, name, cover_path, starred FROM playlists WHERE starred IS NOT NULL ORDER BY name
 `
 
 func (q *Queries) ListFavPlaylists(ctx context.Context) ([]Playlist, error) {
@@ -111,9 +111,9 @@ func (q *Queries) ListFavPlaylists(ctx context.Context) ([]Playlist, error) {
 		var i Playlist
 		if err := rows.Scan(
 			&i.ID,
-			&i.Createdat,
+			&i.CreatedAt,
 			&i.Name,
-			&i.Coverpath,
+			&i.CoverPath,
 			&i.Starred,
 		); err != nil {
 			return nil, err
@@ -130,7 +130,7 @@ func (q *Queries) ListFavPlaylists(ctx context.Context) ([]Playlist, error) {
 }
 
 const listPlaylists = `-- name: ListPlaylists :many
-SELECT id, createdat, name, coverpath, starred FROM playlists ORDER BY name
+SELECT id, created_at, name, cover_path, starred FROM playlists ORDER BY name
 `
 
 func (q *Queries) ListPlaylists(ctx context.Context) ([]Playlist, error) {
@@ -144,9 +144,9 @@ func (q *Queries) ListPlaylists(ctx context.Context) ([]Playlist, error) {
 		var i Playlist
 		if err := rows.Scan(
 			&i.ID,
-			&i.Createdat,
+			&i.CreatedAt,
 			&i.Name,
-			&i.Coverpath,
+			&i.CoverPath,
 			&i.Starred,
 		); err != nil {
 			return nil, err

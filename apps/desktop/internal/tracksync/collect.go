@@ -216,13 +216,14 @@ func (s *TrackSyncMangaer) processFile(path string) (sqlcDb.Track, error) {
 		Title:        GetFirstOr(tags[taglib.Title], "no title"),
 		Album:        GetFirstOr(tags[taglib.Album], "no album"),
 		Genre:        sql.NullString{String: GetFirstOr(tags[taglib.Genre], "no genre")},
-		Durationinms: sql.NullInt64{Int64: int64(properties.Length.Seconds())},
-		Createdat:    time.Now().Unix(),
+		DurationInMs: sql.NullInt64{Int64: int64(properties.Length.Milliseconds())},
+		CreatedAt:    time.Now().Unix(),
 		ID:           uuid.NewString(),
 		Path:         path,
 		Artist:       GetFirstOr(tags[taglib.Artist], "no artist"),
 		Starred:      sql.NullInt64{},
-		Queueid:      sql.NullString{},
+		QueueID:      sql.NullString{},
+		IsMissing:    sql.NullBool{Bool: false},
 	}, nil
 }
 

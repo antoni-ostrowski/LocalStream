@@ -11,23 +11,23 @@ import (
 )
 
 const createFavAlbum = `-- name: CreateFavAlbum :exec
-INSERT INTO favouriteAlbums (id, createdAt, starred, albumName)
+INSERT INTO favouriteAlbums (id, created_at, starred, album_name)
 VALUES (?1, ?2, ?3, ?4)
 `
 
 type CreateFavAlbumParams struct {
 	ID        string        `json:"id"`
-	Createdat int64         `json:"createdat"`
+	CreatedAt int64         `json:"created_at"`
 	Starred   sql.NullInt64 `json:"starred"`
-	Albumname string        `json:"albumname"`
+	AlbumName string        `json:"album_name"`
 }
 
 func (q *Queries) CreateFavAlbum(ctx context.Context, arg CreateFavAlbumParams) error {
 	_, err := q.db.ExecContext(ctx, createFavAlbum,
 		arg.ID,
-		arg.Createdat,
+		arg.CreatedAt,
 		arg.Starred,
-		arg.Albumname,
+		arg.AlbumName,
 	)
 	return err
 }
@@ -60,7 +60,7 @@ func (q *Queries) ListDistinctAlbums(ctx context.Context) ([]string, error) {
 }
 
 const listFavAlbums = `-- name: ListFavAlbums :many
-SELECT id, createdat, starred, albumname FROM favouriteAlbums ORDER BY albumName
+SELECT id, created_at, starred, album_name FROM favouriteAlbums ORDER BY album_name
 `
 
 func (q *Queries) ListFavAlbums(ctx context.Context) ([]Favouritealbum, error) {
@@ -74,9 +74,9 @@ func (q *Queries) ListFavAlbums(ctx context.Context) ([]Favouritealbum, error) {
 		var i Favouritealbum
 		if err := rows.Scan(
 			&i.ID,
-			&i.Createdat,
+			&i.CreatedAt,
 			&i.Starred,
-			&i.Albumname,
+			&i.AlbumName,
 		); err != nil {
 			return nil, err
 		}
@@ -92,15 +92,15 @@ func (q *Queries) ListFavAlbums(ctx context.Context) ([]Favouritealbum, error) {
 }
 
 const updateFavAlbum = `-- name: UpdateFavAlbum :exec
-UPDATE favouriteAlbums SET starred = ?1 WHERE albumName = ?2
+UPDATE favouriteAlbums SET starred = ?1 WHERE album_name = ?2
 `
 
 type UpdateFavAlbumParams struct {
 	Starred   sql.NullInt64 `json:"starred"`
-	Albumname string        `json:"albumname"`
+	AlbumName string        `json:"album_name"`
 }
 
 func (q *Queries) UpdateFavAlbum(ctx context.Context, arg UpdateFavAlbumParams) error {
-	_, err := q.db.ExecContext(ctx, updateFavAlbum, arg.Starred, arg.Albumname)
+	_, err := q.db.ExecContext(ctx, updateFavAlbum, arg.Starred, arg.AlbumName)
 	return err
 }

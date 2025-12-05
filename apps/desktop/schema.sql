@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS tracks (
     id TEXT PRIMARY KEY NOT NULL,
-    createdAt INTEGER NOT NULL,
+    created_at INTEGER NOT NULL,
     path TEXT NOT NULL,
     -- sourceDir TEXT NOT NULL,
     title TEXT NOT NULL,
@@ -8,9 +8,10 @@ CREATE TABLE IF NOT EXISTS tracks (
     album TEXT NOT NULL,
     genre TEXT,
     year INTEGER,
-    durationInMs INTEGER,
+    duration_in_ms INTEGER,
     starred INTEGER,
-    queueId TEXT
+    queue_id TEXT,
+    is_missing BOOL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS tracks_path_unique ON tracks (path);
 
@@ -18,9 +19,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS tracks_path_unique ON tracks (path);
 
 CREATE TABLE IF NOT EXISTS playlists (
     id TEXT PRIMARY KEY NOT NULL,
-    createdAt INTEGER NOT NULL,
+    created_at INTEGER NOT NULL,
     name TEXT NOT NULL,
-    coverPath TEXT,
+    cover_path TEXT,
     starred INTEGER
 );
 
@@ -28,24 +29,24 @@ CREATE TABLE IF NOT EXISTS playlists (
 
 CREATE TABLE IF NOT EXISTS tracks_to_playlists (
     id TEXT PRIMARY KEY NOT NULL,
-    createdAt INTEGER NOT NULL,
-    trackId TEXT NOT NULL,
-    playlistId TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    track_id TEXT NOT NULL,
+    playlist_id TEXT NOT NULL,
     
     -- Foreign Key Constraints (ON UPDATE NO ACTION is SQLite default and often omitted)
-    FOREIGN KEY (trackId) REFERENCES tracks(id),
-    FOREIGN KEY (playlistId) REFERENCES playlists(id)
+    FOREIGN KEY (track_id) REFERENCES tracks(id),
+    FOREIGN KEY (playlist_id) REFERENCES playlists(id)
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS tracks_to_playlists_pair_unique 
-    ON tracks_to_playlists (trackId, playlistId);
+    ON tracks_to_playlists (track_id, playlist_id);
 
 
 --------------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS favouriteArtists (
     id TEXT PRIMARY KEY NOT NULL,
-    createdAt INTEGER NOT NULL,
+    created_at INTEGER NOT NULL,
     starred INTEGER,
     artist TEXT NOT NULL
 );
@@ -55,11 +56,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS favouriteArtists_artist_unique ON favouriteArt
 
 CREATE TABLE IF NOT EXISTS favouriteAlbums (
     id TEXT PRIMARY KEY NOT NULL,
-    createdAt INTEGER NOT NULL,
+    created_at INTEGER NOT NULL,
     starred INTEGER,
-    albumName TEXT NOT NULL
+    album_name TEXT NOT NULL
 );
-CREATE UNIQUE INDEX IF NOT EXISTS favouriteAlbums_albumName_unique ON favouriteAlbums (albumName);
+CREATE UNIQUE INDEX IF NOT EXISTS favouriteAlbums_albumName_unique ON favouriteAlbums (album_name);
 
 
 

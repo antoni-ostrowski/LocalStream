@@ -8,12 +8,12 @@ SELECT * FROM tracks WHERE starred IS NOT NULL ORDER by title;
 UPDATE tracks SET starred = unixepoch() WHERE id = sqlc.arg(id);
 
 -- name: GetTrackFromPath :one
-SELECT * FROM tracks WHERE path LIKE sqlc.arg(trackPath);
+SELECT * FROM tracks WHERE path LIKE sqlc.arg(track_path);
 
 -- name: InsertTrack :exec
 INSERT INTO tracks (
     id,
-    createdAt,
+    created_at,
     path,
     -- sourceDir,
     title,
@@ -21,12 +21,13 @@ INSERT INTO tracks (
     album,
     genre,
     year,
-    durationInMs,
+    duration_in_ms,
     starred,
-    queueId
+    queue_id,
+    is_missing
 ) VALUES (
     sqlc.arg(id),
-    sqlc.arg(createdAt),
+    sqlc.arg(created_at),
     sqlc.arg(path),
     -- sqlc.arg(sourceDir),
     sqlc.arg(title),
@@ -34,21 +35,22 @@ INSERT INTO tracks (
     sqlc.arg(album),
     sqlc.arg(genre),
     sqlc.arg(year),
-    sqlc.arg(durationInMs),
+    sqlc.arg(duration_in_ms),
     sqlc.arg(starred),
-    sqlc.arg(queueId)
+    sqlc.arg(queue_id),
+    sqlc.arg(is_missing)
 );
 
 -- name: ListTracksByArtist :many
 SELECT * FROM tracks WHERE artist LIKE sqlc.arg(artist) ORDER by title;
 
 -- name: ListTracksByAlbum :many
-SELECT * FROM tracks WHERE album =sqlc.arg(albumName);
+SELECT * FROM tracks WHERE album = sqlc.arg(album_name);
 
 -- name: ListTracksByPlaylist :many
 SELECT
     t.id, 
-    t.createdAt, 
+    t.created_at, 
     t.path, 
     -- t.sourceDir, 
     t.title, 
@@ -56,15 +58,27 @@ SELECT
     t.album, 
     t.genre, 
     t.year, 
-    t.durationInMs, 
+    t.duration_in_ms, 
     t.starred, 
-    t.queueId
+    t.queue_id,
+    t.is_missing
 FROM 
     tracks_to_playlists AS ttp
 JOIN 
-    tracks AS t ON ttp.trackId = t.id
+    tracks AS t ON ttp.track_id = t.id
 WHERE 
-    ttp.playlistId = sqlc.arg(playlistId)
+    ttp.playlist_id = sqlc.arg(playlist_id)
 ORDER BY 
     t.title;
 
+
+-- name: UpdateTrack :exec
+UPDATE tracks SET
+    title = sqlc.arg(title),
+    artist = sqlc.arg(artist),
+    album = sqlc.arg(album),
+    genre = sqlc.arg(genre),
+    year = sqlc.arg(year),
+    duration_in_ms = sqlc.arg(duration_in_ms),
+    is_missing = sqlc.arg(is_missing)
+WHERE id = sqlc.arg(id);
