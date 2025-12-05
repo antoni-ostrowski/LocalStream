@@ -16,7 +16,6 @@ func (s *TrackSyncMangaer) SyncTracksWithDb(ctx context.Context, tracks []sqlcDb
 	toInsert, toUpdate, toMarkMissing := s.compareTracksAndGenerateActions(allDbTracks, tracks)
 
 	tx, err := s.Db.DB.Begin()
-
 	if err != nil {
 		return err
 	}
@@ -24,52 +23,26 @@ func (s *TrackSyncMangaer) SyncTracksWithDb(ctx context.Context, tracks []sqlcDb
 
 	qtx := s.Db.Queries.WithTx(tx)
 
-	fmt.Printf("\n this is the stuff to add to db \n %v", toInsert)
-	for i := 0; i < len(toInsert); i++ {
-		itemToInsert := toInsert[i]
-		fmt.Printf("attemtping to insert %v", itemToInsert.Title)
-		qtx.InsertTrack(ctx, sqlcDb.InsertTrackParams(itemToInsert))
+	insertErr := s.handleInserts(ctx, toInsert, qtx)
+	if insertErr != nil {
+		return insertErr
 	}
 
-	fmt.Printf("\n this is the stuff to modify db \n %v", toUpdate)
-
-	for i := 0; i < len(toUpdate); i++ {
-		itemToUpdate := toUpdate[i]
-		fmt.Printf("attemtping to update %v", itemToUpdate.Title)
-		qtx.UpdateTrack(ctx, sqlcDb.UpdateTrackParams{
-			ID:           itemToUpdate.ID,
-			Title:        itemToUpdate.Title,
-			Artist:       itemToUpdate.Artist,
-			Year:         itemToUpdate.Year,
-			Album:        itemToUpdate.Album,
-			DurationInMs: itemToUpdate.DurationInMs,
-			Genre:        itemToUpdate.Genre,
-			IsMissing:    itemToUpdate.IsMissing,
-		})
+	updateErr := s.handleUpdates(ctx, toUpdate, qtx)
+	if updateErr != nil {
+		return updateErr
 	}
 
-	fmt.Printf("\n this is the stuff to to mark missing db \n %v", toMarkMissing)
-
-	for i := 0; i < len(toMarkMissing); i++ {
-		itemToMark := toMarkMissing[i]
-		fmt.Printf("\nattemtping to mark as missing %v\n", itemToMark.Title)
-		qtx.UpdateTrack(ctx, sqlcDb.UpdateTrackParams{
-			ID:           itemToMark.ID,
-			Title:        itemToMark.Title,
-			Artist:       itemToMark.Artist,
-			Year:         itemToMark.Year,
-			Album:        itemToMark.Album,
-			DurationInMs: itemToMark.DurationInMs,
-			Genre:        itemToMark.Genre,
-			IsMissing:    sql.NullBool{Bool: true, Valid: true},
-		})
+	markingErr := s.handleMarkingMisses(ctx, toMarkMissing, qtx)
+	if markingErr != nil {
+		return markingErr
 	}
 
-	err = tx.Commit()
-	if err != nil {
-		fmt.Errorf("Failed to commit tx - %v", err)
-		return err
+	txCommitErr := tx.Commit()
+	if txCommitErr != nil {
+		return fmt.Errorf("Failed to commit tx - %v", txCommitErr)
 	}
+
 	return nil
 }
 
@@ -87,7 +60,6 @@ func (s *TrackSyncMangaer) compareTracksAndGenerateActions(dbTracks []sqlcDb.Tra
 		dbTrack, existsInDB := dbTrackMap[localTrack.Path]
 
 		if !existsInDB {
-			// A. INSERT: Local track is not in the DB
 			toInsert = append(toInsert, localTrack)
 		} else {
 			metadataChanged := dbTrack.Title != localTrack.Title
@@ -111,4 +83,57 @@ func (s *TrackSyncMangaer) compareTracksAndGenerateActions(dbTracks []sqlcDb.Tra
 	}
 
 	return toInsert, toUpdate, toMarkMissing
+}
+
+func (s *TrackSyncMangaer) handleInserts(ctx context.Context, toInsert []sqlcDb.Track, qtx *sqlcDb.Queries) error {
+	for _, itemToInsert := range toInsert {
+		fmt.Printf("attemtping to insert %v", itemToInsert.Title)
+		err := qtx.InsertTrack(ctx, sqlcDb.InsertTrackParams(itemToInsert))
+		if err != nil {
+			return fmt.Errorf("Failed to insert track - %s, %v", itemToInsert.Title, err)
+		}
+	}
+	return nil
+}
+
+func (s *TrackSyncMangaer) handleUpdates(ctx context.Context, toUpdate []sqlcDb.Track, qtx *sqlcDb.Queries) error {
+	for _, itemToUpdate := range toUpdate {
+		fmt.Printf("attemtping to update %v", itemToUpdate.Title)
+		err := qtx.UpdateTrack(ctx, sqlcDb.UpdateTrackParams{
+			ID:           itemToUpdate.ID,
+			Title:        itemToUpdate.Title,
+			Artist:       itemToUpdate.Artist,
+			Year:         itemToUpdate.Year,
+			Album:        itemToUpdate.Album,
+			DurationInMs: itemToUpdate.DurationInMs,
+			Genre:        itemToUpdate.Genre,
+			IsMissing:    itemToUpdate.IsMissing,
+		})
+
+		if err != nil {
+			return fmt.Errorf("Failed to update track - %s, %v", itemToUpdate.Title, err)
+		}
+	}
+	return nil
+}
+
+func (s *TrackSyncMangaer) handleMarkingMisses(ctx context.Context, toMark []sqlcDb.Track, qtx *sqlcDb.Queries) error {
+
+	for _, itemToMark := range toMark {
+		err := qtx.UpdateTrack(ctx, sqlcDb.UpdateTrackParams{
+			ID:           itemToMark.ID,
+			Title:        itemToMark.Title,
+			Artist:       itemToMark.Artist,
+			Year:         itemToMark.Year,
+			Album:        itemToMark.Album,
+			DurationInMs: itemToMark.DurationInMs,
+			Genre:        itemToMark.Genre,
+			IsMissing:    sql.NullBool{Bool: true, Valid: true},
+		})
+
+		if err != nil {
+			return fmt.Errorf("Failed to mark track track - %s, %v", itemToMark.Title, err)
+		}
+	}
+	return nil
 }
