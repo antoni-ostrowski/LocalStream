@@ -13,4 +13,6 @@ export function ListFavTracks():Promise<Array<sqlcDb.Track>>;
 
 export function ReloadAppResources():Promise<void>;
 
+export function StarTrack(arg1:sqlcDb.Track):Promise<void>;
+
 export function UpdatePreferences(arg1:config.Preferences):Promise<void>;

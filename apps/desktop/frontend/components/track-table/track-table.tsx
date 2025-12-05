@@ -20,7 +20,8 @@ import {
   TableRow,
 } from "../ui/table"
 import { fuzzyFilter, fuzzySort } from "./table-utils"
-import TrackContextMenu, { handlePlayNewTrack } from "./track-context-menu"
+import TrackContextMenu from "./track-context-menu"
+import TrackInteractions from "./track-interactions"
 
 const columnHelper = createColumnHelper<sqlcDb.Track>()
 
@@ -64,9 +65,9 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
     columnHelper.display({
       id: "btns",
       size: 20,
-      cell: (_props) => (
+      cell: (props) => (
         <div className="flex flex-row items-center justify-end">
-          {/* <TrackInteractions {...{ track: props.row.original }} /> */}
+          <TrackInteractions {...{ track: props.row.original }} />
         </div>
       ),
     }),

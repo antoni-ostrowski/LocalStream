@@ -4,21 +4,17 @@ import {
   ContextMenuItem,
   ContextMenuShortcut,
   ContextMenuTrigger,
-} from '@/components/ui/context-menu'
-import type { TrackType } from '@/server/db/schema'
-import { MoreHorizontal } from 'lucide-react'
-import { useRef, type ReactNode } from 'react'
-import {
-  playerStore,
-  updatePlayerStore,
-} from '../sidebar/sidebar-right/player/store'
-import { Button } from '../ui/button'
+} from "@/components/ui/context-menu"
+import { sqlcDb } from "@/wailsjs/go/models"
+import { MoreHorizontal } from "lucide-react"
+import { useRef, type ReactNode } from "react"
+import { Button } from "../ui/button"
 
 export default function TrackContextMenu({
   track,
   children,
 }: {
-  track: TrackType
+  track: sqlcDb.Track
   children?: ReactNode
 }) {
   const triggerRef = useRef(null)
@@ -26,17 +22,17 @@ export default function TrackContextMenu({
 
   const triggerContextMenuFromClick = (event) => {
     event.stopPropagation()
-    console.log('Custom LEFT-CLICK logic executed!')
+    console.log("Custom LEFT-CLICK logic executed!")
 
     if (!triggerRef.current) return
     if (!contextMenuRef.current) return
 
     contextMenuRef.current.dispatchEvent(
-      new MouseEvent('contextmenu', {
+      new MouseEvent("contextmenu", {
         bubbles: true,
         clientX: triggerRef.current.getBoundingClientRect().x,
         clientY: triggerRef.current.getBoundingClientRect().y,
-      })
+      }),
     )
   }
 
@@ -54,11 +50,11 @@ export default function TrackContextMenu({
         )}
       </ContextMenuTrigger>
       <ContextMenuContent className="w-52">
-        <ContextMenuItem onClick={() => appendToQueue(track)}>
+        <ContextMenuItem>
           Append to queue
           <ContextMenuShortcut>⌘[</ContextMenuShortcut>
         </ContextMenuItem>
-        <ContextMenuItem onClick={() => insertToQueue(track)}>
+        <ContextMenuItem>
           Insert to queue
           <ContextMenuShortcut>⌘]</ContextMenuShortcut>
         </ContextMenuItem>
@@ -67,36 +63,10 @@ export default function TrackContextMenu({
   )
 }
 
-export function handlePlayNewTrack(track: TrackType) {
-  updatePlayerStore('currentTrack', createQueueTrack(track))
-  updatePlayerStore('isPlaying', true)
-}
-
-export function createQueueTrack(track: TrackType) {
-  return {
-    ...track,
-    queue_id: crypto.randomUUID(),
-  }
-}
-
 export function MoreTrackOptionBtn() {
   return (
     <Button variant="ghost">
       <MoreHorizontal className="h-4 w-4" />
     </Button>
   )
-}
-
-function appendToQueue(track: TrackType) {
-  updatePlayerStore('queue', [
-    ...playerStore.state.queue,
-    createQueueTrack(track),
-  ])
-}
-
-function insertToQueue(track: TrackType) {
-  updatePlayerStore('queue', [
-    createQueueTrack(track),
-    ...playerStore.state.queue,
-  ])
 }

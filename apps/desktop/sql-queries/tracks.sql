@@ -7,6 +7,9 @@ SELECT * FROM tracks WHERE starred IS NOT NULL ORDER by title;
 -- name: StarTrack :exec
 UPDATE tracks SET starred = unixepoch() WHERE id = sqlc.arg(id);
 
+-- name: UnStarTrack :exec
+UPDATE tracks SET starred = NULL WHERE id = sqlc.arg(id);
+
 -- name: GetTrackFromPath :one
 SELECT * FROM tracks WHERE path LIKE sqlc.arg(track_path);
 

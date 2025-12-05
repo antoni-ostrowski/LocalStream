@@ -22,6 +22,10 @@ export function ReloadAppResources() {
   return window['go']['main']['App']['ReloadAppResources']();
 }
 
+export function StarTrack(arg1) {
+  return window['go']['main']['App']['StarTrack'](arg1);
+}
+
 export function UpdatePreferences(arg1) {
   return window['go']['main']['App']['UpdatePreferences'](arg1);
 }

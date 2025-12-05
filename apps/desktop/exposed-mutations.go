@@ -2,7 +2,9 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"localStream/internal/config"
+	"localStream/sqlcDb"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -67,4 +69,20 @@ func (a *App) ReloadAppResources() error {
 		return err
 	}
 	return nil
+}
+
+func (a *App) StarTrack(track sqlcDb.Track) error {
+	if track.Starred.Valid {
+		err := a.db.Queries.UnStarTrack(a.ctx, track.ID)
+		if err != nil {
+			return fmt.Errorf("Failed to un star track: %v", err)
+		}
+		return nil
+	} else {
+		err := a.db.Queries.StarTrack(a.ctx, track.ID)
+		if err != nil {
+			return fmt.Errorf("Failed to star track: %v", err)
+		}
+		return nil
+	}
 }

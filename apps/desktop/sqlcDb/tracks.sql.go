@@ -329,6 +329,15 @@ func (q *Queries) StarTrack(ctx context.Context, id string) error {
 	return err
 }
 
+const unStarTrack = `-- name: UnStarTrack :exec
+UPDATE tracks SET starred = NULL WHERE id = ?1
+`
+
+func (q *Queries) UnStarTrack(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, unStarTrack, id)
+	return err
+}
+
 const updateTrack = `-- name: UpdateTrack :exec
 UPDATE tracks SET
     title = ?1,

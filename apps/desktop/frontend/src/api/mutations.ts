@@ -1,8 +1,10 @@
 import {
   CreateSourceDir,
   ReloadAppResources,
+  StarTrack,
   UpdatePreferences,
 } from "@/wailsjs/go/main/App"
+import { sqlcDb } from "@/wailsjs/go/models"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { queries } from "./queries"
@@ -46,5 +48,18 @@ export function useReloadAppResources() {
       await qc.invalidateQueries(queries.me.preferences())
     },
     mutationFn: () => ReloadAppResources(),
+  })
+}
+
+export function useStarTrack() {
+  const qc = useQueryClient()
+  return useMutation({
+    onError: ({ message }) => {
+      toast.error("Failed to star track!", { description: message })
+    },
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: queries.tracks._def })
+    },
+    mutationFn: (track: sqlcDb.Track) => StarTrack(track),
   })
 }
