@@ -10,6 +10,18 @@ export function GetPreferences() {
   return window['go']['main']['App']['GetPreferences']();
 }
 
+export function ListAllTracks() {
+  return window['go']['main']['App']['ListAllTracks']();
+}
+
+export function ListFavTracks() {
+  return window['go']['main']['App']['ListFavTracks']();
+}
+
+export function ReloadAppResources() {
+  return window['go']['main']['App']['ReloadAppResources']();
+}
+
 export function UpdatePreferences(arg1) {
   return window['go']['main']['App']['UpdatePreferences'](arg1);
 }

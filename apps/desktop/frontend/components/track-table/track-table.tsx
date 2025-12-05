@@ -1,4 +1,4 @@
-import type { TrackType } from "@/server/db/schema"
+import { sqlcDb } from "@/wailsjs/go/models"
 import {
   createColumnHelper,
   flexRender,
@@ -22,14 +22,13 @@ import {
 import { fuzzyFilter, fuzzySort } from "./table-utils"
 import TrackContextMenu, { handlePlayNewTrack } from "./track-context-menu"
 
-const columnHelper = createColumnHelper<TrackType>()
+const columnHelper = createColumnHelper<sqlcDb.Track>()
 
-export default function TrackTable() {
-  // { tracks }: { tracks: TrackType[] }
+export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
   const columns = [
     columnHelper.display({
       id: "artwork",
-      // header: `(${tracks.length})`,
+      header: `(${tracks.length.toString()})`,
       maxSize: 0.01,
       // cell: (props) => (
       //   <img className="w-10" src={makeArtworkUrl(props.row.original.path)} />
@@ -39,16 +38,19 @@ export default function TrackTable() {
     columnHelper.accessor("title", {
       header: "Title",
       size: 30,
-      // cell: ({
-      //   row: {
-      //     original: { title, artist },
-      //   },
-      // }) => (
-      //   <div className="flex flex-col">
-      //     <p className="truncate">{title}</p>
-      //     <p className="text-muted-foreground">{artist}</p>
-      //   </div>
-      // ),
+      cell: ({
+        row: {
+          original: { title, artist, is_missing },
+        },
+      }) => (
+        <div className="flex flex-col">
+          <p className="truncate">{title}</p>
+          <p className="text-muted-foreground">{artist}</p>
+          <p className="text-muted-foreground">
+            {is_missing.Valid && is_missing.Bool && "missing"}
+          </p>
+        </div>
+      ),
       filterFn: "fuzzy", //using our custom fuzzy filter function
       // filterFn: fuzzyFilter, //or just define with the function
       sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
@@ -56,17 +58,17 @@ export default function TrackTable() {
     columnHelper.accessor("album", {
       header: "Album",
       size: 20,
-      // cell: (info) => <p className="truncate">{info.getValue()}</p>,
+      cell: (info) => <p className="truncate">{info.getValue()}</p>,
     }),
 
     columnHelper.display({
       id: "btns",
       size: 20,
-      // cell: (props) => (
-      //   <div className="flex flex-row items-center justify-end">
-      //     <TrackInteractions {...{ track: props.row.original }} />
-      //   </div>
-      // ),
+      cell: (_props) => (
+        <div className="flex flex-row items-center justify-end">
+          {/* <TrackInteractions {...{ track: props.row.original }} /> */}
+        </div>
+      ),
     }),
   ]
 
@@ -75,7 +77,7 @@ export default function TrackTable() {
 
   const table = useReactTable({
     columns,
-    data: [],
+    data: tracks,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -88,7 +90,6 @@ export default function TrackTable() {
     },
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
-
     globalFilterFn: "fuzzy", //apply fuzzy filter to the global filter (most common use case for fuzzy filter)
   })
 
@@ -107,14 +108,16 @@ export default function TrackTable() {
         table.setSorting([{ id: "title", desc: false }])
       }
     }
-  }, [table.getState().columnFilters[0]?.id])
+  }, [table.getState().columnFilters[0]?.id, table])
 
   return (
     <div ref={parentRef} className="">
       <div>
         <DebouncedInput
           value={globalFilter}
-          onChange={(value) => setGlobalFilter(String(value))}
+          onChange={(value) => {
+            setGlobalFilter(String(value))
+          }}
           placeholder="Search ..."
         />
       </div>
@@ -153,14 +156,12 @@ export default function TrackTable() {
                     onDoubleClick={() => {
                       handlePlayNewTrack(row.original)
                     }}
-                    style={
-                      {
-                        // height: `${virtualRow.size}px`,
-                        // transform: `translateY(${
-                        //   virtualRow.start - index * virtualRow.size
-                        // }px)`,
-                      }
-                    }
+                    style={{
+                      height: `${virtualRow.size}px`,
+                      transform: `translateY(${
+                        virtualRow.start - index * virtualRow.size
+                      }px)`,
+                    }}
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                   >

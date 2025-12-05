@@ -1,4 +1,8 @@
-import { GetPreferences } from "@/wailsjs/go/main/App"
+import {
+  GetPreferences,
+  ListAllTracks,
+  ListFavTracks,
+} from "@/wailsjs/go/main/App"
 import { createQueryKeys, mergeQueryKeys } from "@lukemorales/query-key-factory"
 
 export const me = createQueryKeys("me", {
@@ -9,4 +13,16 @@ export const me = createQueryKeys("me", {
   }),
 })
 
-export const queries = mergeQueryKeys(me)
+export const tracks = createQueryKeys("tracks", {
+  all: ["tracks"],
+  listAll: () => ({
+    queryKey: ["list"],
+    queryFn: ListAllTracks,
+  }),
+  listFav: () => ({
+    queryKey: ["list", "fav"],
+    queryFn: ListFavTracks,
+  }),
+})
+
+export const queries = mergeQueryKeys(me, tracks)

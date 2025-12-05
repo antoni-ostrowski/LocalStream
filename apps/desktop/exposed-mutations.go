@@ -7,10 +7,6 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-func (a *App) GetPreferences() (config.Preferences, error) {
-	return a.config.Preferences, nil
-}
-
 func (a *App) UpdatePreferences(newPrefs config.Preferences) error {
 	runtime.LogDebugf(a.ctx, "prefs from client - %v", newPrefs)
 	err := a.config.UpdatePreferences(a.ctx, newPrefs)
@@ -19,6 +15,8 @@ func (a *App) UpdatePreferences(newPrefs config.Preferences) error {
 		runtime.LogErrorf(a.ctx, "Failed to update runtime preferences: %v", err)
 		return err
 	}
+
+	a.ReloadAppResources()
 
 	return nil
 }
@@ -57,5 +55,16 @@ func (a *App) CreateSourceDir() error {
 		return err
 	}
 
+	a.ReloadAppResources()
+
+	return nil
+}
+
+func (a *App) ReloadAppResources() error {
+	err := a.initAppResources()
+	if err != nil {
+		a.handleAppResourceFailure()
+		return err
+	}
 	return nil
 }

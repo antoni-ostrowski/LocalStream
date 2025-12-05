@@ -1,6 +1,7 @@
 import PageTitleWrapper, {
   pageTitleIconSize,
 } from "@/components/page-title-wrapper"
+import { queries } from "@/src/api/queries"
 import { createFileRoute } from "@tanstack/react-router"
 import { Settings } from "lucide-react"
 import DbManagment from "./-components/db-managment/db-managment"
@@ -9,9 +10,9 @@ import MusicSources from "./-components/music-sources.tsx/music-sources"
 import ThemeManagment from "./-components/theme"
 
 export const Route = createFileRoute("/settings")({
-  // loader: async ({ context: { queryClient, trpc } }) => {
-  //   await queryClient.prefetchQuery(trpc.user.getPreferences.queryOptions())
-  // },
+  loader: async ({ context: { queryClient } }) => {
+    await queryClient.prefetchQuery(queries.me.preferences())
+  },
   component: RouteComponent,
 })
 

@@ -6,18 +6,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { useReloadAppResources } from "@/src/api/mutations"
 import { RefreshCw } from "lucide-react"
 
 export default function ManualTracksSync() {
-  // const { mutateAsync: manualSync } = useMutation(
-  //   trpc.track.syncTracks.mutationOptions()
-  // )
-  // const [isSyncing, setIsSyncing] = useState(false)
+  const { mutateAsync: manualSync, isPending } = useReloadAppResources()
+
   async function handleSyncTrigger() {
-    // setIsSyncing(true)
-    // await manualSync()
-    // setIsSyncing(false)
+    await manualSync()
   }
+
   return (
     <Card>
       <CardHeader>
@@ -34,14 +32,14 @@ export default function ManualTracksSync() {
       <CardContent>
         <Button
           variant={"outline"}
-          onClick={async () => await handleSyncTrigger()}
+          onClick={async () => {
+            await handleSyncTrigger()
+          }}
           size="lg"
           className="flex items-center gap-2"
         >
-          {/* <RefreshCw className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} /> */}
-          <RefreshCw />
-          {/* {isSyncing ? "Syncing Tracks..." : "Sync Tracks Manually"} */}
-          sycn tracks
+          <RefreshCw className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
+          {isPending ? "Syncing Tracks..." : "Sync Tracks Manually"}
         </Button>
       </CardContent>
     </Card>

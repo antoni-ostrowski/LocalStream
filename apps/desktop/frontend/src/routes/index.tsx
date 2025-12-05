@@ -1,4 +1,3 @@
-import { UpdatePreferences } from "@/wailsjs/go/main/App"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/")({
@@ -6,19 +5,5 @@ export const Route = createFileRoute("/")({
 })
 
 function RouteComponent() {
-  return (
-    <div>
-      Hello{" "}
-      <button
-        onClick={async () => {
-          await UpdatePreferences({
-            databasePath: "test",
-            sourceUrls: ["jfkdls"],
-          })
-        }}
-      >
-        update
-      </button>
-    </div>
-  )
+  return <div></div>
 }

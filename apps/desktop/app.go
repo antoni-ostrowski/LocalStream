@@ -24,10 +24,11 @@ func (a *App) onDomReady(ctx context.Context) {
 	a.ctx = ctx
 	err := a.initAppResources()
 	if err != nil {
-		runtime.MessageDialog(ctx,
-			runtime.MessageDialogOptions{Message: "app failed to init. try clearing the config directory and restarting the app", Type: runtime.ErrorDialog, Title: "app failed to init",
-				DefaultButton: "close app"})
-		runtime.Quit(ctx)
+		a.handleAppResourceFailure()
+		// runtime.MessageDialog(ctx,
+		// 	runtime.MessageDialogOptions{Message: "app failed to init. try clearing the config directory and restarting the app", Type: runtime.ErrorDialog, Title: "app failed to init",
+		// 		DefaultButton: "close app"})
+		// runtime.Quit(ctx)
 		return
 	}
 	runtime.LogPrintf(a.ctx, "Prefs %v", a.config.Preferences)
@@ -70,4 +71,10 @@ func (a *App) initAppResources() error {
 
 	runtime.LogInfo(a.ctx, "Successfully initialized app resources")
 	return nil
+}
+func (a *App) handleAppResourceFailure() {
+	runtime.MessageDialog(a.ctx,
+		runtime.MessageDialogOptions{Message: "app failed to init. try clearing the config directory and restarting the app", Type: runtime.ErrorDialog, Title: "app failed to init",
+			DefaultButton: "close app"})
+	runtime.Quit(a.ctx)
 }

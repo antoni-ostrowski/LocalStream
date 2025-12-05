@@ -1,4 +1,8 @@
-import { CreateSourceDir, UpdatePreferences } from "@/wailsjs/go/main/App"
+import {
+  CreateSourceDir,
+  ReloadAppResources,
+  UpdatePreferences,
+} from "@/wailsjs/go/main/App"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { queries } from "./queries"
@@ -29,5 +33,18 @@ export function useCreateNewSource() {
       toast.success("Created new music source!")
     },
     mutationFn: () => CreateSourceDir(),
+  })
+}
+
+export function useReloadAppResources() {
+  const qc = useQueryClient()
+  return useMutation({
+    onError: ({ message }) => {
+      toast.error("Failed to reload resources!", { description: message })
+    },
+    onSuccess: async () => {
+      await qc.invalidateQueries(queries.me.preferences())
+    },
+    mutationFn: () => ReloadAppResources(),
   })
 }
