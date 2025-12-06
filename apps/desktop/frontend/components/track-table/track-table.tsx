@@ -1,5 +1,7 @@
-import { PauseResume, PlayTrack } from "@/wailsjs/go/main/App"
+import { queries } from "@/src/api/queries"
+import { AddToQueue, PauseResume, PlayTrack } from "@/wailsjs/go/main/App"
 import { sqlcDb } from "@/wailsjs/go/models"
+import { useQueryClient } from "@tanstack/react-query"
 import {
   createColumnHelper,
   flexRender,
@@ -28,6 +30,7 @@ import TrackInteractions from "./track-interactions"
 const columnHelper = createColumnHelper<sqlcDb.Track>()
 
 export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
+  const qc = useQueryClient()
   const columns = [
     columnHelper.display({
       id: "artwork",
@@ -73,6 +76,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
           <Button
             onClick={async () => {
               await PlayTrack(props.row.original)
+              await qc.invalidateQueries({ queryKey: queries.player._def })
             }}
           >
             play
@@ -83,6 +87,14 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
             }}
           >
             pause
+          </Button>
+          <Button
+            onClick={async () => {
+              await AddToQueue(props.row.original)
+              await qc.invalidateQueries({ queryKey: queries.player._def })
+            }}
+          >
+            add to q
           </Button>
         </div>
       ),

@@ -4,14 +4,10 @@ import (
 	"fmt"
 )
 
+// queue plays everything from the streamers slice, if no items, streams silence,
+// Queue implements interface Streamer which just needs a func that steams and err
 type Queue struct {
 	streamers []*Playable
-}
-
-func (q *Queue) Add(playables ...*Playable) {
-	fmt.Printf("adding toqueue %v\n", playables)
-
-	q.streamers = append(q.streamers, playables...)
 }
 
 func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {

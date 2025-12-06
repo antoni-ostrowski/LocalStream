@@ -28,23 +28,6 @@ func (p *LocalPlayer) Init() {
 	fmt.Print("queue initialized correclty")
 }
 
-func (p *LocalPlayer) Play(track sqlcDb.Track) error {
-
-	playable, err := p.createPlayableFromTrack(track)
-	if err != nil {
-		return err
-	}
-
-	speaker.Lock()
-	p.queue.Add(playable)
-	speaker.Unlock()
-	return nil
-}
-
-func (p *LocalPlayer) PauseResume() {
-	p.queue.streamers[0].Ctrl.Paused = !p.queue.streamers[0].Ctrl.Paused
-}
-
 func (p *LocalPlayer) createPlayableFromTrack(track sqlcDb.Track) (*Playable, error) {
 	streamer, format, err := p.decodeFile(track.Path)
 	if err != nil {
