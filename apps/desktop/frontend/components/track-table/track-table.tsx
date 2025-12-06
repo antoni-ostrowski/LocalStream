@@ -1,3 +1,4 @@
+import { PauseResume, PlayTrack } from "@/wailsjs/go/main/App"
 import { sqlcDb } from "@/wailsjs/go/models"
 import {
   createColumnHelper,
@@ -11,6 +12,7 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { useEffect, useRef, useState } from "react"
 import DebouncedInput from "../debounced-input"
+import { Button } from "../ui/button"
 import {
   Table,
   TableBody,
@@ -68,6 +70,20 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
       cell: (props) => (
         <div className="flex flex-row items-center justify-end">
           <TrackInteractions {...{ track: props.row.original }} />
+          <Button
+            onClick={async () => {
+              await PlayTrack(props.row.original)
+            }}
+          >
+            play
+          </Button>
+          <Button
+            onClick={async () => {
+              await PauseResume()
+            }}
+          >
+            pause
+          </Button>
         </div>
       ),
     }),

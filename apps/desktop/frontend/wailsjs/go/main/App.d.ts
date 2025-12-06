@@ -11,6 +11,10 @@ export function ListAllTracks():Promise<Array<sqlcDb.Track>>;
 
 export function ListFavTracks():Promise<Array<sqlcDb.Track>>;
 
+export function PauseResume():Promise<void>;
+
+export function PlayTrack(arg1:sqlcDb.Track):Promise<void>;
+
 export function ReloadAppResources():Promise<void>;
 
 export function StarTrack(arg1:sqlcDb.Track):Promise<void>;

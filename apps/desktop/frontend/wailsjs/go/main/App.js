@@ -18,6 +18,14 @@ export function ListFavTracks() {
   return window['go']['main']['App']['ListFavTracks']();
 }
 
+export function PauseResume() {
+  return window['go']['main']['App']['PauseResume']();
+}
+
+export function PlayTrack(arg1) {
+  return window['go']['main']['App']['PlayTrack'](arg1);
+}
+
 export function ReloadAppResources() {
   return window['go']['main']['App']['ReloadAppResources']();
 }

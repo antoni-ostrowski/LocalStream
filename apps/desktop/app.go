@@ -5,15 +5,17 @@ import (
 	_ "embed"
 	"localStream/internal/config"
 	"localStream/internal/database"
+	"localStream/internal/playback"
 	"localStream/internal/tracksync"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 type App struct {
-	ctx    context.Context
-	config *config.RuntimeConfigManager
-	db     *database.DBManager
+	ctx         context.Context
+	config      *config.RuntimeConfigManager
+	db          *database.DBManager
+	localPlayer *playback.LocalPlayer
 }
 
 func NewApp() *App {
@@ -23,12 +25,11 @@ func NewApp() *App {
 func (a *App) onDomReady(ctx context.Context) {
 	a.ctx = ctx
 	err := a.initAppResources()
+	player := &playback.LocalPlayer{}
+	player.Init()
+	a.localPlayer = player
 	if err != nil {
 		a.handleAppResourceFailure()
-		// runtime.MessageDialog(ctx,
-		// 	runtime.MessageDialogOptions{Message: "app failed to init. try clearing the config directory and restarting the app", Type: runtime.ErrorDialog, Title: "app failed to init",
-		// 		DefaultButton: "close app"})
-		// runtime.Quit(ctx)
 		return
 	}
 	runtime.LogPrintf(a.ctx, "Prefs %v", a.config.Preferences)
