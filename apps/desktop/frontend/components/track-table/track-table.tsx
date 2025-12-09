@@ -1,4 +1,3 @@
-import { usePlaybackControls } from "@/src/api/mutations"
 import { queries } from "@/src/api/queries"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { useQuery } from "@tanstack/react-query"
@@ -28,7 +27,6 @@ import TrackInteractions from "./track-interactions"
 const columnHelper = createColumnHelper<sqlcDb.Track>()
 
 export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
-  const { pauseResume, addToQueueEnd, playNow } = usePlaybackControls()
   const columns = [
     columnHelper.display({
       id: "artwork",
@@ -40,14 +38,9 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
     columnHelper.accessor("title", {
       header: "Title",
       size: 30,
-      cell: ({
-        row: {
-          original: { title, artist },
-        },
-      }) => (
+      cell: (info) => (
         <div className="flex flex-col">
-          <p className="truncate">{title}</p>
-          <p className="text-muted-foreground">{artist}</p>
+          <p className="truncate">{info.getValue()}</p>
         </div>
       ),
       filterFn: "fuzzy",
@@ -80,10 +73,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
       id: "btns",
       size: 20,
       cell: (props) => (
-        <div
-          className="flex flex-row items-center justify-end"
-          onClick={() => console.log("div")}
-        >
+        <div className="flex flex-row items-center justify-end">
           <TrackInteractions {...{ track: props.row.original }} />
         </div>
       ),
@@ -203,7 +193,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
   )
 }
 
-function RenderTableArtwork({ track }: { track: sqlcDb.Track }) {
+export function RenderTableArtwork({ track }: { track: sqlcDb.Track }) {
   const { data } = useQuery(queries.tracks.getTrackArtwork(track))
   return <img className="w-10" src={data ?? "../../placeholder.webp"} />
 }

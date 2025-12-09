@@ -25,7 +25,12 @@ func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
 		// If it's drained, we pop it from the queue, thus continuing with
 		// the next streamer.
 		if !ok {
-			q.streamers = q.streamers[1:]
+			// Crucial: Check if the slice is still non-empty before slicing.
+			// It should not be empty, but this protects against race conditions
+			// or unexpected logic flow where it might be.
+			if len(q.streamers) > 0 {
+				q.streamers = q.streamers[1:]
+			}
 		}
 		// We update the number of filled samples.
 		filled += n

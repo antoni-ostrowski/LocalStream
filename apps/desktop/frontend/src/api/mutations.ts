@@ -77,7 +77,8 @@ export function usePlaybackControls() {
       onError: ({ message }) => {
         toast.error("Failed to play track!", { description: message })
       },
-      onSettled: async () => {
+
+      onSuccess: async () => {
         await qc.invalidateQueries({ queryKey: queries.player._def })
         await qc.invalidateQueries({ queryKey: queries.tracks._def })
       },
@@ -88,7 +89,7 @@ export function usePlaybackControls() {
       onError: ({ message }) => {
         toast.error("Failed to play/pause track!", { description: message })
       },
-      onSettled: async () => {
+      onSuccess: async () => {
         await qc.invalidateQueries({ queryKey: queries.player._def })
         await qc.invalidateQueries({ queryKey: queries.tracks._def })
       },
@@ -99,9 +100,11 @@ export function usePlaybackControls() {
       onError: ({ message }) => {
         toast.error("Failed to add to queue!", { description: message })
       },
-      onSettled: async () => {
+      onSuccess: async () => {
+        await qc.invalidateQueries({ queryKey: queries.player.listQueue._def })
         await qc.invalidateQueries({ queryKey: queries.player._def })
         await qc.invalidateQueries({ queryKey: queries.tracks._def })
+        await qc.resetQueries()
       },
       mutationFn: (track: sqlcDb.Track) => AddToQueue(track),
     }),

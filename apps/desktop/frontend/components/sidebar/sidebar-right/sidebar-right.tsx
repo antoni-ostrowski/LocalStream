@@ -1,3 +1,4 @@
+import QueueTrackTable from "@/components/queue-track-table/queue-track-table"
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar"
 import Player from "./player/player"
 
@@ -9,6 +10,7 @@ export default function SidebarRight() {
     >
       <SidebarContent>
         <Player />
+        <QueueTrackTable />
         {/* {data2 && <div>now playing {data2.Track.title}</div>} */}
         {/* {data && */}
         {/*   data.map((a) => { */}

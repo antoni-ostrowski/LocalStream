@@ -21,7 +21,7 @@ export default function Metadata({
       <div className="flex w-full flex-row items-center justify-between">
         <div className="flex w-full flex-col items-start justify-start">
           <h1 className="text-xl font-bold">{currentTrack.Track.title}</h1>
-          <div className="flex flex-row gap-0">
+          <div className="flex flex-row items-center justify-center gap-0">
             <h2 className="text-muted-foreground">
               {currentTrack.Track.artist}
             </h2>

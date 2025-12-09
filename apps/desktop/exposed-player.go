@@ -17,7 +17,6 @@ func (a *App) GetTrackArtwork(track sqlcDb.Track) (string, error) {
 		return "", fmt.Errorf("Failed to read image: %v", err)
 	}
 	if imageBytes == nil {
-		fmt.Printf("File contains no image")
 		return "", fmt.Errorf("Failed to read image: %v", err)
 	}
 

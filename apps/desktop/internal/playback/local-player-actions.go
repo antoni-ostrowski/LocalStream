@@ -14,7 +14,17 @@ func (p *LocalPlayer) GetCurrent() (Playable, error) {
 	if len(p.queue.streamers) == 0 {
 		return Playable{}, fmt.Errorf("Nothing playing right now")
 	}
-	fmt.Printf("now playing - %v\n", *p.queue.streamers[0])
+	currentPlayable := p.queue.streamers[0] // Get the pointer
+
+	// CRITICAL FIX: Check if the retrieved pointer is nil
+	if currentPlayable == nil {
+		// You should investigate why a nil pointer was added, but this prevents the crash
+		return Playable{}, fmt.Errorf("Queue contains a nil playable item")
+	}
+
+	fmt.Printf("now playing - %v\n", *currentPlayable)
+
+	return *currentPlayable, nil
 
 	return *p.queue.streamers[0], nil
 }
