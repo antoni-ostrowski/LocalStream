@@ -1,10 +1,12 @@
 import {
   GetCurrent,
   GetPreferences,
+  GetTrackArtwork,
   ListAllTracks,
   ListFavTracks,
   ListQueue,
 } from "@/wailsjs/go/main/App"
+import { sqlcDb } from "@/wailsjs/go/models"
 import { createQueryKeys, mergeQueryKeys } from "@lukemorales/query-key-factory"
 
 export const me = createQueryKeys("me", {
@@ -24,6 +26,10 @@ export const tracks = createQueryKeys("tracks", {
   listFav: () => ({
     queryKey: ["list", "fav"],
     queryFn: ListFavTracks,
+  }),
+  getTrackArtwork: (track: sqlcDb.Track) => ({
+    queryKey: ["track-artwork", track.path],
+    queryFn: () => GetTrackArtwork(track),
   }),
 })
 

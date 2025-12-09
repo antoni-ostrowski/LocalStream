@@ -5,6 +5,7 @@ import {
   ContextMenuShortcut,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu"
+import { usePlaybackControls } from "@/src/api/mutations"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { MoreHorizontal } from "lucide-react"
 import { useRef, type ReactNode } from "react"
@@ -17,6 +18,7 @@ export default function TrackContextMenu({
   track: sqlcDb.Track
   children?: ReactNode
 }) {
+  const { addToQueueEnd } = usePlaybackControls()
   const triggerRef = useRef(null)
   const contextMenuRef = useRef(null)
 
@@ -50,7 +52,11 @@ export default function TrackContextMenu({
         )}
       </ContextMenuTrigger>
       <ContextMenuContent className="w-52">
-        <ContextMenuItem>
+        <ContextMenuItem
+          onClick={() => {
+            addToQueueEnd.mutate(track)
+          }}
+        >
           Append to queue
           <ContextMenuShortcut>⌘[</ContextMenuShortcut>
         </ContextMenuItem>

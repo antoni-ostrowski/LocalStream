@@ -1,9 +1,5 @@
 package playback
 
-import (
-	"fmt"
-)
-
 // queue plays everything from the streamers slice, if no items, streams silence,
 // Queue implements interface Streamer which just needs a func that steams and err
 type Queue struct {
@@ -11,7 +7,6 @@ type Queue struct {
 }
 
 func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
-	fmt.Print("queue stream func start \n")
 	// We use the filled variable to track how many samples we've
 	// successfully filled already. We loop until all samples are filled.
 	filled := 0
@@ -22,11 +17,9 @@ func (q *Queue) Stream(samples [][2]float64) (n int, ok bool) {
 				samples[i][0] = 0
 				samples[i][1] = 0
 			}
-			fmt.Print("no strearms to stream \n")
 			break
 		}
 
-		fmt.Print("streaming from queue \n")
 		// We stream from the first streamer in the queue.
 		n, ok := q.streamers[0].Streamer.Stream(samples[filled:])
 		// If it's drained, we pop it from the queue, thus continuing with

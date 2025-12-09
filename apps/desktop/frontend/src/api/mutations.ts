@@ -1,5 +1,8 @@
 import {
+  AddToQueue,
   CreateSourceDir,
+  PauseResume,
+  PlayTrack,
   ReloadAppResources,
   StarTrack,
   UpdatePreferences,
@@ -57,9 +60,50 @@ export function useStarTrack() {
     onError: ({ message }) => {
       toast.error("Failed to star track!", { description: message })
     },
-    onSuccess: async () => {
+    onSettled: async () => {
       await qc.invalidateQueries({ queryKey: queries.tracks._def })
+      await qc.invalidateQueries({
+        queryKey: queries.player._def,
+      })
     },
     mutationFn: (track: sqlcDb.Track) => StarTrack(track),
   })
+}
+
+export function usePlaybackControls() {
+  const qc = useQueryClient()
+  return {
+    playNow: useMutation({
+      onError: ({ message }) => {
+        toast.error("Failed to play track!", { description: message })
+      },
+      onSettled: async () => {
+        await qc.invalidateQueries({ queryKey: queries.player._def })
+        await qc.invalidateQueries({ queryKey: queries.tracks._def })
+      },
+      mutationFn: (track: sqlcDb.Track) => PlayTrack(track),
+    }),
+
+    pauseResume: useMutation({
+      onError: ({ message }) => {
+        toast.error("Failed to play/pause track!", { description: message })
+      },
+      onSettled: async () => {
+        await qc.invalidateQueries({ queryKey: queries.player._def })
+        await qc.invalidateQueries({ queryKey: queries.tracks._def })
+      },
+      mutationFn: () => PauseResume(),
+    }),
+
+    addToQueueEnd: useMutation({
+      onError: ({ message }) => {
+        toast.error("Failed to add to queue!", { description: message })
+      },
+      onSettled: async () => {
+        await qc.invalidateQueries({ queryKey: queries.player._def })
+        await qc.invalidateQueries({ queryKey: queries.tracks._def })
+      },
+      mutationFn: (track: sqlcDb.Track) => AddToQueue(track),
+    }),
+  }
 }

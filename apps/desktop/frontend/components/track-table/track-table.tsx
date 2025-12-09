@@ -1,7 +1,7 @@
+import { usePlaybackControls } from "@/src/api/mutations"
 import { queries } from "@/src/api/queries"
-import { AddToQueue, PauseResume, PlayTrack } from "@/wailsjs/go/main/App"
 import { sqlcDb } from "@/wailsjs/go/models"
-import { useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import {
   createColumnHelper,
   flexRender,
@@ -30,15 +30,13 @@ import TrackInteractions from "./track-interactions"
 const columnHelper = createColumnHelper<sqlcDb.Track>()
 
 export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
-  const qc = useQueryClient()
+  const { pauseResume, addToQueueEnd, playNow } = usePlaybackControls()
   const columns = [
     columnHelper.display({
       id: "artwork",
       header: `(${tracks.length.toString()})`,
       maxSize: 0.01,
-      // cell: (props) => (
-      //   <img className="w-10" src={makeArtworkUrl(props.row.original.path)} />
-      // ),
+      cell: (props) => <RenderTableArtwork track={props.row.original} />,
     }),
 
     columnHelper.accessor("title", {
@@ -57,9 +55,8 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
           </p>
         </div>
       ),
-      filterFn: "fuzzy", //using our custom fuzzy filter function
-      // filterFn: fuzzyFilter, //or just define with the function
-      sortingFn: fuzzySort, //sort by fuzzy rank (falls back to alphanumeric)
+      filterFn: "fuzzy",
+      sortingFn: fuzzySort,
     }),
     columnHelper.accessor("album", {
       header: "Album",
@@ -74,24 +71,22 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
         <div className="flex flex-row items-center justify-end">
           <TrackInteractions {...{ track: props.row.original }} />
           <Button
-            onClick={async () => {
-              await PlayTrack(props.row.original)
-              await qc.invalidateQueries({ queryKey: queries.player._def })
+            onClick={() => {
+              playNow.mutate(props.row.original)
             }}
           >
             play
           </Button>
           <Button
-            onClick={async () => {
-              await PauseResume()
+            onClick={() => {
+              pauseResume.mutate()
             }}
           >
             pause
           </Button>
           <Button
-            onClick={async () => {
-              await AddToQueue(props.row.original)
-              await qc.invalidateQueries({ queryKey: queries.player._def })
+            onClick={() => {
+              addToQueueEnd.mutate(props.row.original)
             }}
           >
             add to q
@@ -219,4 +214,9 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
       </Table>
     </div>
   )
+}
+
+function RenderTableArtwork({ track }: { track: sqlcDb.Track }) {
+  const { data } = useQuery(queries.tracks.getTrackArtwork(track))
+  return <img className="w-10" src={data ?? "../../placeholder.webp"} />
 }

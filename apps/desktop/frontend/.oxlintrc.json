@@ -100,7 +100,7 @@
     "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/no-array-delete": "error",
     "@typescript-eslint/no-base-to-string": "error",
-    "@typescript-eslint/no-confusing-void-expression": "error",
+    "@typescript-eslint/no-confusing-void-expression": "warn",
     "@typescript-eslint/no-deprecated": "error",
     "@typescript-eslint/no-duplicate-type-constituents": "error",
     "@typescript-eslint/no-dynamic-delete": "error",
@@ -172,4 +172,3 @@
     }
   ]
 }
-
