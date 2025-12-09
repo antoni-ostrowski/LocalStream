@@ -14,7 +14,6 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { useEffect, useRef, useState } from "react"
 import DebouncedInput from "../debounced-input"
-import { Button } from "../ui/button"
 import {
   Table,
   TableBody,
@@ -24,7 +23,6 @@ import {
   TableRow,
 } from "../ui/table"
 import { fuzzyFilter, fuzzySort } from "./table-utils"
-import TrackContextMenu from "./track-context-menu"
 import TrackInteractions from "./track-interactions"
 
 const columnHelper = createColumnHelper<sqlcDb.Track>()
@@ -44,53 +42,49 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
       size: 30,
       cell: ({
         row: {
-          original: { title, artist, is_missing },
+          original: { title, artist },
         },
       }) => (
         <div className="flex flex-col">
           <p className="truncate">{title}</p>
           <p className="text-muted-foreground">{artist}</p>
-          <p className="text-muted-foreground">
-            {is_missing.Valid && is_missing.Bool && "missing"}
-          </p>
         </div>
       ),
       filterFn: "fuzzy",
       sortingFn: fuzzySort,
     }),
+
+    columnHelper.accessor("artist", {
+      header: "Artist",
+      size: 20,
+      cell: (info) => <p className="truncate">{info.getValue()}</p>,
+    }),
+
     columnHelper.accessor("album", {
       header: "Album",
       size: 20,
       cell: (info) => <p className="truncate">{info.getValue()}</p>,
     }),
 
+    columnHelper.accessor("is_missing", {
+      header: "Available",
+      size: 20,
+      cell: (info) => (
+        <p className="text-muted-foreground truncate">
+          {info.getValue().Bool && "N/A"}
+        </p>
+      ),
+    }),
+
     columnHelper.display({
       id: "btns",
       size: 20,
       cell: (props) => (
-        <div className="flex flex-row items-center justify-end">
+        <div
+          className="flex flex-row items-center justify-end"
+          onClick={() => console.log("div")}
+        >
           <TrackInteractions {...{ track: props.row.original }} />
-          <Button
-            onClick={() => {
-              playNow.mutate(props.row.original)
-            }}
-          >
-            play
-          </Button>
-          <Button
-            onClick={() => {
-              pauseResume.mutate()
-            }}
-          >
-            pause
-          </Button>
-          <Button
-            onClick={() => {
-              addToQueueEnd.mutate(props.row.original)
-            }}
-          >
-            add to q
-          </Button>
         </div>
       ),
     }),
@@ -172,14 +166,9 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
             <>
               {virtualizer.getVirtualItems().map((virtualRow, index) => {
                 const row = table.getRowModel().rows[virtualRow.index]
-                {
-                  /* if (!row) return null */
-                }
+                if (!row) return null
                 return (
                   <TableRow
-                    onDoubleClick={() => {
-                      handlePlayNewTrack(row.original)
-                    }}
                     style={{
                       height: `${virtualRow.size}px`,
                       transform: `translateY(${
@@ -191,12 +180,10 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
-                        <TrackContextMenu track={row.original}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TrackContextMenu>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>

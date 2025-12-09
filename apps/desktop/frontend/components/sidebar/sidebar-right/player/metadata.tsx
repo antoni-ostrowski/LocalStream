@@ -31,7 +31,9 @@ export default function Metadata({
             </h2>
           </div>
         </div>
-        <TrackInteractions {...{ track: currentTrack.Track }} />
+        <TrackInteractions
+          {...{ track: currentTrack.Track, showPlayNow: false }}
+        />
       </div>
     </div>
   )
