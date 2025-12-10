@@ -14,14 +14,14 @@ type TrackSyncMangaer struct {
 }
 
 func (s *TrackSyncMangaer) StartSync(ctx context.Context) error {
+	runtime.LogInfo(ctx, "Starting track collection process")
 	tracks, err := s.collectTracks(ctx)
 	if err != nil {
 		runtime.LogErrorf(ctx, "Tracks collector failed %v", err)
 		return err
 	}
-	// runtime.LogPrintf(ctx, "Tracks collected %v", tracks)
 
-	runtime.LogPrint(ctx, "satrt db sync")
+	runtime.LogInfo(ctx, "Starting track db sync")
 	err = s.SyncTracksWithDb(ctx, tracks)
 	if err != nil {
 		runtime.LogErrorf(ctx, "Tracks collector failed %v", err)

@@ -1,6 +1,7 @@
 package playback
 
 import (
+	"context"
 	"fmt"
 	"localStream/sqlcDb"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"github.com/gopxl/beep/mp3"
 	"github.com/gopxl/beep/speaker"
 	"github.com/gopxl/beep/wav"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 // enforce that LocalPlayer implements Player
@@ -20,12 +22,12 @@ type LocalPlayer struct {
 	queue Queue
 }
 
-func (p *LocalPlayer) Init() {
-	fmt.Print("initing player")
+func (p *LocalPlayer) Init(ctx context.Context) {
+	runtime.LogInfo(ctx, "Initing local player")
 	sr := beep.SampleRate(44100)
 	speaker.Init(sr, sr.N(time.Second/10))
 	speaker.Play(&p.queue)
-	fmt.Print("queue initialized correclty")
+	runtime.LogInfo(ctx, "Queue and speaker intialized successfully")
 }
 
 func (p *LocalPlayer) createPlayableFromTrack(track sqlcDb.Track) (*Playable, error) {

@@ -14,6 +14,10 @@ export function GetCurrent() {
   return window['go']['main']['App']['GetCurrent']();
 }
 
+export function GetIsAppReady() {
+  return window['go']['main']['App']['GetIsAppReady']();
+}
+
 export function GetPreferences() {
   return window['go']['main']['App']['GetPreferences']();
 }

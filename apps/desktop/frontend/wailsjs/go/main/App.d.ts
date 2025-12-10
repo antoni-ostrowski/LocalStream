@@ -10,6 +10,8 @@ export function CreateSourceDir():Promise<void>;
 
 export function GetCurrent():Promise<playback.Playable>;
 
+export function GetIsAppReady():Promise<boolean>;
+
 export function GetPreferences():Promise<config.Preferences>;
 
 export function GetTrackArtwork(arg1:sqlcDb.Track):Promise<string>;

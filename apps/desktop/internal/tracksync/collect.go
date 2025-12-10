@@ -174,7 +174,7 @@ func (s *TrackSyncMangaer) scanSourceDirForFiles(ctx context.Context, root strin
 		return ext == ".mp3" || ext == ".flac" || ext == ".ogg"
 	}
 
-	fmt.Printf("scan for  %s \n", root)
+	// fmt.Printf("scan for  %s \n", root)
 	if _, err := os.Stat(root); os.IsNotExist(err) {
 		runtime.LogErrorf(ctx, "Root source dir doesnt exist %v", err)
 		return fmt.Errorf("Root source dir doesnt exist")
@@ -182,7 +182,7 @@ func (s *TrackSyncMangaer) scanSourceDirForFiles(ctx context.Context, root strin
 
 	// send a path to a filePathChn only if the file is music file and theres no errs
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
-		fmt.Printf("walk over %s \n", path)
+		// fmt.Printf("walk over %s \n", path)
 		if err != nil {
 			runtime.LogErrorf(ctx, "Error accessing path %s: %v. Skipping \n", path, err)
 			return nil
@@ -195,7 +195,7 @@ func (s *TrackSyncMangaer) scanSourceDirForFiles(ctx context.Context, root strin
 		}
 
 		if !d.IsDir() && isMusicFile(path) {
-			fmt.Print("found a music file, sending to chan \n")
+			// fmt.Print("found a music file, sending to chan \n")
 			filePathChn <- path
 		}
 

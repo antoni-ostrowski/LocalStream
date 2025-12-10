@@ -25,11 +25,12 @@ export default function TrackInteractions({
 
 function PlayNowBtn({ track }: { track: sqlcDb.Track }) {
   const { data: currentPlaying } = useQuery(queries.player.getCurrentPlaying())
-  const isPaused = currentPlaying?.Ctrl?.Paused
   const { playNow } = usePlaybackControls()
   return (
     <Button variant="ghost" onClick={() => playNow.mutate(track)}>
-      {track.id === currentPlaying?.Track.id && !isPaused ? (
+      {currentPlaying &&
+      currentPlaying.isPaused &&
+      currentPlaying.Track.id === track.id ? (
         <PauseIcon className="cursor-pointer" size={15} />
       ) : (
         <PlayIcon className="cursor-pointer" size={15} />

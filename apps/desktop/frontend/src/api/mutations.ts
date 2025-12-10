@@ -12,6 +12,30 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { queries } from "./queries"
 
+// import { useState } from 'react';
+//
+// export function useAddToQueue() {
+//     const [isPending, setIsPending] = useState(false);
+//     const [error, setError] = useState(null);
+//
+//     const mutate = async (track) => {
+//         setIsPending(true);
+//         setError(null);
+//         try {
+//             // The Go function executes, modifies state, and emits the event.
+//             await window.go.main.App.AddToQueue(track);
+//             // The frontend is updated by the event listener in useQueueState.
+//         } catch (e) {
+//             setError(e);
+//             console.error("Mutation failed:", e);
+//         } finally {
+//             setIsPending(false);
+//         }
+//     };
+//
+//     return { mutate, isPending, error };
+// }
+
 export function useUpdatePreferences() {
   const qc = useQueryClient()
   return useMutation({
@@ -60,7 +84,7 @@ export function useStarTrack() {
     onError: ({ message }) => {
       toast.error("Failed to star track!", { description: message })
     },
-    onSettled: async () => {
+    onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: queries.tracks._def })
       await qc.invalidateQueries({
         queryKey: queries.player._def,
@@ -101,10 +125,8 @@ export function usePlaybackControls() {
         toast.error("Failed to add to queue!", { description: message })
       },
       onSuccess: async () => {
-        await qc.invalidateQueries({ queryKey: queries.player.listQueue._def })
         await qc.invalidateQueries({ queryKey: queries.player._def })
         await qc.invalidateQueries({ queryKey: queries.tracks._def })
-        await qc.resetQueries()
       },
       mutationFn: (track: sqlcDb.Track) => AddToQueue(track),
     }),

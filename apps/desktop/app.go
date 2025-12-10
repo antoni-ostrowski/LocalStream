@@ -16,22 +16,33 @@ type App struct {
 	config      *config.RuntimeConfigManager
 	db          *database.DBManager
 	localPlayer *playback.LocalPlayer
+	isReady     bool
 }
 
 func NewApp() *App {
-	return &App{}
+	return &App{isReady: false}
+}
+func (a *App) GetIsAppReady() bool {
+	return a.isReady
 }
 
-func (a *App) onDomReady(ctx context.Context) {
+func (a *App) onStartup(ctx context.Context) {
 	a.ctx = ctx
-	err := a.initAppResources()
-	player := &playback.LocalPlayer{}
-	player.Init()
-	a.localPlayer = player
-	if err != nil {
-		a.handleAppResourceFailure()
-		return
-	}
+	runtime.LogInfof(ctx, "On startup function start")
+	isAppReadyChan := make(chan struct{})
+	runtime.LogInfof(ctx, "Created done channel, starting go routine")
+	go func() {
+		err := a.initAppResources()
+		if err != nil {
+			a.handleAppResourceFailure()
+			return
+		}
+		runtime.LogInfof(ctx, "Init app succeded, closing channel")
+		a.isReady = true
+		close(isAppReadyChan)
+	}()
+	<-isAppReadyChan
+	runtime.LogPrint(a.ctx, "Init app successfull")
 	runtime.LogPrintf(a.ctx, "Prefs %v", a.config.Preferences)
 }
 
@@ -70,9 +81,14 @@ func (a *App) initAppResources() error {
 		return err
 	}
 
+	player := &playback.LocalPlayer{}
+	player.Init(a.ctx)
+	a.localPlayer = player
+
 	runtime.LogInfo(a.ctx, "Successfully initialized app resources")
 	return nil
 }
+
 func (a *App) handleAppResourceFailure() {
 	runtime.MessageDialog(a.ctx,
 		runtime.MessageDialogOptions{Message: "app failed to init. try clearing the config directory and restarting the app", Type: runtime.ErrorDialog, Title: "app failed to init",

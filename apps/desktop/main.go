@@ -23,8 +23,7 @@ func main() {
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		OnDomReady: app.onDomReady,
-		// OnStartup: app.startup,
+		OnStartup: app.onStartup,
 		Bind: []interface{}{
 			app,
 		},

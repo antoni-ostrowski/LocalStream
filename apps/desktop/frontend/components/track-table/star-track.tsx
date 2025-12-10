@@ -5,6 +5,7 @@ import { Button } from "../ui/button"
 
 export default function StarTrack({ track }: { track: sqlcDb.Track }) {
   const { mutate } = useStarTrack()
+
   return (
     <Button
       variant="ghost"

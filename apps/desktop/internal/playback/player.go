@@ -1,10 +1,14 @@
 package playback
 
-import "localStream/sqlcDb"
+import (
+	"localStream/sqlcDb"
+
+	"context"
+)
 
 type Player interface {
 	Play(track sqlcDb.Track) error
 	PauseResume()
-	ListQueue() ([]sqlcDb.Track, error)
-	AddToQueue(track sqlcDb.Track) error
+	ListQueue(ctx context.Context) ([]sqlcDb.Track, error)
+	AddToQueue(ctx context.Context, track sqlcDb.Track) error
 }

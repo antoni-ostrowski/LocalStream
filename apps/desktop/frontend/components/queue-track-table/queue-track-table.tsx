@@ -1,6 +1,5 @@
-import { queries } from "@/src/api/queries"
+import { trackss } from "@/src/api/queries"
 import { sqlcDb } from "@/wailsjs/go/models"
-import { useQuery } from "@tanstack/react-query"
 import {
   ColumnFiltersState,
   createColumnHelper,
@@ -27,10 +26,18 @@ import {
 const columnHelper = createColumnHelper<sqlcDb.Track>()
 
 export default function QueueTrackTable() {
-  const { data: queueTracks } = useQuery(queries.player.listQueue())
-  console.log({ queueTracks })
+  const { data: queueTracks } = trackss.useListAll()
+  // const { data: queueTracks } = useQuery(queries.player.listQueue())
+  // console.log("NEW QUEUE DATA")
+  // console.log({ queueTracks })
 
-  return <>{queueTracks && <QueueTable queueTracks={queueTracks} />}</>
+  return (
+    <>
+      {queueTracks && queueTracks?.length > 0 && (
+        <QueueTable queueTracks={queueTracks} />
+      )}
+    </>
+  )
 }
 
 function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
@@ -80,6 +87,7 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
       ),
     }),
   ]
+
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState("")
 

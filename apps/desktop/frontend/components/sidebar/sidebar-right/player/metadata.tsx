@@ -7,7 +7,7 @@ import { Dot } from "lucide-react"
 export default function Metadata({
   currentTrack,
 }: {
-  currentTrack: playback.Playable
+  currentTrack: playback.PlayableData
 }) {
   const { data: trackArtwork } = useQuery(
     queries.tracks.getTrackArtwork(currentTrack.Track),

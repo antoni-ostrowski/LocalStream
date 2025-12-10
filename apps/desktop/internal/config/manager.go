@@ -27,7 +27,7 @@ func GetConfigInstance(ctx context.Context) *RuntimeConfigManager {
 
 func initConfig(ctx context.Context) {
 	configInstance = &RuntimeConfigManager{}
-	runtime.LogPrint(ctx, "In-memory config Initialized successfully")
+	runtime.LogInfo(ctx, "In-memory config Initialized successfully")
 }
 
 func (c *RuntimeConfigManager) LoadConfig(ctx context.Context) (Preferences, error) {

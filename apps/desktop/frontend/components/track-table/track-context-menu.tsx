@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { usePlaybackControls } from "@/src/api/mutations"
+import { AddToQueue } from "@/wailsjs/go/main/App"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "../ui/button"
@@ -23,7 +24,11 @@ export default function TrackContextMenu({ track }: { track: sqlcDb.Track }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="start">
           <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => addToQueueEnd.mutate(track)}>
+            <DropdownMenuItem
+              onClick={async () => {
+                AddToQueue(track)
+              }}
+            >
               Add to queue
             </DropdownMenuItem>
           </DropdownMenuGroup>

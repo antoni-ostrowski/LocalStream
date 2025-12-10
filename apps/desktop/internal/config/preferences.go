@@ -80,8 +80,6 @@ func GetPreferencesFromConfigFile(ctx context.Context, configFilePath string) (P
 		return Preferences{}, err
 	}
 
-	runtime.LogInfof(ctx, "Successfully loaded config. DatabasePath: %s", preferences.DatabasePath)
-
 	return preferences, nil
 }
 

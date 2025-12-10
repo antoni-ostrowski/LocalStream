@@ -53,8 +53,8 @@ func (s *TrackSyncMangaer) compareTracksAndGenerateActions(dbTracks []sqlcDb.Tra
 		dbTrackMap[track.Path] = track
 	}
 
-	fmt.Printf("\nDb tracks  - \n %v", dbTracks)
-	fmt.Printf("\n Local  tracks  - \n %v", localTracks)
+	// fmt.Printf("\nDb tracks  - \n %v", dbTracks)
+	// fmt.Printf("\n Local  tracks  - \n %v", localTracks)
 
 	for _, localTrack := range localTracks {
 		dbTrack, existsInDB := dbTrackMap[localTrack.Path]
