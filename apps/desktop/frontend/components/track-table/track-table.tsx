@@ -1,6 +1,5 @@
-import { queries } from "@/src/api/queries"
+import { useTrackArtwork } from "@/lib/hooks"
 import { sqlcDb } from "@/wailsjs/go/models"
-import { useQuery } from "@tanstack/react-query"
 import {
   createColumnHelper,
   flexRender,
@@ -194,6 +193,6 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
 }
 
 export function RenderTableArtwork({ track }: { track: sqlcDb.Track }) {
-  const { data } = useQuery(queries.tracks.getTrackArtwork(track))
-  return <img className="w-10" src={data ?? "../../placeholder.webp"} />
+  const { renderArtworkOrFallback } = useTrackArtwork(track)
+  return <>{renderArtworkOrFallback()}</>
 }

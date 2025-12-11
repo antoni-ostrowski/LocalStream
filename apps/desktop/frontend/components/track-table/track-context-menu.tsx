@@ -26,7 +26,9 @@ export default function TrackContextMenu({ track }: { track: sqlcDb.Track }) {
           <DropdownMenuGroup>
             <DropdownMenuItem
               onClick={async () => {
-                AddToQueue(track)
+                console.log("trying to add to queue")
+                await AddToQueue(track)
+                console.log("aaddeed to queue")
               }}
             >
               Add to queue

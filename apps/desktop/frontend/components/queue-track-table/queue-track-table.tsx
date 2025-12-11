@@ -1,5 +1,6 @@
-import { trackss } from "@/src/api/queries"
+import { queries } from "@/src/api/queries"
 import { sqlcDb } from "@/wailsjs/go/models"
+import { Result, useAtomValue } from "@effect-atom/atom-react"
 import {
   ColumnFiltersState,
   createColumnHelper,
@@ -26,16 +27,16 @@ import {
 const columnHelper = createColumnHelper<sqlcDb.Track>()
 
 export default function QueueTrackTable() {
-  const { data: queueTracks } = trackss.useListAll()
-  // const { data: queueTracks } = useQuery(queries.player.listQueue())
-  // console.log("NEW QUEUE DATA")
-  // console.log({ queueTracks })
+  const queueListAtom = useAtomValue(queries.player.listQueue)
+  console.log(queueListAtom)
 
   return (
     <>
-      {queueTracks && queueTracks?.length > 0 && (
-        <QueueTable queueTracks={queueTracks} />
-      )}
+      {Result.builder(queueListAtom)
+        .onErrorTag("NotFound", () => <p>no queue items</p>)
+        .onError((error) => <p>error: {error.message}</p>)
+        .onSuccess((queue) => <QueueTable {...{ queueTracks: queue }} />)
+        .orNull()}
     </>
   )
 }

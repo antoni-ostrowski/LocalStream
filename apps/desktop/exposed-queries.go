@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"localStream/internal/config"
 	"localStream/sqlcDb"
@@ -13,6 +14,10 @@ func (a *App) GetPreferences() (config.Preferences, error) {
 func (a *App) ListAllTracks() ([]sqlcDb.Track, error) {
 	tracks, err := a.db.Queries.ListAllTracks(a.ctx)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			fmt.Printf("No tracks in list all tracks")
+			return []sqlcDb.Track{}, nil
+		}
 		return []sqlcDb.Track{}, fmt.Errorf("Failed to get tracks: %v", err)
 	}
 

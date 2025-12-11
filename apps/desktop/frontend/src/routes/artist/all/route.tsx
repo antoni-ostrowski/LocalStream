@@ -5,9 +5,6 @@ import PageTitleWrapper from "@/components/page-title-wrapper"
 import { createFileRoute } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/artist/all")({
-  // loader: async ({ context: { queryClient, trpc } }) => {
-  //   await queryClient.prefetchQuery(trpc.metadata.listArtists.queryOptions({}))
-  // },
   component: RouteComponent,
   pendingComponent: () => <FullScreenLoading />,
   errorComponent: ({ error }) => (

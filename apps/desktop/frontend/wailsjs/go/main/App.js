@@ -14,6 +14,10 @@ export function GetCurrent() {
   return window['go']['main']['App']['GetCurrent']();
 }
 
+export function GetEvents() {
+  return window['go']['main']['App']['GetEvents']();
+}
+
 export function GetIsAppReady() {
   return window['go']['main']['App']['GetIsAppReady']();
 }

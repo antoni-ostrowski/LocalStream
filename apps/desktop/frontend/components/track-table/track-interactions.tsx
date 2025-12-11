@@ -16,7 +16,7 @@ export default function TrackInteractions({
 }) {
   return (
     <div className="flex flex-row items-center justify-start gap-1">
-      {showPlayNow && <PlayNowBtn {...{ track }} />}
+      {/* {showPlayNow && <PlayNowBtn {...{ track }} />} */}
       <StarTrack {...{ track }} />
       <TrackContextMenu {...{ track }} />
     </div>

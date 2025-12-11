@@ -1,23 +1,18 @@
 import TrackInteractions from "@/components/track-table/track-interactions"
-import { queries } from "@/src/api/queries"
+import { useTrackArtwork } from "@/lib/hooks"
 import { playback } from "@/wailsjs/go/models"
-import { useQuery } from "@tanstack/react-query"
 import { Dot } from "lucide-react"
 
 export default function Metadata({
   currentTrack,
 }: {
-  currentTrack: playback.PlayableData
+  currentTrack: playback.Playable
 }) {
-  const { data: trackArtwork } = useQuery(
-    queries.tracks.getTrackArtwork(currentTrack.Track),
-  )
+  const { renderArtworkOrFallback } = useTrackArtwork(currentTrack.Track)
+
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      <img
-        className="w-full rounded-lg"
-        src={trackArtwork ?? "../../../../placeholder.webp"}
-      />
+      {renderArtworkOrFallback()}
       <div className="flex w-full flex-row items-center justify-between">
         <div className="flex w-full flex-col items-start justify-start">
           <h1 className="text-xl font-bold">{currentTrack.Track.title}</h1>

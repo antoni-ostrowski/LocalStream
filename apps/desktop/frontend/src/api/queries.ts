@@ -7,67 +7,105 @@ import {
   ListQueue,
 } from "@/wailsjs/go/main/App"
 import { sqlcDb } from "@/wailsjs/go/models"
-import { EventsOn } from "@/wailsjs/runtime/runtime"
-import { createQueryKeys, mergeQueryKeys } from "@lukemorales/query-key-factory"
-import { useEffect, useState } from "react"
+import { Atom } from "@effect-atom/atom-react"
+import { Array, Effect } from "effect"
+import { GenericError, NotFound } from "./errors"
 
-export namespace trackss {
-  export function useListAll() {
-    const [queue, setQueue] = useState<sqlcDb.Track[]>([])
-    const [isPending, setIsPending] = useState(true)
-
-    useEffect(() => {
-      void (async () => {
-        const data = await ListQueue()
-        setQueue(data)
-        setIsPending(false)
-      })()
-
-      const unsubscribe = EventsOn("queue", (newQueueData) => {
-        setQueue(newQueueData)
-      })
-
-      return unsubscribe
-    }, [])
-
-    return { data: queue, isPending: isPending }
-  }
+const me = {
+  preferences: Atom.make(
+    Effect.tryPromise({
+      try: async () => await GetPreferences(),
+      catch: () => new GenericError({ message: "Failed to get preferences" }),
+    }),
+  ),
 }
 
-export const me = createQueryKeys("me", {
-  all: ["me"],
-  preferences: () => ({
-    queryKey: ["preferences"],
-    queryFn: () => GetPreferences(),
-  }),
-})
+const tracks = {
+  listAllTracksAtom: Atom.make(
+    Effect.flatMap(
+      Effect.tryPromise({
+        try: async () => await ListAllTracks(),
+        catch: () => new GenericError({ message: "Failed to list tracks" }),
+      }),
+      (tracks) =>
+        Effect.if(Array.isEmptyArray(tracks), {
+          onTrue: () =>
+            Effect.fail(new NotFound({ message: "No tracks found" })),
+          onFalse: () =>
+            Effect.succeed(tracks).pipe(
+              Effect.tap((value) =>
+                Effect.logInfo(`Found ${value.length} tracks`),
+              ),
+            ),
+        }),
+    ),
+  ),
+  makeGetTrackArtworkAtom: (track: sqlcDb.Track) =>
+    Atom.make(
+      Effect.flatMap(
+        Effect.tryPromise({
+          try: async () => await GetTrackArtwork(track),
+          catch: () => new GenericError({ message: "Failed to get artwork" }),
+        }),
+        (artwork) => Effect.succeed(artwork),
+      ),
+    ),
 
-export const tracks = createQueryKeys("tracks", {
-  all: ["tracks"],
-  listAll: () => ({
-    queryKey: ["list"],
-    queryFn: () => ListAllTracks(),
-  }),
-  listFav: () => ({
-    queryKey: ["list", "fav"],
-    queryFn: () => ListFavTracks(),
-  }),
-  getTrackArtwork: (track: sqlcDb.Track) => ({
-    queryKey: ["track-artwork", track.path],
-    queryFn: () => GetTrackArtwork(track),
-  }),
-})
+  listFavTracks: Atom.make(
+    Effect.flatMap(
+      Effect.tryPromise({
+        try: async () => await ListFavTracks(),
+        catch: () => new GenericError({ message: "Failed to list fav tracks" }),
+      }),
+      (tracks) =>
+        Effect.if(Array.isEmptyArray(tracks), {
+          onTrue: () =>
+            Effect.fail(new NotFound({ message: "No fav tracks found" })),
+          onFalse: () =>
+            Effect.succeed(tracks).pipe(
+              Effect.tap((value) =>
+                Effect.logInfo(`Found ${value.length} fav tracks`),
+              ),
+            ),
+        }),
+    ),
+  ),
+}
 
-export const player = createQueryKeys("player", {
-  all: ["player"],
-  listQueue: () => ({
-    queryKey: ["list"],
-    queryFn: () => ListQueue(),
-  }),
-  getCurrentPlaying: () => ({
-    queryKey: ["current-playing"],
-    queryFn: () => GetCurrent(),
-  }),
-})
+const player = {
+  listQueue: Atom.make(
+    Effect.flatMap(
+      Effect.tryPromise({
+        try: async () => await ListQueue(),
+        catch: () => new GenericError({ message: "Failed to list queue" }),
+      }),
+      (queueTracks) =>
+        Effect.if(Array.isEmptyArray(queueTracks), {
+          onTrue: () =>
+            Effect.fail(new NotFound({ message: "No queue list found" })),
+          onFalse: () =>
+            Effect.succeed(queueTracks).pipe(
+              Effect.tap((value) =>
+                Effect.logInfo(`Found ${value.length} fav tracks`),
+              ),
+            ),
+        }),
+    ),
+  ),
+  getCurrentPlaying: Atom.make(
+    Effect.flatMap(
+      Effect.tryPromise({
+        try: async () => await GetCurrent(),
+        catch: () =>
+          new GenericError({ message: "Failed to get current playing track" }),
+      }),
+      (currentPlaying) => Effect.succeed(currentPlaying),
+    ),
+  ),
+}
 
-export const queries = mergeQueryKeys(me, tracks, player)
+export const queries = {
+  me,
+  tracks,
+  player,
+}

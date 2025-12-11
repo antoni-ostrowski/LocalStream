@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	_ "embed"
+	"localStream/events"
 	"localStream/internal/config"
 	"localStream/internal/database"
 	"localStream/internal/playback"
@@ -22,8 +23,13 @@ type App struct {
 func NewApp() *App {
 	return &App{isReady: false}
 }
+
 func (a *App) GetIsAppReady() bool {
 	return a.isReady
+}
+
+func (a *App) GetEvents() events.EventsStruct {
+	return events.Events
 }
 
 func (a *App) onStartup(ctx context.Context) {

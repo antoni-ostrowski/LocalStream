@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"image"
+	"localStream/events"
 	"localStream/internal/playback"
 	"localStream/sqlcDb"
 
@@ -44,6 +45,7 @@ func (a *App) GetTrackArtwork(track sqlcDb.Track) (string, error) {
 func (a *App) GetCurrent() (playback.Playable, error) {
 	playable, err := a.localPlayer.GetCurrent(a.ctx)
 	if err != nil {
+		runtime.LogErrorf(a.ctx, "Failed to get current track: %v", err)
 		return playback.Playable{}, fmt.Errorf("Failed to get current track: %v", err)
 	}
 
@@ -53,25 +55,30 @@ func (a *App) GetCurrent() (playback.Playable, error) {
 func (a *App) PlayTrack(track sqlcDb.Track) error {
 	err := a.localPlayer.Play(track)
 	if err != nil {
+		runtime.LogErrorf(a.ctx, "Failed to start playback: %v", err)
 		return fmt.Errorf("Failed to start playback: %v", err)
 	}
+
+	go events.EmitCurrentPlayingUpdated(a.ctx)
+
 	return nil
 }
 
 func (a *App) PauseResume() {
 	a.localPlayer.PauseResume()
+	events.EmitCurrentPlayingUpdated(a.ctx)
 }
 
 func (a *App) AddToQueue(track sqlcDb.Track) error {
-
+	runtime.LogInfo(a.ctx, "Adding to queue")
 	err := a.localPlayer.AddToQueue(a.ctx, track)
 	if err != nil {
+		runtime.LogErrorf(a.ctx, "Failed to add to queue: %v", err)
 		return fmt.Errorf("Failed to add to queue: %v", err)
 	}
 
-	queueTracks, err := a.localPlayer.ListQueue(a.ctx)
-	runtime.EventsEmit(a.ctx, "queue", queueTracks)
-
+	go events.EmitQueueUpdated(a.ctx)
+	go events.EmitCurrentPlayingUpdated(a.ctx)
 	return nil
 }
 

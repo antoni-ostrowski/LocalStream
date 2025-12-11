@@ -5,43 +5,36 @@ import PageTitleWrapper, {
 } from "@/components/page-title-wrapper"
 import TrackTable from "@/components/track-table/track-table"
 import { queries } from "@/src/api/queries"
-import { useQuery } from "@tanstack/react-query"
+import { Result, useAtomValue } from "@effect-atom/atom-react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Star } from "lucide-react"
 
 export const Route = createFileRoute("/track/favourites")({
-  loader: async ({ context: { queryClient } }) => {
-    await queryClient.prefetchQuery(queries.tracks.listFav())
-  },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { data, isPending, error } = useQuery(queries.tracks.listFav())
-  if (error)
-    return (
-      <FullScreenError
-        errorMessage="Failed to load favourite tracks"
-        errorDetail={error.message}
-      />
-    )
-  if (isPending)
-    return <FullScreenLoading loadingMessage="Loading favourite tracks" />
-
-  if (!data)
-    return (
-      <FullScreenError
-        type="warning"
-        errorMessage="No favourite tracks found"
-      />
-    )
+  const favTracksAtom = useAtomValue(queries.tracks.listFavTracks)
 
   return (
     <PageTitleWrapper
       title="Favourite Tracks"
       icon={<Star className={pageTitleIconSize} color="yellow" fill="yellow" />}
     >
-      <TrackTable tracks={data} />
+      <>
+        {Result.builder(favTracksAtom)
+          .onInitialOrWaiting(() => (
+            <FullScreenLoading loadingMessage="Loading tracks" />
+          ))
+          .onErrorTag("NotFound", () => (
+            <FullScreenError type="warning" errorMessage="No tracks found" />
+          ))
+          .onError((error) => (
+            <FullScreenError type="error" errorDetail={error.message} />
+          ))
+          .onSuccess((tracks) => <TrackTable tracks={tracks} />)
+          .orNull()}
+      </>
     </PageTitleWrapper>
   )
 }

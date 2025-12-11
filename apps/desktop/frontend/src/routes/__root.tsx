@@ -3,10 +3,12 @@ import SidebarRight from "@/components/sidebar/sidebar-right/sidebar-right"
 import { ThemeProvider } from "@/components/theme/theme-provider"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/sonner"
+import { RegistryProvider } from "@effect-atom/atom-react"
 import type { QueryClient } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
+import MountGoEventHandler from "../api/event-handler"
 import appCss from "../style.css?url"
 
 export const Route = createRootRouteWithContext<{
@@ -46,20 +48,23 @@ function RootComponent() {
   return (
     <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <div className={`flex min-h-screen flex-col`}>
-          <div className={`flex items-center gap-2 border-b`}>
-            <div className={`flex-1`}>
-              <SidebarProvider>
-                <SidebarLeft />
-                <SidebarInset>
-                  <Outlet />
-                  <Toaster />
-                </SidebarInset>
-                <SidebarRight />
-              </SidebarProvider>
+        <RegistryProvider>
+          <MountGoEventHandler />
+          <div className={`flex min-h-screen flex-col`}>
+            <div className={`flex items-center gap-2 border-b`}>
+              <div className={`flex-1`}>
+                <SidebarProvider>
+                  <SidebarLeft />
+                  <SidebarInset>
+                    <Outlet />
+                    <Toaster />
+                  </SidebarInset>
+                  <SidebarRight />
+                </SidebarProvider>
+              </div>
             </div>
           </div>
-        </div>
+        </RegistryProvider>
       </ThemeProvider>
       <TanStackRouterDevtools position="bottom-right" />
       <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />

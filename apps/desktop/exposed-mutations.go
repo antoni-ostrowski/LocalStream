@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"localStream/events"
 	"localStream/internal/config"
 	"localStream/sqlcDb"
 
@@ -77,12 +78,18 @@ func (a *App) StarTrack(track sqlcDb.Track) error {
 		if err != nil {
 			return fmt.Errorf("Failed to un star track: %v", err)
 		}
+		go events.EmitQueueUpdated(a.ctx)
+		go events.EmitCurrentPlayingUpdated(a.ctx)
+		go events.EmitAnyTrackInfoUpdated(a.ctx)
 		return nil
 	} else {
 		err := a.db.Queries.StarTrack(a.ctx, track.ID)
 		if err != nil {
 			return fmt.Errorf("Failed to star track: %v", err)
 		}
+		go events.EmitQueueUpdated(a.ctx)
+		go events.EmitCurrentPlayingUpdated(a.ctx)
+		go events.EmitAnyTrackInfoUpdated(a.ctx)
 		return nil
 	}
 }
