@@ -8,7 +8,6 @@ import type { QueryClient } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
-import MountGoEventHandler from "../api/event-handler"
 import appCss from "../style.css?url"
 
 export const Route = createRootRouteWithContext<{
@@ -49,7 +48,7 @@ function RootComponent() {
     <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <RegistryProvider>
-          <MountGoEventHandler />
+          {/* <MountGoEventHandler /> */}
           <div className={`flex min-h-screen flex-col`}>
             <div className={`flex items-center gap-2 border-b`}>
               <div className={`flex-1`}>

@@ -1,16 +1,16 @@
+import FullScreenLoading from "@/components/full-screen-loading"
 import PageTitleWrapper from "@/components/page-title-wrapper"
 import TrackTable from "@/components/track-table/track-table"
-import { GenericError } from "@/src/api/errors"
+import { atomRuntime } from "@/src/api/atom-runtime"
 import {
   genericTrackListAtom,
   GenericTrackListAtomAction,
-} from "@/src/api/track-list-atom"
-import { ListAllTracks } from "@/wailsjs/go/main/App"
+} from "@/src/api/atoms/generic-track-list-atom"
+import { Queries } from "@/src/api/queries"
 import {
-  Atom,
   Registry,
   Result,
-  useAtom,
+  useAtomSet,
   useAtomValue,
 } from "@effect-atom/atom-react"
 import { createFileRoute } from "@tanstack/react-router"
@@ -21,52 +21,42 @@ export const Route = createFileRoute("/track/all")({
   component: RouteComponent,
 })
 
-//temp lazy implementation of fetching data
-const setGenericTrackListAtomDataAtom = Atom.fn(
+// a func to set specific list of tracks as the current one
+// this could be abstacted to some hook probably,
+// the whole flow of running a set func on genericTrackList
+const setGenericTracksToAllTracks = atomRuntime.fn(
   Effect.fn(function* () {
     const registry = yield* Registry.AtomRegistry
-    const data = yield* Effect.tryPromise({
-      try: async () => await ListAllTracks(),
-      catch: () => new GenericError({ message: "Failed to get tracks" }),
-    })
+    const q = yield* Queries
+    const newTrackList = yield* q.listAllTracks
 
     registry.set(
       genericTrackListAtom,
-      GenericTrackListAtomAction.UpdateTrackList({ newTrackList: data }),
+      GenericTrackListAtomAction.UpdateTrackList({
+        newTrackList: newTrackList,
+      }),
     )
   }),
 )
 
 function RouteComponent() {
-  // here fetch the server tracks we want to show
-  const [state, setGenericTrackListAtomData] = useAtom(
-    setGenericTrackListAtomDataAtom,
-    { mode: "promiseExit" },
-  )
+  const genericTrackListResult = useAtomValue(genericTrackListAtom)
+  const updateGenericTrackList = useAtomSet(setGenericTracksToAllTracks)
+
   useEffect(() => {
-    void (async () => {
-      await setGenericTrackListAtomData()
-    })()
-  }, [])
+    updateGenericTrackList()
+  }, [updateGenericTrackList])
 
   return (
     <PageTitleWrapper title={`All Tracks`}>
       <>
-        {Result.builder(state)
-          .onSuccess(() => <Child />)
-          .orNull()}
+        {Result.builder(genericTrackListResult)
+          .onInitialOrWaiting(() => <FullScreenLoading />)
+          .onSuccess((tracks) => <TrackTable tracks={tracks} />)
+          .orElse(() => (
+            <p>no data found</p>
+          ))}
       </>
     </PageTitleWrapper>
-  )
-}
-
-function Child() {
-  const trackList = useAtomValue(genericTrackListAtom)
-  return (
-    <>
-      {Result.builder(trackList)
-        .onSuccess((tracks) => <TrackTable tracks={tracks} />)
-        .orNull()}
-    </>
   )
 }

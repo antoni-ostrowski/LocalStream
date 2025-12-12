@@ -1,39 +1,58 @@
-import FullScreenError from "@/components/full-screen-error"
 import FullScreenLoading from "@/components/full-screen-loading"
-import PageTitleWrapper, {
-  pageTitleIconSize,
-} from "@/components/page-title-wrapper"
+import PageTitleWrapper from "@/components/page-title-wrapper"
 import TrackTable from "@/components/track-table/track-table"
-import { queries } from "@/src/api/queries"
-import { Result, useAtomValue } from "@effect-atom/atom-react"
+import { atomRuntime } from "@/src/api/atom-runtime"
+import {
+  genericTrackListAtom,
+  GenericTrackListAtomAction,
+} from "@/src/api/atoms/generic-track-list-atom"
+import { Queries } from "@/src/api/queries"
+import {
+  Registry,
+  Result,
+  useAtomSet,
+  useAtomValue,
+} from "@effect-atom/atom-react"
 import { createFileRoute } from "@tanstack/react-router"
-import { Star } from "lucide-react"
+import { Effect } from "effect"
+import { useEffect } from "react"
 
 export const Route = createFileRoute("/track/favourites")({
   component: RouteComponent,
 })
 
+const setGenericTracksToFavTracks = atomRuntime.fn(
+  Effect.fn(function* () {
+    const registry = yield* Registry.AtomRegistry
+    const q = yield* Queries
+    const favTracks = yield* q.listFavTracks
+
+    registry.set(
+      genericTrackListAtom,
+      GenericTrackListAtomAction.UpdateTrackList({
+        newTrackList: favTracks,
+      }),
+    )
+  }),
+)
+
 function RouteComponent() {
-  const favTracksAtom = useAtomValue(queries.tracks.listFavTracks)
+  const genericTrackListResult = useAtomValue(genericTrackListAtom)
+  const updateGenericTrackList = useAtomSet(setGenericTracksToFavTracks)
+
+  useEffect(() => {
+    updateGenericTrackList()
+  }, [updateGenericTrackList])
 
   return (
-    <PageTitleWrapper
-      title="Favourite Tracks"
-      icon={<Star className={pageTitleIconSize} color="yellow" fill="yellow" />}
-    >
+    <PageTitleWrapper title={`All Tracks`}>
       <>
-        {Result.builder(favTracksAtom)
-          .onInitialOrWaiting(() => (
-            <FullScreenLoading loadingMessage="Loading tracks" />
-          ))
-          .onErrorTag("NotFound", () => (
-            <FullScreenError type="warning" errorMessage="No tracks found" />
-          ))
-          .onError((error) => (
-            <FullScreenError type="error" errorDetail={error.message} />
-          ))
+        {Result.builder(genericTrackListResult)
+          .onInitialOrWaiting(() => <FullScreenLoading />)
           .onSuccess((tracks) => <TrackTable tracks={tracks} />)
-          .orNull()}
+          .orElse(() => (
+            <p>no data found</p>
+          ))}
       </>
     </PageTitleWrapper>
   )

@@ -1,4 +1,4 @@
-import { useTrackArtwork } from "@/lib/hooks"
+import { useTrackArtwork } from "@/lib/hooks/get-artwork"
 import { updateTrackInGenericTrackListAtom } from "@/src/api/track-list-atom"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { useAtom } from "@effect-atom/atom-react"
@@ -24,7 +24,6 @@ import {
   TableRow,
 } from "../ui/table"
 import { fuzzyFilter, fuzzySort } from "./table-utils"
-import TrackInteractions from "./track-interactions"
 
 const columnHelper = createColumnHelper<sqlcDb.Track>()
 
@@ -77,7 +76,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
       cell: (props) => (
         <div className="flex flex-row items-center justify-end">
           <Updater track={props.row.original} />
-          <TrackInteractions {...{ track: props.row.original }} />
+          {/* <TrackInteractions {...{ track: props.row.original }} /> */}
         </div>
       ),
     }),

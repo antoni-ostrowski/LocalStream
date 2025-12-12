@@ -1,16 +1,25 @@
+import { atomRuntime } from "@/src/api/atom-runtime"
 import { GenericError } from "@/src/api/errors"
-import { queries } from "@/src/api/queries"
+import { Queries } from "@/src/api/queries"
 import { sqlcDb } from "@/wailsjs/go/models"
-import { Result, useAtomValue } from "@effect-atom/atom-react"
-import { useMemo } from "react"
+import { Atom, Result, useAtomValue } from "@effect-atom/atom-react"
+import { Effect } from "effect"
+
+const artworkAtom = Atom.family((track: sqlcDb.Track) =>
+  atomRuntime.atom(
+    Effect.gen(function* () {
+      const q = yield* Queries
+      const a = yield* q.getTrackArtwork(track)
+      return a
+    }),
+  ),
+)
 
 export function useTrackArtwork(track: sqlcDb.Track) {
-  const artworkAtomArg = useMemo(
-    () => queries.tracks.makeGetTrackArtworkAtom(track),
-    [track],
-  )
-  const artworkAtom = useAtomValue(artworkAtomArg)
-  return { renderArtworkOrFallback: () => RenderArtworkOrFallback(artworkAtom) }
+  const artworkResult = useAtomValue(artworkAtom(track))
+  return {
+    renderArtworkOrFallback: () => RenderArtworkOrFallback(artworkResult),
+  }
 }
 
 export function RenderArtworkOrFallback(
