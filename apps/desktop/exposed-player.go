@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"image"
-	"localStream/events"
 	"localStream/internal/playback"
 	"localStream/sqlcDb"
 
@@ -59,14 +58,11 @@ func (a *App) PlayTrack(track sqlcDb.Track) error {
 		return fmt.Errorf("Failed to start playback: %v", err)
 	}
 
-	go events.EmitCurrentPlayingUpdated(a.ctx)
-
 	return nil
 }
 
 func (a *App) PauseResume() {
 	a.localPlayer.PauseResume()
-	events.EmitCurrentPlayingUpdated(a.ctx)
 }
 
 func (a *App) AddToQueue(track sqlcDb.Track) error {
@@ -77,8 +73,6 @@ func (a *App) AddToQueue(track sqlcDb.Track) error {
 		return fmt.Errorf("Failed to add to queue: %v", err)
 	}
 
-	go events.EmitQueueUpdated(a.ctx)
-	go events.EmitCurrentPlayingUpdated(a.ctx)
 	return nil
 }
 

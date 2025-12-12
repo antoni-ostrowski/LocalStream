@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	_ "embed"
-	"localStream/events"
 	"localStream/internal/config"
 	"localStream/internal/database"
 	"localStream/internal/playback"
@@ -26,10 +25,6 @@ func NewApp() *App {
 
 func (a *App) GetIsAppReady() bool {
 	return a.isReady
-}
-
-func (a *App) GetEvents() events.EventsStruct {
-	return events.Events
 }
 
 func (a *App) onStartup(ctx context.Context) {

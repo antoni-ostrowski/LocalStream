@@ -1,13 +1,14 @@
 import { sqlcDb } from "@/wailsjs/go/models"
 import { Atom, Registry, Result } from "@effect-atom/atom-react"
 import { Data, Effect } from "effect"
+import { atomRuntime } from "../atom-runtime"
 
 // immutable atom,
 // cant modify the cache of this atom
 // everything needs to be derived
 // dictates real source of truth ON THE server
 // generic atom to store the currenlty viewed track list
-const remoteGenericTrackListAtom = Atom.make(
+const remoteGenericTrackListAtom = atomRuntime.atom(
   Effect.fn(function* () {
     const arr: sqlcDb.Track[] = []
     // const arrr = yield* Effect.promise(async () => await ListAllTracks())
@@ -60,10 +61,9 @@ export const genericTrackListAtom = Object.assign(
   { remote: remoteGenericTrackListAtom },
 )
 
-export const updateGenericTrackListAtom = Atom.fn(
+export const updateGenericTrackListAtom = atomRuntime.fn(
   Effect.fn(function* (tracks: sqlcDb.Track[]) {
     const registry = yield* Registry.AtomRegistry
-    // here can update server state and update the eg. current playing atom
     registry.set(
       genericTrackListAtom,
       GenericTrackListAtomAction.UpdateTrackList({ newTrackList: tracks }),
@@ -71,10 +71,9 @@ export const updateGenericTrackListAtom = Atom.fn(
   }),
 )
 
-export const updateTrackInGenericTrackListAtom = Atom.fn(
+export const updateTrackInGenericTrackListAtom = atomRuntime.fn(
   Effect.fn(function* (track: sqlcDb.Track) {
     const registry = yield* Registry.AtomRegistry
-    // here can update server state and update the eg. current playing atom
     registry.set(
       genericTrackListAtom,
       GenericTrackListAtomAction.UpdateTrackData({ newTrackData: track }),

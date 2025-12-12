@@ -30,6 +30,7 @@ const setGenericTracksToAllTracks = atomRuntime.fn(
     const q = yield* Queries
     const newTrackList = yield* q.listAllTracks
 
+    Effect.logInfo("running atom to update to all tracks")
     registry.set(
       genericTrackListAtom,
       GenericTrackListAtomAction.UpdateTrackList({
@@ -40,10 +41,12 @@ const setGenericTracksToAllTracks = atomRuntime.fn(
 )
 
 function RouteComponent() {
+  console.log("track all route")
   const genericTrackListResult = useAtomValue(genericTrackListAtom)
   const updateGenericTrackList = useAtomSet(setGenericTracksToAllTracks)
 
   useEffect(() => {
+    console.log("track all use effect")
     updateGenericTrackList()
   }, [updateGenericTrackList])
 
@@ -53,9 +56,7 @@ function RouteComponent() {
         {Result.builder(genericTrackListResult)
           .onInitialOrWaiting(() => <FullScreenLoading />)
           .onSuccess((tracks) => <TrackTable tracks={tracks} />)
-          .orElse(() => (
-            <p>no data found</p>
-          ))}
+          .orNull()}
       </>
     </PageTitleWrapper>
   )

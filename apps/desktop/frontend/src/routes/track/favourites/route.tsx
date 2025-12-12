@@ -39,13 +39,13 @@ const setGenericTracksToFavTracks = atomRuntime.fn(
 function RouteComponent() {
   const genericTrackListResult = useAtomValue(genericTrackListAtom)
   const updateGenericTrackList = useAtomSet(setGenericTracksToFavTracks)
-
+  console.log({ genericTrackListResult })
   useEffect(() => {
     updateGenericTrackList()
   }, [updateGenericTrackList])
 
   return (
-    <PageTitleWrapper title={`All Tracks`}>
+    <PageTitleWrapper title={`Favourite Tracks`}>
       <>
         {Result.builder(genericTrackListResult)
           .onInitialOrWaiting(() => <FullScreenLoading />)

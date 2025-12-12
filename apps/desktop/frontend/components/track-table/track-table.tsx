@@ -1,7 +1,5 @@
 import { useTrackArtwork } from "@/lib/hooks/get-artwork"
-import { updateTrackInGenericTrackListAtom } from "@/src/api/track-list-atom"
 import { sqlcDb } from "@/wailsjs/go/models"
-import { useAtom } from "@effect-atom/atom-react"
 import {
   createColumnHelper,
   flexRender,
@@ -14,7 +12,6 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { useEffect, useRef, useState } from "react"
 import DebouncedInput from "../debounced-input"
-import { Button } from "../ui/button"
 import {
   Table,
   TableBody,
@@ -24,6 +21,7 @@ import {
   TableRow,
 } from "../ui/table"
 import { fuzzyFilter, fuzzySort } from "./table-utils"
+import TrackInteractions from "./track-interactions"
 
 const columnHelper = createColumnHelper<sqlcDb.Track>()
 
@@ -75,8 +73,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
       size: 20,
       cell: (props) => (
         <div className="flex flex-row items-center justify-end">
-          <Updater track={props.row.original} />
-          {/* <TrackInteractions {...{ track: props.row.original }} /> */}
+          <TrackInteractions {...{ track: props.row.original }} />
         </div>
       ),
     }),
@@ -200,20 +197,20 @@ export function RenderTableArtwork({ track }: { track: sqlcDb.Track }) {
   return <>{renderArtworkOrFallback()}</>
 }
 
-function Updater({ track }: { track: sqlcDb.Track }) {
-  const [updateState, update] = useAtom(updateTrackInGenericTrackListAtom, {
-    mode: "promiseExit",
-  })
-  return (
-    <Button
-      onClick={async () => {
-        await update({
-          ...track,
-          title: `fjdkslafjlk`,
-        } as sqlcDb.Track)
-      }}
-    >
-      update
-    </Button>
-  )
-}
+// function Updater({ track }: { track: sqlcDb.Track }) {
+//   const [updateState, update] = useAtom(updateTrackInGenericTrackListAtom, {
+//     mode: "promiseExit",
+//   })
+//   return (
+//     <Button
+//       onClick={async () => {
+//         await update({
+//           ...track,
+//           title: `fjdkslafjlk`,
+//         } as sqlcDb.Track)
+//       }}
+//     >
+//       update
+//     </Button>
+//   )
+// }

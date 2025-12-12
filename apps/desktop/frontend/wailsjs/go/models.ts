@@ -59,27 +59,6 @@ export namespace effects {
 
 }
 
-export namespace events {
-	
-	export class EventsStruct {
-	    QueueUpdated: string;
-	    CurrentPlayingUpdated: string;
-	    AnyTrackInfoUpdated: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new EventsStruct(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.QueueUpdated = source["QueueUpdated"];
-	        this.CurrentPlayingUpdated = source["CurrentPlayingUpdated"];
-	        this.AnyTrackInfoUpdated = source["AnyTrackInfoUpdated"];
-	    }
-	}
-
-}
-
 export namespace playback {
 	
 	export class Playable {

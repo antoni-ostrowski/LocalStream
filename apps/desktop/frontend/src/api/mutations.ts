@@ -9,7 +9,24 @@ import {
 } from "@/wailsjs/go/main/App"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { useMutation } from "@tanstack/react-query"
+import { Effect } from "effect"
 import { toast } from "sonner"
+import { GenericError } from "./errors"
+
+export class Mutations extends Effect.Service<Mutations>()("Mutations", {
+  effect: Effect.gen(function* () {
+    const starTrack = Effect.fn(function* (track: sqlcDb.Track) {
+      return yield* Effect.tryPromise({
+        try: async () => StarTrack(track),
+        catch: () => new GenericError({ message: "Failed to star track" }),
+      })
+    })
+
+    return {
+      starTrack,
+    }
+  }),
+}) {}
 
 export function useUpdatePreferences() {
   return useMutation({

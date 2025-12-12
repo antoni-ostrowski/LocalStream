@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"localStream/internal/config"
 	"localStream/sqlcDb"
+
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 func (a *App) GetPreferences() (config.Preferences, error) {
@@ -12,6 +14,7 @@ func (a *App) GetPreferences() (config.Preferences, error) {
 }
 
 func (a *App) ListAllTracks() ([]sqlcDb.Track, error) {
+	runtime.LogInfo(a.ctx, "trying list all tracks")
 	tracks, err := a.db.Queries.ListAllTracks(a.ctx)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -25,6 +28,7 @@ func (a *App) ListAllTracks() ([]sqlcDb.Track, error) {
 }
 
 func (a *App) ListFavTracks() ([]sqlcDb.Track, error) {
+	runtime.LogInfo(a.ctx, "trying list fav tracks")
 	favTracks, err := a.db.Queries.ListFavTracks(a.ctx)
 	if err != nil {
 		return []sqlcDb.Track{}, fmt.Errorf("Failed to get favourite tracks: %v", err)
