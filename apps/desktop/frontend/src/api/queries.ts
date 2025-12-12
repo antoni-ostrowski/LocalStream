@@ -8,7 +8,7 @@ import {
 } from "@/wailsjs/go/main/App"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { Atom } from "@effect-atom/atom-react"
-import { Array, Effect } from "effect"
+import { Array, Effect, Layer } from "effect"
 import { GenericError, NotFound } from "./errors"
 
 const me = {
@@ -19,6 +19,15 @@ const me = {
     }),
   ),
 }
+
+const runtimeAtom = Atom.runtime(Layer.empty)
+
+export const updateListAllTracks = runtimeAtom.fn(
+  Effect.fn(function* () {
+    yield* Effect.log("mutating list all tracks")
+  }),
+  { reactivityKeys: ["listAllTracks"], concurrent: true },
+)
 
 const tracks = {
   listAllTracksAtom: Atom.make(
@@ -39,7 +48,7 @@ const tracks = {
             ),
         }),
     ),
-  ),
+  ).pipe(Atom.withReactivity(["listAllTracks"])),
   makeGetTrackArtworkAtom: (track: sqlcDb.Track) =>
     Atom.make(
       Effect.flatMap(

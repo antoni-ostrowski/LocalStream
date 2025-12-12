@@ -1,5 +1,7 @@
 import { useTrackArtwork } from "@/lib/hooks"
+import { updateTrackInGenericTrackListAtom } from "@/src/api/track-list-atom"
 import { sqlcDb } from "@/wailsjs/go/models"
+import { useAtom } from "@effect-atom/atom-react"
 import {
   createColumnHelper,
   flexRender,
@@ -12,6 +14,7 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { useEffect, useRef, useState } from "react"
 import DebouncedInput from "../debounced-input"
+import { Button } from "../ui/button"
 import {
   Table,
   TableBody,
@@ -73,6 +76,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
       size: 20,
       cell: (props) => (
         <div className="flex flex-row items-center justify-end">
+          <Updater track={props.row.original} />
           <TrackInteractions {...{ track: props.row.original }} />
         </div>
       ),
@@ -164,7 +168,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
                         virtualRow.start - index * virtualRow.size
                       }px)`,
                     }}
-                    key={row.id}
+                    key={row.original.id}
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (
@@ -195,4 +199,22 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
 export function RenderTableArtwork({ track }: { track: sqlcDb.Track }) {
   const { renderArtworkOrFallback } = useTrackArtwork(track)
   return <>{renderArtworkOrFallback()}</>
+}
+
+function Updater({ track }: { track: sqlcDb.Track }) {
+  const [updateState, update] = useAtom(updateTrackInGenericTrackListAtom, {
+    mode: "promiseExit",
+  })
+  return (
+    <Button
+      onClick={async () => {
+        await update({
+          ...track,
+          title: `fjdkslafjlk`,
+        } as sqlcDb.Track)
+      }}
+    >
+      update
+    </Button>
+  )
 }
