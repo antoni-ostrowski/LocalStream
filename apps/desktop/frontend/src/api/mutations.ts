@@ -9,10 +9,8 @@ import {
   StarTrack,
   UpdatePreferences,
 } from "@/wailsjs/go/main/App"
-import { sqlcDb } from "@/wailsjs/go/models"
-import { useMutation } from "@tanstack/react-query"
+import { config, sqlcDb } from "@/wailsjs/go/models"
 import { Effect } from "effect"
-import { toast } from "sonner"
 import { GenericError } from "./errors"
 
 export class Mutations extends Effect.Service<Mutations>()("Mutations", {
@@ -61,63 +59,35 @@ export class Mutations extends Effect.Service<Mutations>()("Mutations", {
       }),
     }
 
+    const settings = {
+      reloadAppResources: Effect.tryPromise({
+        try: async () => ReloadAppResources(),
+        catch: () => new GenericError({ message: "Failed to reload settings" }),
+      }),
+      createSourceDir: Effect.tryPromise({
+        try: async () => await CreateSourceDir(),
+        catch: () =>
+          new GenericError({
+            message: "Failed to create new source directory",
+          }),
+      }),
+      updatePreferences: Effect.fn(function* (newPrefs: config.Preferences) {
+        return yield* Effect.tryPromise({
+          try: async () => await UpdatePreferences(newPrefs),
+          catch: () =>
+            new GenericError({ message: "Failed to update preferences" }),
+        })
+      }),
+      triggerTrackSync: Effect.try({
+        try: () => ReloadAppResources(),
+        catch: () => new GenericError({ message: "Failed to sync track" }),
+      }),
+    }
+
     return {
       starTrack,
       playbackControls,
+      settings,
     }
   }),
 }) {}
-
-export function useUpdatePreferences() {
-  return useMutation({
-    onError: ({ message }) => {
-      toast.error("Failed update preferences!", { description: message })
-    },
-    mutationFn: (...newPrefs: Parameters<typeof UpdatePreferences>) =>
-      UpdatePreferences(...newPrefs),
-  })
-}
-
-export function useCreateNewSource() {
-  return useMutation({
-    onError: ({ message }) => {
-      toast.error("Failed create music source!", { description: message })
-    },
-    onSuccess: async () => {
-      toast.success("Created new music source!")
-    },
-    mutationFn: () => CreateSourceDir(),
-  })
-}
-
-export function useReloadAppResources() {
-  return useMutation({
-    onError: ({ message }) => {
-      toast.error("Failed to reload resources!", { description: message })
-    },
-    mutationFn: () => ReloadAppResources(),
-  })
-}
-
-export function usePlaybackControls() {
-  return {
-    // playNow: useMutation({
-    //   onError: ({ message }) => {
-    //     toast.error("Failed to play track!", { description: message })
-    //   },
-    //   mutationFn: (track: sqlcDb.Track) => PlayTrack(track),
-    // }),
-    // pauseResume: useMutation({
-    //   onError: ({ message }) => {
-    //     toast.error("Failed to play/pause track!", { description: message })
-    //   },
-    //   mutationFn: () => PauseResume(),
-    // }),
-    // addToQueueEnd: useMutation({
-    //   onError: ({ message }) => {
-    //     toast.error("Failed to add to queue!", { description: message })
-    //   },
-    //   mutationFn: (track: sqlcDb.Track) => AddToQueue(track),
-    // }),
-  }
-}

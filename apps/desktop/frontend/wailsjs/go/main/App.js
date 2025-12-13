@@ -18,6 +18,10 @@ export function GetCurrentTrack() {
   return window['go']['main']['App']['GetCurrentTrack']();
 }
 
+export function GetDefaultPreferences() {
+  return window['go']['main']['App']['GetDefaultPreferences']();
+}
+
 export function GetIsAppReady() {
   return window['go']['main']['App']['GetIsAppReady']();
 }

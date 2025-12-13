@@ -1,11 +1,11 @@
 import FullScreenLoading from "@/components/full-screen-loading"
 import PageTitleWrapper from "@/components/page-title-wrapper"
 import TrackTable from "@/components/track-table/track-table"
-import { atomRuntime } from "@/src/api/atom-runtime"
 import {
   genericTrackListAtom,
   GenericTrackListAtomAction,
 } from "@/src/api/atoms/generic-track-list-atom"
+import { atomRuntime } from "@/src/api/make-runtime"
 import { Queries } from "@/src/api/queries"
 import {
   Registry,

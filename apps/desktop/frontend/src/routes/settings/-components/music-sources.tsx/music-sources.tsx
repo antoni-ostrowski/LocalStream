@@ -9,21 +9,22 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
-import { useCreateNewSource, useUpdatePreferences } from "@/src/api/mutations"
-import { queries } from "@/src/api/queries"
+import {
+  createSourceDirAtom,
+  settingsAtom,
+  updatePrefsAtom,
+} from "@/src/api/atoms/settings-atom"
 import { config } from "@/wailsjs/go/models"
-import { Result, useAtomValue } from "@effect-atom/atom-react"
+import { Result, useAtom, useAtomValue } from "@effect-atom/atom-react"
 import { FolderOpen, Music, Plus, Trash } from "lucide-react"
 
 export default function MusicSources() {
-  const preferencesAtom = useAtomValue(queries.me.preferences)
-
-  const { mutate: createNewSource, isPending: isMutating } =
-    useCreateNewSource()
+  const [createSourceDirState, createSourceDir] = useAtom(createSourceDirAtom)
+  const settingsResult = useAtomValue(settingsAtom)
 
   return (
     <>
-      {Result.builder(preferencesAtom)
+      {Result.builder(settingsResult)
         .onInitialOrWaiting(() => <p>loading</p>)
         .onError((error) => (
           <div className="text-destructive">
@@ -64,10 +65,10 @@ export default function MusicSources() {
                     type="submit"
                     className="flex items-center gap-2"
                     onClick={() => {
-                      createNewSource()
+                      createSourceDir()
                     }}
                   >
-                    {isMutating ? (
+                    {createSourceDirState.waiting ? (
                       <>
                         <Spinner />
                         <p>Adding...</p>
@@ -122,6 +123,7 @@ function ActiveSources({
     </Card>
   )
 }
+
 function Source({
   source,
   prefs,
@@ -129,8 +131,7 @@ function Source({
   source: string
   prefs: config.Preferences
 }) {
-  const { mutate: updatePrefs, isPending: isMutating } = useUpdatePreferences()
-
+  const [updatePrefsState, updatePrefs] = useAtom(updatePrefsAtom)
   function handleUpdate() {
     if (!prefs) return
     const newPrefs = {
@@ -148,7 +149,7 @@ function Source({
         <span className="flex-1 truncate font-mono text-sm">{source}</span>
         <Badge>Active</Badge>
         <Button variant={"destructive"} onClick={handleUpdate}>
-          {isMutating ? <Spinner /> : <Trash />}
+          {updatePrefsState.waiting ? <Spinner /> : <Trash />}
         </Button>
       </div>
     </>

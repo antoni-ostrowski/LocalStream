@@ -1,5 +1,7 @@
 import {
   GetCurrentTrack,
+  GetDefaultPreferences,
+  GetPreferences,
   GetTrackArtwork,
   ListAllTracks,
   ListFavTracks,
@@ -68,14 +70,22 @@ export class Queries extends Effect.Service<Queries>()("Queries", {
         }),
     )
 
-    const getCurrentPlayingTrack = Effect.flatMap(
-      Effect.tryPromise({
-        try: async () => await GetCurrentTrack(),
-        catch: () =>
-          new GenericError({ message: "Failed to get current playing track" }),
-      }),
-      (currentPlaying) => Effect.succeed(currentPlaying),
-    )
+    const getCurrentPlayingTrack = Effect.tryPromise({
+      try: async () => await GetCurrentTrack(),
+      catch: () =>
+        new GenericError({ message: "Failed to get current playing track" }),
+    }).pipe(Effect.flatMap((currentTrack) => Effect.succeed(currentTrack)))
+
+    const getSettings = Effect.tryPromise({
+      try: async () => await GetPreferences(),
+      catch: () => new GenericError({ message: "Failed to get preferences" }),
+    }).pipe(Effect.flatMap((prefs) => Effect.succeed(prefs)))
+
+    const getDefaultSettings = Effect.tryPromise({
+      try: async () => await GetDefaultPreferences(),
+      catch: () =>
+        new GenericError({ message: "Failed to get default preferences" }),
+    }).pipe(Effect.flatMap((prefs) => Effect.succeed(prefs)))
 
     return {
       listAllTracks,
@@ -83,6 +93,8 @@ export class Queries extends Effect.Service<Queries>()("Queries", {
       getTrackArtwork,
       listQueue,
       getCurrentPlayingTrack,
+      getSettings,
+      getDefaultSettings,
     }
   }),
 }) {}

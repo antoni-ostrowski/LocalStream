@@ -6,15 +6,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { useReloadAppResources } from "@/src/api/mutations"
+import { triggerTrackSyncAtom } from "@/src/api/atoms/settings-atom"
+import { useAtom } from "@effect-atom/atom-react"
 import { RefreshCw } from "lucide-react"
 
 export default function ManualTracksSync() {
-  const { mutateAsync: manualSync, isPending } = useReloadAppResources()
-
-  async function handleSyncTrigger() {
-    await manualSync()
-  }
+  const [trackSyncState, triggerTrackSync] = useAtom(triggerTrackSyncAtom)
 
   return (
     <Card>
@@ -32,14 +29,16 @@ export default function ManualTracksSync() {
       <CardContent>
         <Button
           variant={"outline"}
-          onClick={async () => {
-            await handleSyncTrigger()
-          }}
+          onClick={() => triggerTrackSync()}
           size="lg"
           className="flex items-center gap-2"
         >
-          <RefreshCw className={`h-4 w-4 ${isPending ? "animate-spin" : ""}`} />
-          {isPending ? "Syncing Tracks..." : "Sync Tracks Manually"}
+          <RefreshCw
+            className={`h-4 w-4 ${trackSyncState.waiting ? "animate-spin" : ""}`}
+          />
+          {trackSyncState.waiting
+            ? "Syncing Tracks..."
+            : "Sync Tracks Manually"}
         </Button>
       </CardContent>
     </Card>

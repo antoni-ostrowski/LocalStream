@@ -2,7 +2,15 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
 import { useAppForm } from "@/lib/app-form/app-form"
+import {
+  defaultPreferencesAtom,
+  settingsAtom,
+  updatePrefsAtom,
+} from "@/src/api/atoms/settings-atom"
+import { config } from "@/wailsjs/go/models"
+import { Result, useAtom, useAtomValue } from "@effect-atom/atom-react"
 import { PenOff, RefreshCcw } from "lucide-react"
+import { toast } from "sonner"
 import z from "zod"
 
 const formSchema = z.object({
@@ -12,50 +20,52 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>
 
 export default function UpdateDbPath() {
-  // const { data: preferences, isPending } = useQuery(
-  //   trpc.user.getPreferences.queryOptions()
-  // )
+  const settings = useAtomValue(settingsAtom)
+  const defaultSettings = useAtomValue(defaultPreferencesAtom)
 
-  // const { data: defaultPreferences, isPending: isDefaultPreferencesPending } =
-  //   useQuery(trpc.user.getDefaultPreferences.queryOptions())
-
-  // if (isPending || isDefaultPreferencesPending) return <Spinner />
-  // if (!preferences || !defaultPreferences)
-  //   return <div>Failed to load preferences</div>
-  //
-  return <DoUpdating />
+  return (
+    <>
+      {Result.builder(settings)
+        .onInitialOrWaiting(() => <Spinner />)
+        .onSuccess((settings) => (
+          <>
+            {Result.builder(defaultSettings)
+              .onError((error) => <p>Failed to load data: {error.message}</p>)
+              .onSuccess((defaults) => (
+                <DoUpdating
+                  preferences={settings}
+                  defaultPreferences={defaults}
+                />
+              ))
+              .orNull()}
+          </>
+        ))
+        .orNull()}
+    </>
+  )
 }
 
-function DoUpdating() {
-  //   {
-  //   preferences,
-  //   defaultPreferences,
-  // }: {
-  //   preferences: Preferences
-  //   defaultPreferences: Preferences
-  // }
-  // const { mutateAsync } = useMutation({
-  //   ...trpc.user.updateDbPath.mutationOptions(),
-  // })
-
+function DoUpdating({
+  preferences,
+  defaultPreferences,
+}: {
+  preferences: config.Preferences
+  defaultPreferences: config.Preferences
+}) {
+  const [, updatePrefs] = useAtom(updatePrefsAtom)
   const form = useAppForm({
     defaultValues: {
-      newDatabasePath: "test path",
+      newDatabasePath: preferences.databasePath,
     } satisfies FormData as FormData,
     validators: {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      // const [, err] = await tryCatch(
-      //   (async () => {
-      //     return await mutateAsync({ newPath: value.newDatabasePath })
-      //   })(),
-      // )
-      // if (err) {
-      //   toast.error("Failed to update database file path.")
-      //   return
-      // }
-      //
+      const newPrefs = {
+        databasePath: value.newDatabasePath,
+        sourceDirs: preferences.sourceDirs,
+      } as config.Preferences
+      updatePrefs(newPrefs)
       toast.success("Succesfully changed the database path.", {
         description: "Please reopen the app to load new database.",
       })
@@ -65,8 +75,8 @@ function DoUpdating() {
   return (
     <form
       onSubmit={async (e) => {
-        // e.preventDefault()
-        // await form.handleSubmit()
+        e.preventDefault()
+        await form.handleSubmit()
       }}
     >
       <Card>
@@ -81,8 +91,8 @@ function DoUpdating() {
             type="submit"
             variant={"outline"}
             onClick={() => {
-              // form.state.values.newDatabasePath =
-              //   defaultPreferences.databasePath
+              form.state.values.newDatabasePath =
+                defaultPreferences.databasePath
             }}
           >
             {form.state.isSubmitting ? (

@@ -1,7 +1,7 @@
 import { sqlcDb } from "@/wailsjs/go/models"
 import { Atom, Registry, Result } from "@effect-atom/atom-react"
 import { Data, Effect } from "effect"
-import { atomRuntime } from "../atom-runtime"
+import { atomRuntime } from "../make-runtime"
 
 // immutable atom,
 // cant modify the cache of this atom

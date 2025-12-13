@@ -4,9 +4,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { DatabaseIcon } from 'lucide-react'
-import UpdateDbPath from './update-db-path'
+} from "@/components/ui/card"
+import { DatabaseIcon } from "lucide-react"
+import UpdateDbPath from "./update-db-path"
 
 export default function DbManagment() {
   return (

@@ -11,6 +11,8 @@ export function DeleteFromQueue(arg1:sqlcDb.Track):Promise<void>;
 
 export function GetCurrentTrack():Promise<sqlcDb.Track>;
 
+export function GetDefaultPreferences():Promise<config.Preferences>;
+
 export function GetIsAppReady():Promise<boolean>;
 
 export function GetPlaybackState():Promise<void>;

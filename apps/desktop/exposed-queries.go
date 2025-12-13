@@ -13,6 +13,15 @@ func (a *App) GetPreferences() (config.Preferences, error) {
 	return a.config.Preferences, nil
 }
 
+func (a *App) GetDefaultPreferences() (config.Preferences, error) {
+	_, configFilePath, err := config.GetConfigFilePath(a.ctx)
+	if err != nil {
+		return config.Preferences{}, fmt.Errorf("Failed to get default preferences")
+	}
+	defaultPreferences := config.CreateDefaultPreferences(configFilePath)
+	return defaultPreferences, nil
+}
+
 func (a *App) ListAllTracks() ([]sqlcDb.Track, error) {
 	runtime.LogInfo(a.ctx, "trying list all tracks")
 	tracks, err := a.db.Queries.ListAllTracks(a.ctx)

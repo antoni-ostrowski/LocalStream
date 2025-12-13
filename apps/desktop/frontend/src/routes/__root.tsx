@@ -46,8 +46,8 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   return (
     <>
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <RegistryProvider>
+      <RegistryProvider>
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <div className={`flex min-h-screen flex-col`}>
             <div className={`flex items-center gap-2 border-b`}>
               <div className={`flex-1`}>
@@ -55,15 +55,15 @@ function RootComponent() {
                   <SidebarLeft />
                   <SidebarInset>
                     <Outlet />
-                    <Toaster />
                   </SidebarInset>
                   <SidebarRight />
+                  <Toaster />
                 </SidebarProvider>
               </div>
             </div>
           </div>
-        </RegistryProvider>
-      </ThemeProvider>
+        </ThemeProvider>
+      </RegistryProvider>
       <TanStackRouterDevtools position="bottom-right" />
       <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
     </>

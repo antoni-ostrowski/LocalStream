@@ -84,7 +84,7 @@ func GetPreferencesFromConfigFile(ctx context.Context, configFilePath string) (P
 }
 
 func handleCreatingDefaultConfig(ctx context.Context, configFilePath string) (Preferences, error) {
-	defaultPreferencesStruct := createDefaultPreferences(configFilePath)
+	defaultPreferencesStruct := CreateDefaultPreferences(configFilePath)
 	if err := writeDefaultPreferencesToConfigFile(ctx, configFilePath, defaultPreferencesStruct); err != nil {
 		runtime.LogErrorf(ctx, "Failed to create config file: %v", err)
 		return Preferences{}, err
@@ -93,7 +93,7 @@ func handleCreatingDefaultConfig(ctx context.Context, configFilePath string) (Pr
 	return defaultPreferencesStruct, nil
 }
 
-func createDefaultPreferences(configFilePath string) Preferences {
+func CreateDefaultPreferences(configFilePath string) Preferences {
 	defaultDBPath := filepath.Join(filepath.Dir(configFilePath), "localStream.sqlite")
 	defaultSourceDirs := make([]string, 0)
 	return Preferences{

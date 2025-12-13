@@ -1,7 +1,7 @@
 import { sqlcDb } from "@/wailsjs/go/models"
 import { Atom, Registry, Result } from "@effect-atom/atom-react"
 import { Data, Effect, Option } from "effect"
-import { atomRuntime } from "../atom-runtime"
+import { atomRuntime } from "../make-runtime"
 import { Queries } from "../queries"
 
 const remotePlaybackStateAtom = atomRuntime.atom(

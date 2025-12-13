@@ -1,21 +1,7 @@
-import { atomRuntime } from "@/src/api/atom-runtime"
+import { artworkAtom } from "@/src/api/atoms/track-atoms"
 import { GenericError } from "@/src/api/errors"
-import { Queries } from "@/src/api/queries"
 import { sqlcDb } from "@/wailsjs/go/models"
-import { Atom, Result, useAtomValue } from "@effect-atom/atom-react"
-import { Effect } from "effect"
-
-const artworkAtom = Atom.family((track: sqlcDb.Track | null) =>
-  atomRuntime.atom(
-    Effect.gen(function* () {
-      if (!track)
-        return yield* new GenericError({ message: "no track provided" })
-      const q = yield* Queries
-      const a = yield* q.getTrackArtwork(track)
-      return a
-    }),
-  ),
-)
+import { Result, useAtomValue } from "@effect-atom/atom-react"
 
 export function useTrackArtwork(track: sqlcDb.Track | null) {
   const artworkResult = useAtomValue(artworkAtom(track))
