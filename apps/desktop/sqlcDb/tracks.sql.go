@@ -10,6 +10,30 @@ import (
 	"database/sql"
 )
 
+const getTrackFromId = `-- name: GetTrackFromId :one
+SELECT id, created_at, path, title, artist, album, genre, year, duration_in_ms, starred, queue_id, is_missing FROM tracks WHERE id LIKE ?1
+`
+
+func (q *Queries) GetTrackFromId(ctx context.Context, id string) (Track, error) {
+	row := q.db.QueryRowContext(ctx, getTrackFromId, id)
+	var i Track
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.Path,
+		&i.Title,
+		&i.Artist,
+		&i.Album,
+		&i.Genre,
+		&i.Year,
+		&i.DurationInMs,
+		&i.Starred,
+		&i.QueueID,
+		&i.IsMissing,
+	)
+	return i, err
+}
+
 const getTrackFromPath = `-- name: GetTrackFromPath :one
 SELECT id, created_at, path, title, artist, album, genre, year, duration_in_ms, starred, queue_id, is_missing FROM tracks WHERE path LIKE ?1
 `

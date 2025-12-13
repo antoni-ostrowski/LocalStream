@@ -45,27 +45,33 @@ function PlayNowBtn({ track }: { track: sqlcDb.Track }) {
         .onSuccess((currentTrackOption) =>
           Option.match(currentTrackOption, {
             onSome: (currentTrack) => {
-              const isThisTrackPlayingRightNow =
-                !currentTrack.Ctrl?.Paused && currentTrack.Track.id === track.id
+              {
+                /* const isThisTrackPlayingRightNow = */
+              }
+              {
+                /*   !currentTrack.Ctrl?.Paused && currentTrack.Track.id === track.id */
+              }
 
               return (
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    if (isThisTrackPlayingRightNow) {
+                <>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      console.log("pause rems")
                       pauseResume()
-                      console.log("shoould pause resume")
-                    } else {
+                    }}
+                  >
+                    <PauseIcon className="cursor-pointer" size={15} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
                       playNow(track)
-                    }
-                  }}
-                >
-                  {isThisTrackPlayingRightNow ? (
-                    <PauseIcon className="cursor-pointer" size={17} />
-                  ) : (
+                    }}
+                  >
                     <PlayIcon className="cursor-pointer" size={15} />
-                  )}
-                </Button>
+                  </Button>
+                </>
               )
             },
             onNone: () => (
@@ -75,7 +81,27 @@ function PlayNowBtn({ track }: { track: sqlcDb.Track }) {
             ),
           }),
         )
-        .orNull()}
+        .orElse(() => (
+          <>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                console.log("pause rems")
+                pauseResume()
+              }}
+            >
+              <PauseIcon className="cursor-pointer" size={15} />
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                playNow(track)
+              }}
+            >
+              <PlayIcon className="cursor-pointer" size={15} />
+            </Button>
+          </>
+        ))}
     </>
   )
 }

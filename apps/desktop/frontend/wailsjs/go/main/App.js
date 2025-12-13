@@ -14,12 +14,16 @@ export function DeleteFromQueue(arg1) {
   return window['go']['main']['App']['DeleteFromQueue'](arg1);
 }
 
-export function GetCurrent() {
-  return window['go']['main']['App']['GetCurrent']();
+export function GetCurrentTrack() {
+  return window['go']['main']['App']['GetCurrentTrack']();
 }
 
 export function GetIsAppReady() {
   return window['go']['main']['App']['GetIsAppReady']();
+}
+
+export function GetPlaybackState() {
+  return window['go']['main']['App']['GetPlaybackState']();
 }
 
 export function GetPreferences() {

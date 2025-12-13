@@ -1,4 +1,4 @@
-import { playback, sqlcDb } from "@/wailsjs/go/models"
+import { sqlcDb } from "@/wailsjs/go/models"
 import { Atom, Registry, Result } from "@effect-atom/atom-react"
 import { Data, Effect, Option } from "effect"
 import { atomRuntime } from "../atom-runtime"
@@ -8,17 +8,16 @@ import { Queries } from "../queries"
 const remoteCurrentPlayingAtom = atomRuntime.atom(
   Effect.fn(function* () {
     const q = yield* Queries
-    const currentPlaying = yield* q.getCurrentPlaying
-    const trackOption: Option.Option<playback.Playable> =
-      Option.some(currentPlaying)
+    const currentPlaying = yield* q.getCurrentPlayingTrack
+    const trackOption: Option.Option<sqlcDb.Track> = Option.some(currentPlaying)
     return yield* Effect.succeed(trackOption)
   }),
 )
 
 type Action = Data.TaggedEnum<{
-  UpdateCurrentPlaying: { readonly newCurrentPlaying: playback.Playable }
+  UpdateCurrentPlaying: { readonly newCurrentPlaying: sqlcDb.Track }
   UpdateCurrentPlayingState: {
-    readonly newCurrentPlayingState: playback.Playable
+    readonly newCurrentPlayingState: sqlcDb.Track
   }
 }>
 
@@ -39,7 +38,7 @@ export const currentPlayingAtom = Object.assign(
           return Option.match(currentState.value, {
             onNone: () => Option.none(),
             onSome: (currentPlaying) => {
-              if (currentPlaying.Track.id === newCurrentPlayingState.Track.id) {
+              if (currentPlaying.id === newCurrentPlayingState.id) {
                 return Option.some(newCurrentPlayingState)
               } else {
                 return Option.some(currentPlaying)
@@ -56,7 +55,7 @@ export const currentPlayingAtom = Object.assign(
 )
 
 export const updateCurrentPlayingAtom = atomRuntime.fn(
-  Effect.fn(function* (track: playback.Playable) {
+  Effect.fn(function* (track: sqlcDb.Track) {
     const registry = yield* Registry.AtomRegistry
     registry.set(
       currentPlayingAtom,
@@ -68,7 +67,7 @@ export const updateCurrentPlayingAtom = atomRuntime.fn(
 )
 
 export const updateCurrentPlayingStateAtom = atomRuntime.fn(
-  Effect.fn(function* (newState: playback.Playable) {
+  Effect.fn(function* (newState: sqlcDb.Track) {
     const registry = yield* Registry.AtomRegistry
     registry.set(
       currentPlayingAtom,
@@ -87,6 +86,12 @@ export const playNowAtom = atomRuntime.fn(
     yield* m.playbackControls.playNow(track)
     yield* Effect.logDebug("Play now successfully!")
 
+    registry.set(
+      currentPlayingAtom,
+      CurrentPlayingAtomAction.UpdateCurrentPlaying({
+        newCurrentPlaying: track,
+      }),
+    )
     registry.refresh(currentPlayingAtom.remote)
   }),
 )

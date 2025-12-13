@@ -7,9 +7,10 @@ import (
 )
 
 type Player interface {
-	Play(track sqlcDb.Track) (Playable, error)
-	PauseResume() Playable
-	ListQueue(ctx context.Context) ([]sqlcDb.Track, error)
+	PlayNow(ctx context.Context, trackId string, trackPath string) (Playable, error)
+	PauseResume()
+	ListQueue(ctx context.Context) []*Playable
 	AppendToQueue(ctx context.Context, track sqlcDb.Track) error
 	PrependToQueue(ctx context.Context, track sqlcDb.Track) error
+	DeleteFromQueue(ctx context.Context, track sqlcDb.Track) error
 }

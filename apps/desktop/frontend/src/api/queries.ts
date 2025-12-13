@@ -1,5 +1,5 @@
 import {
-  GetCurrent,
+  GetCurrentTrack,
   GetTrackArtwork,
   ListAllTracks,
   ListFavTracks,
@@ -68,9 +68,9 @@ export class Queries extends Effect.Service<Queries>()("Queries", {
         }),
     )
 
-    const getCurrentPlaying = Effect.flatMap(
+    const getCurrentPlayingTrack = Effect.flatMap(
       Effect.tryPromise({
-        try: async () => await GetCurrent(),
+        try: async () => await GetCurrentTrack(),
         catch: () =>
           new GenericError({ message: "Failed to get current playing track" }),
       }),
@@ -82,7 +82,7 @@ export class Queries extends Effect.Service<Queries>()("Queries", {
       listFavTracks,
       getTrackArtwork,
       listQueue,
-      getCurrentPlaying,
+      getCurrentPlayingTrack,
     }
   }),
 }) {}

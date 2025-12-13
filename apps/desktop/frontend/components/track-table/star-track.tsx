@@ -5,6 +5,7 @@ import {
   genericTrackListAtom,
   GenericTrackListAtomAction,
 } from "@/src/api/atoms/generic-track-list-atom"
+import { queueAtom } from "@/src/api/atoms/queue-atom"
 import { Mutations } from "@/src/api/mutations"
 import { sql, sqlcDb } from "@/wailsjs/go/models"
 import { Registry, Result, useAtom } from "@effect-atom/atom-react"
@@ -48,6 +49,7 @@ const starTrackAtom = atomRuntime.fn(
       }),
     )
     registry.refresh(currentPlayingAtom.remote)
+    registry.refresh(queueAtom.remote)
   }),
 )
 

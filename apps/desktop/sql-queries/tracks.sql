@@ -13,6 +13,9 @@ UPDATE tracks SET starred = NULL WHERE id = sqlc.arg(id);
 -- name: GetTrackFromPath :one
 SELECT * FROM tracks WHERE path LIKE sqlc.arg(track_path);
 
+-- name: GetTrackFromId :one
+SELECT * FROM tracks WHERE id LIKE sqlc.arg(id);
+
 -- name: InsertTrack :exec
 INSERT INTO tracks (
     id,

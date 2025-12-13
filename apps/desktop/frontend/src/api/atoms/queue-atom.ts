@@ -4,7 +4,6 @@ import { Array, Data, Effect } from "effect"
 import { atomRuntime } from "../atom-runtime"
 import { Mutations } from "../mutations"
 import { Queries } from "../queries"
-import { currentPlayingAtom } from "./current-playing-atom"
 
 const remoteQueueAtom = atomRuntime.atom(
   Effect.fn(function* () {
@@ -17,7 +16,7 @@ const remoteQueueAtom = atomRuntime.atom(
 type Action = Data.TaggedEnum<{
   AppendToQueue: { readonly newQueueTrack: sqlcDb.Track }
   PrependToQueue: { readonly newQueueTrack: sqlcDb.Track }
-  DeleteFromQueue: { readonly queueTrackIndex: number }
+  DeleteFromQueue: { readonly trackDoDelete: sqlcDb.Track }
 }>
 
 export const QueueAtomAction = Data.taggedEnum<Action>()
@@ -34,8 +33,8 @@ export const queueAtom = Object.assign(
           Array.append(currentState.value, newQueueTrack),
         PrependToQueue: ({ newQueueTrack }) =>
           Array.prepend(currentState.value, newQueueTrack),
-        DeleteFromQueue: ({ queueTrackIndex }) =>
-          currentState.value.filter((_, index) => index !== queueTrackIndex),
+        DeleteFromQueue: ({ trackDoDelete }) =>
+          currentState.value.filter((value) => trackDoDelete.id !== value.id),
       })
 
       ctx.setSelf(Result.success(update))
@@ -56,7 +55,6 @@ export const appendToQueueAtom = atomRuntime.fn(
       QueueAtomAction.AppendToQueue({ newQueueTrack: track }),
     )
 
-    registry.refresh(currentPlayingAtom)
     registry.refresh(queueAtom.remote)
   }),
 )
@@ -73,23 +71,21 @@ export const prependToQueueAtom = atomRuntime.fn(
       QueueAtomAction.PrependToQueue({ newQueueTrack: track }),
     )
 
-    registry.refresh(currentPlayingAtom.remote)
     registry.refresh(queueAtom.remote)
   }),
 )
 
 export const deleteFromQueueAtom = atomRuntime.fn(
-  Effect.fn(function* (trackIndex: number) {
+  Effect.fn(function* (track: sqlcDb.Track) {
     const registry = yield* Registry.AtomRegistry
     const m = yield* Mutations
-    yield* m.playbackControls.deleteFromQueue(trackIndex)
+    yield* m.playbackControls.deleteFromQueue(track)
 
     registry.set(
       queueAtom,
-      QueueAtomAction.DeleteFromQueue({ queueTrackIndex: trackIndex }),
+      QueueAtomAction.DeleteFromQueue({ trackDoDelete: track }),
     )
 
-    registry.refresh(currentPlayingAtom.remote)
     registry.refresh(queueAtom.remote)
   }),
 )

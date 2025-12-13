@@ -3,12 +3,12 @@ package playback
 import (
 	"context"
 	"fmt"
-	"localStream/sqlcDb"
 	"os"
 	"time"
 
 	"github.com/gopxl/beep"
 	"github.com/gopxl/beep/flac"
+	"github.com/gopxl/beep/generators"
 	"github.com/gopxl/beep/mp3"
 	"github.com/gopxl/beep/speaker"
 	"github.com/gopxl/beep/wav"
@@ -18,25 +18,50 @@ import (
 // enforce that LocalPlayer implements Player
 var _ Player = (*LocalPlayer)(nil)
 
-type LocalPlayer struct {
-	queue Queue
+type PlayerCommand struct {
+	Playable    *Playable
+	CommandType string
 }
+
+type LocalPlayer struct {
+	currentStreamer beep.Streamer
+	currentPlayable *Playable
+	queue           []*Playable
+	cmdChan         chan PlayerCommand
+	quitChan        chan struct{}
+}
+
+var globalCtrl *beep.Ctrl
 
 func (p *LocalPlayer) Init(ctx context.Context) {
 	runtime.LogInfo(ctx, "Initing local player")
+
+	// init chan for communication
+	p.cmdChan = make(chan PlayerCommand)
+	p.quitChan = make(chan struct{})
+
+	// init speaker
 	sr := beep.SampleRate(44100)
 	speaker.Init(sr, sr.N(time.Second/10))
-	speaker.Play(&p.queue)
-	runtime.LogInfo(ctx, "Queue and speaker intialized successfully")
+
+	// initially stream silence forever
+	globalCtrl = &beep.Ctrl{Streamer: generators.Silence(-1), Paused: false}
+	speaker.Play(globalCtrl)
+
+	// kick of the orchestrator routine
+	go p.PlayerLoop(ctx)
+
+	runtime.LogInfo(ctx, "Queue and speaker intialized successfully, should be streaming silence")
 }
 
-func (p *LocalPlayer) createPlayableFromTrack(track sqlcDb.Track) (*Playable, error) {
-	streamer, format, err := p.decodeFile(track.Path)
+func (p *LocalPlayer) createPlayableFromTrack(ctx context.Context, trackId string, trackPath string) (*Playable, error) {
+	streamer, format, err := p.decodeFile(trackPath)
 	if err != nil {
+		runtime.LogErrorf(ctx, "Failed to decode file - %v", err)
 		return &Playable{}, fmt.Errorf("Failed to decode file - %v\n", err)
 	}
 
-	playable := NewPlayable(streamer, format.SampleRate, track)
+	playable := NewPlayable(streamer, format.SampleRate, trackId)
 	return playable, nil
 }
 

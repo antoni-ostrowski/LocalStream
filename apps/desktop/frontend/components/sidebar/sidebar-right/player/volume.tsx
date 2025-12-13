@@ -1,10 +1,10 @@
-import { playback } from "@/wailsjs/go/models"
+import { sqlcDb } from "@/wailsjs/go/models"
 import { Volume2, VolumeOff } from "lucide-react"
 
 export default function VolumeControls({
   currentTrack,
 }: {
-  currentTrack: playback.Playable
+  currentTrack: sqlcDb.Track
 }) {
   function handleVolumeChange(event: React.ChangeEvent<HTMLInputElement>) {
     console.log(event.target.value)

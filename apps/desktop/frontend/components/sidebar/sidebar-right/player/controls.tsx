@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button"
 import { pauseResumeAtom } from "@/src/api/atoms/current-playing-atom"
-import { playback } from "@/wailsjs/go/models"
+import { sqlcDb } from "@/wailsjs/go/models"
 import { useAtom } from "@effect-atom/atom-react"
-import { Pause, Play, SkipBack, SkipForward } from "lucide-react"
+import { SkipBack, SkipForward } from "lucide-react"
 
 export default function Controls({
   currentTrack,
 }: {
-  currentTrack: playback.Playable
+  currentTrack: sqlcDb.Track
 }) {
   const [_, pauseResume] = useAtom(pauseResumeAtom)
 
@@ -23,7 +23,8 @@ export default function Controls({
           pauseResume()
         }}
       >
-        {currentTrack.Ctrl?.Paused ? <Play /> : <Pause />}
+        maybe pause
+        {/* {currentTrack.Ctrl?.Paused ? <Play /> : <Pause />} */}
       </Button>
       <Button variant={"outline"} className="w-min cursor-pointer">
         <SkipForward />

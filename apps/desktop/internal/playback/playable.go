@@ -1,20 +1,19 @@
 package playback
 
 import (
-	"localStream/sqlcDb"
-
 	"github.com/gopxl/beep"
 	"github.com/gopxl/beep/effects"
 )
 
 type Playable struct {
-	Streamer beep.Streamer
-	Ctrl     *beep.Ctrl
-	Volume   *effects.Volume
-	Track    sqlcDb.Track
+	Streamer      beep.Streamer
+	Ctrl          *beep.Ctrl
+	Volume        *effects.Volume
+	TrackFinished chan struct{}
+	TrackId       string
 }
 
-func NewPlayable(initialStreamer beep.Streamer, trackSampleRate beep.SampleRate, track sqlcDb.Track) *Playable {
+func NewPlayable(initialStreamer beep.Streamer, trackSampleRate beep.SampleRate, trackId string) *Playable {
 
 	ctrl := &beep.Ctrl{Streamer: initialStreamer, Paused: false}
 
@@ -25,13 +24,23 @@ func NewPlayable(initialStreamer beep.Streamer, trackSampleRate beep.SampleRate,
 		Silent:   false,
 	}
 
+	finished := make(chan struct{}, 1)
+
 	sr := beep.SampleRate(44100)
 	finalStreamer := beep.Resample(4, trackSampleRate, sr, volume)
 
+	callbackStreamer := beep.Seq(finalStreamer, beep.Callback(func() {
+		select {
+		case finished <- struct{}{}:
+		default:
+		}
+	}))
+
 	return &Playable{
-		Ctrl:     ctrl,
-		Volume:   volume,
-		Streamer: finalStreamer,
-		Track:    track,
+		Ctrl:          ctrl,
+		Volume:        volume,
+		Streamer:      callbackStreamer,
+		TrackId:       trackId,
+		TrackFinished: finished,
 	}
 }

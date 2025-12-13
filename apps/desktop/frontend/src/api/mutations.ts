@@ -52,9 +52,9 @@ export class Mutations extends Effect.Service<Mutations>()("Mutations", {
         })
       }),
 
-      deleteFromQueue: Effect.fn(function* (trackIndex: number) {
+      deleteFromQueue: Effect.fn(function* (track: sqlcDb.Track) {
         return yield* Effect.tryPromise({
-          try: async () => await DeleteFromQueue(trackIndex),
+          try: async () => await DeleteFromQueue(track),
           catch: () =>
             new GenericError({ message: "Failed to delete from queue" }),
         })
