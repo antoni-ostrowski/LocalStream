@@ -10,7 +10,7 @@ const remotePlaybackStateAtom = atomRuntime.atom(
     const currentPlaying = yield* q.getCurrentPlayingTrack
     const trackOption: Option.Option<sqlcDb.Track> = Option.some(currentPlaying)
     return yield* Effect.succeed(trackOption)
-  }),
+  })
 )
 
 type Action = Data.TaggedEnum<{
@@ -29,13 +29,13 @@ export const playbackStateAtom = Object.assign(
       const update = playbackStateAtomAction.$match(action, {
         UpdateCurrentPlaying: ({ newCurrentPlaying }) => {
           return Option.some(newCurrentPlaying)
-        },
+        }
       })
 
       ctx.setSelf(Result.success(update))
-    },
+    }
   ),
-  { remote: remotePlaybackStateAtom },
+  { remote: remotePlaybackStateAtom }
 )
 
 export const updateCurrentPlayingAtom = atomRuntime.fn(
@@ -44,10 +44,10 @@ export const updateCurrentPlayingAtom = atomRuntime.fn(
     registry.set(
       playbackStateAtom,
       playbackStateAtomAction.UpdateCurrentPlaying({
-        newCurrentPlaying: track,
-      }),
+        newCurrentPlaying: track
+      })
     )
-  }),
+  })
 )
 
 // export const updateCurrentPlayingStateAtom = atomRuntime.fn(

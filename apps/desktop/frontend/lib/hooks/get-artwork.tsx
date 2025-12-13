@@ -6,12 +6,12 @@ import { Result, useAtomValue } from "@effect-atom/atom-react"
 export function useTrackArtwork(track: sqlcDb.Track | null) {
   const artworkResult = useAtomValue(artworkAtom(track))
   return {
-    renderArtworkOrFallback: () => RenderArtworkOrFallback(artworkResult),
+    renderArtworkOrFallback: () => RenderArtworkOrFallback(artworkResult)
   }
 }
 
 export function RenderArtworkOrFallback(
-  atom: Result.Result<string, GenericError>,
+  atom: Result.Result<string, GenericError>
 ) {
   return (
     <>

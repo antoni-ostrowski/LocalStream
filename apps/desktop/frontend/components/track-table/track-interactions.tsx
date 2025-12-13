@@ -1,7 +1,7 @@
 import {
   currentPlayingAtom,
   pauseResumeAtom,
-  playNowAtom,
+  playNowAtom
 } from "@/src/api/atoms/current-playing-atom"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { Result, useAtom, useAtomValue } from "@effect-atom/atom-react"
@@ -13,7 +13,7 @@ import TrackContextMenu from "./track-context-menu"
 
 export default function TrackInteractions({
   track,
-  showPlayNow = true,
+  showPlayNow = true
 }: {
   track: sqlcDb.Track
   showPlayNow?: boolean
@@ -29,9 +29,8 @@ export default function TrackInteractions({
 
 function PlayNowBtn({ track }: { track: sqlcDb.Track }) {
   const currentPlaying = useAtomValue(currentPlayingAtom)
-  const [_, playNow] = useAtom(playNowAtom)
-  const [__, pauseResume] = useAtom(pauseResumeAtom)
-  console.log({ currentPlaying })
+  const [, playNow] = useAtom(playNowAtom)
+  const [, pauseResume] = useAtom(pauseResumeAtom)
   return (
     <>
       {Result.builder(currentPlaying)
@@ -78,8 +77,8 @@ function PlayNowBtn({ track }: { track: sqlcDb.Track }) {
               <>
                 <Button>jfklds</Button>
               </>
-            ),
-          }),
+            )
+          })
         )
         .orElse(() => (
           <>

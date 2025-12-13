@@ -2,7 +2,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarMenu,
-  SidebarMenuButton,
+  SidebarMenuButton
 } from "@/components/ui/sidebar"
 import { Link } from "@tanstack/react-router"
 import { Minimize, Settings } from "lucide-react"

@@ -5,7 +5,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from "@/components/ui/dialog"
 import { Trash } from "lucide-react"
 import { useState } from "react"
@@ -15,7 +15,7 @@ export function DeletePlaylist(
     // currentPlaylistState,
   }: {
     // currentPlaylistState: PlaylistType
-  },
+  }
 ) {
   // const navigate = useNavigate()
   const [isOpen, setIsOpen] = useState(false)

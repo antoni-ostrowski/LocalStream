@@ -15,7 +15,7 @@ type Failure<E> = [null, E]
 type Result<T, E = Error> = Success<T> | Failure<E>
 
 export async function tryCatch<T, E = Error>(
-  promise: Promise<T>,
+  promise: Promise<T>
 ): Promise<Result<T, E>> {
   try {
     const data = await promise
@@ -36,7 +36,7 @@ export function tryCatchSync<T, E = Error>(func: () => T): Result<T, E> {
 
 export const getCurrentEpoch = Effect.gen(function* () {
   const epochMillis = yield* DateTime.now.pipe(
-    Effect.flatMap((utcDateTime) => Effect.succeed(utcDateTime.epochMillis)),
+    Effect.flatMap((utcDateTime) => Effect.succeed(utcDateTime.epochMillis))
   )
   return Duration.millis(epochMillis)
 })

@@ -16,22 +16,22 @@ export const Route = createRootRouteWithContext<{
   head: () => ({
     meta: [
       {
-        charSet: "utf-8",
+        charSet: "utf-8"
       },
       {
         name: "viewport",
-        content: "width=device-width, initial-scale=1",
+        content: "width=device-width, initial-scale=1"
       },
       {
-        title: "localStream",
-      },
+        title: "localStream"
+      }
     ],
     links: [
       {
         rel: "stylesheet",
-        href: appCss,
-      },
-    ],
+        href: appCss
+      }
+    ]
   }),
   component: RootComponent,
   notFoundComponent: () => {
@@ -40,7 +40,7 @@ export const Route = createRootRouteWithContext<{
         <p>This is the notFoundComponent configured on root route</p>
       </div>
     )
-  },
+  }
 })
 
 function RootComponent() {

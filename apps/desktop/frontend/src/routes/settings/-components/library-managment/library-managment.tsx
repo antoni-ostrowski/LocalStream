@@ -3,7 +3,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card"
 import { RefreshCw } from "lucide-react"
 import ManualTracksSync from "./manual-sync"

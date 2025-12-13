@@ -4,7 +4,7 @@ import { sqlcDb } from "@/wailsjs/go/models"
 import { Dot } from "lucide-react"
 
 export default function Metadata({
-  currentTrack,
+  currentTrack
 }: {
   currentTrack: sqlcDb.Track
 }) {

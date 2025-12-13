@@ -12,19 +12,19 @@ const queryClient = new QueryClient({
     queries: {
       networkMode: "always",
       staleTime: 0,
-      refetchOnMount: true,
-    },
-  },
+      refetchOnMount: true
+    }
+  }
 })
 
 const router = createRouter({
   routeTree,
   context: {
-    queryClient,
+    queryClient
   },
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
-  scrollRestoration: true,
+  scrollRestoration: true
 })
 
 declare module "@tanstack/react-router" {
@@ -79,7 +79,7 @@ if (!rootElement.innerHTML) {
           The backend failed to initialize. Please check the application logs
           and restart the app.
         </p>
-      </div>,
+      </div>
     )
     // You might also want to prevent the toast.success from running if it failed.
   }

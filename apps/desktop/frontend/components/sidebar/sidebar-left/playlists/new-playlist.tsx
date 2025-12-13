@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from "@/components/ui/dialog"
 import { useAppForm } from "@/lib/app-form/app-form"
 import { Plus } from "lucide-react"
@@ -18,7 +18,7 @@ export const playlistFormSchema = z.object({
     .string()
     .nullable()
     .or(z.literal(""))
-    .transform((e) => (e === "" ? null : e)),
+    .transform((e) => (e === "" ? null : e))
 })
 
 export type PlaylistFormData = z.infer<typeof playlistFormSchema>
@@ -35,10 +35,10 @@ export function NewPlaylist() {
   const form = useAppForm({
     defaultValues: {
       name: "",
-      coverPath: "",
+      coverPath: ""
     } satisfies PlaylistFormData as PlaylistFormData,
     validators: {
-      onSubmit: playlistFormSchema,
+      onSubmit: playlistFormSchema
     },
     onSubmit: async ({ value }) => {
       // const [, err] = await tryCatch(
@@ -49,7 +49,7 @@ export function NewPlaylist() {
       //   toast.error("Failed to create playlist")
       //   return
       // }
-    },
+    }
   })
   return (
     <>

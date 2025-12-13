@@ -4,7 +4,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card"
 import { triggerTrackSyncAtom } from "@/src/api/atoms/settings-atom"
 import { useAtom } from "@effect-atom/atom-react"

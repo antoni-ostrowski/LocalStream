@@ -11,9 +11,7 @@ export const Route = createFileRoute("/artist/$artist")({
   // },
   component: RouteComponent,
   pendingComponent: () => <FullScreenLoading />,
-  errorComponent: ({ error }) => (
-    <FullScreenError errorDetail={error.message} />
-  ),
+  errorComponent: ({ error }) => <FullScreenError errorDetail={error.message} />
 })
 
 function RouteComponent() {

@@ -33,7 +33,7 @@ export default function Player() {
                     <Controls {...{ currentTrack }} />
                   </div>
                 </div>
-              ),
+              )
             })}
           </>
         ))

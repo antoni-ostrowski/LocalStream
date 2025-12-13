@@ -8,7 +8,7 @@ export const { useAppForm, withForm, withFieldGroup } = createFormHook({
   fieldContext,
   formContext,
   fieldComponents: {
-    InputField: FormTextField,
+    InputField: FormTextField
   },
-  formComponents: {},
+  formComponents: {}
 })

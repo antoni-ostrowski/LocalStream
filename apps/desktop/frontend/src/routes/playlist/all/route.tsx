@@ -6,7 +6,7 @@ export const Route = createFileRoute("/playlist/all")({
   // loader: async ({ context: { queryClient, trpc } }) => {
   //   await queryClient.prefetchQuery(trpc.playlist.listPlaylists.queryOptions())
   // },
-  component: RouteComponent,
+  component: RouteComponent
 })
 
 function RouteComponent() {

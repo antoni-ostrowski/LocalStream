@@ -12,7 +12,7 @@ export const Route = createFileRoute("/playlist/$playlistId")({
   //     })
   //   )
   // },
-  component: RouteComponent,
+  component: RouteComponent
 })
 
 function RouteComponent() {

@@ -1,5 +1,5 @@
-import { useEffect, useState, type InputHTMLAttributes } from 'react'
-import { Input } from './ui/input'
+import { useEffect, useState, type InputHTMLAttributes } from "react"
+import { Input } from "./ui/input"
 
 export default function DebouncedInput({
   value: initialValue,
@@ -10,7 +10,7 @@ export default function DebouncedInput({
   value: string | number
   onChange: (value: string | number) => void
   debounce?: number
-} & Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'>) {
+} & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">) {
   const [value, setValue] = useState(initialValue)
 
   useEffect(() => {

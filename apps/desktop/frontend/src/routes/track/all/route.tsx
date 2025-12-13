@@ -3,7 +3,7 @@ import PageTitleWrapper from "@/components/page-title-wrapper"
 import TrackTable from "@/components/track-table/track-table"
 import {
   genericTrackListAtom,
-  GenericTrackListAtomAction,
+  GenericTrackListAtomAction
 } from "@/src/api/atoms/generic-track-list-atom"
 import { atomRuntime } from "@/src/api/make-runtime"
 import { Queries } from "@/src/api/queries"
@@ -11,14 +11,14 @@ import {
   Registry,
   Result,
   useAtomSet,
-  useAtomValue,
+  useAtomValue
 } from "@effect-atom/atom-react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Effect } from "effect"
 import { useEffect } from "react"
 
 export const Route = createFileRoute("/track/all")({
-  component: RouteComponent,
+  component: RouteComponent
 })
 
 // a func to set specific list of tracks as the current one
@@ -34,10 +34,10 @@ const setGenericTracksToAllTracks = atomRuntime.fn(
     registry.set(
       genericTrackListAtom,
       GenericTrackListAtomAction.UpdateTrackList({
-        newTrackList: newTrackList,
-      }),
+        newTrackList: newTrackList
+      })
     )
-  }),
+  })
 )
 
 function RouteComponent() {

@@ -3,12 +3,12 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import {
   appendToQueueAtom,
   deleteFromQueueAtom,
-  prependToQueueAtom,
+  prependToQueueAtom
 } from "@/src/api/atoms/queue-atom"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { useAtom } from "@effect-atom/atom-react"

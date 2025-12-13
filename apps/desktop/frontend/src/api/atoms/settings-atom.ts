@@ -10,7 +10,7 @@ const remoteSettingsAtom = atomRuntime.atom(
     const q = yield* Queries
     const settings = yield* q.getSettings
     return yield* Effect.succeed(settings)
-  }),
+  })
 )
 
 type Action = Data.TaggedEnum<{
@@ -29,9 +29,9 @@ export const settingsAtom = Object.assign(
       // const update = SettingsAtomAction.$match(action, {})
 
       // ctx.setSelf(Result.success(update))
-    },
+    }
   ),
-  { remote: remoteSettingsAtom },
+  { remote: remoteSettingsAtom }
 )
 
 export const createSourceDirAtom = atomRuntime.fn(
@@ -41,7 +41,7 @@ export const createSourceDirAtom = atomRuntime.fn(
     yield* m.settings.createSourceDir
 
     registry.refresh(remoteSettingsAtom)
-  }),
+  })
 )
 
 export const updatePrefsAtom = atomRuntime.fn(
@@ -51,17 +51,17 @@ export const updatePrefsAtom = atomRuntime.fn(
     yield* m.settings.updatePreferences(newPrefs)
 
     registry.refresh(remoteSettingsAtom)
-  }),
+  })
 )
 
 export const triggerTrackSyncAtom = atomRuntime.fn(
   Effect.fn(function* () {
     const registry = yield* Registry.AtomRegistry
     const m = yield* Mutations
-    yield* m.settings.triggerTrackSync
+    yield* m.settings.reloadAppResources
 
     registry.refresh(remoteSettingsAtom)
-  }),
+  })
 )
 
 export const defaultPreferencesAtom = atomRuntime.atom(
@@ -69,5 +69,5 @@ export const defaultPreferencesAtom = atomRuntime.atom(
     const q = yield* Queries
     const defaultSettings = yield* q.getDefaultSettings
     return yield* Effect.succeed(defaultSettings)
-  }),
+  })
 )

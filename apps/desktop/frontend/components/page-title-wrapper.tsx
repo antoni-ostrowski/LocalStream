@@ -1,10 +1,10 @@
-import type { ReactNode } from 'react'
-export const pageTitleIconSize = 'h-8 w-8'
+import type { ReactNode } from "react"
+export const pageTitleIconSize = "h-8 w-8"
 export default function PageTitleWrapper({
-  title = '',
+  title = "",
   icon,
-  description = '',
-  children,
+  description = "",
+  children
 }: {
   title?: string
   icon?: ReactNode

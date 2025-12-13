@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from "@/components/ui/dialog"
 import { Edit } from "lucide-react"
 import { useState } from "react"
@@ -14,7 +14,7 @@ export function EditPlaylist(
     // currentPlaylistState,
   }: {
     // currentPlaylistState: PlaylistType
-  },
+  }
 ) {
   const [isOpen, setIsOpen] = useState(false)
   // const { mutateAsync: updatePlaylist, isPending } = useMutation({

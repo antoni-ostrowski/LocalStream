@@ -13,7 +13,7 @@ const remoteGenericTrackListAtom = atomRuntime.atom(
     const arr: sqlcDb.Track[] = []
     // const arrr = yield* Effect.promise(async () => await ListAllTracks())
     return yield* Effect.succeed(arr)
-  }),
+  })
 )
 
 // here we define all possible actions (mutations) on writable atom
@@ -43,7 +43,7 @@ export const genericTrackListAtom = Object.assign(
           return currentState.value.map((track) => {
             if (track.id === newTrackData.id) {
               return {
-                ...newTrackData,
+                ...newTrackData
               } as sqlcDb.Track
             }
             return track
@@ -51,15 +51,15 @@ export const genericTrackListAtom = Object.assign(
         },
         UpdateTrackList: ({ newTrackList }) => {
           return newTrackList
-        },
+        }
       })
 
       // here we updating actual state of the writable atom
       ctx.setSelf(Result.success(update))
-    },
+    }
   ),
   //  expose remote atom if its needed somewhere in the future
-  { remote: remoteGenericTrackListAtom },
+  { remote: remoteGenericTrackListAtom }
 )
 
 // public funcs to write to writable atom
@@ -68,9 +68,9 @@ export const updateGenericTrackListAtom = atomRuntime.fn(
     const registry = yield* Registry.AtomRegistry
     registry.set(
       genericTrackListAtom,
-      GenericTrackListAtomAction.UpdateTrackList({ newTrackList: tracks }),
+      GenericTrackListAtomAction.UpdateTrackList({ newTrackList: tracks })
     )
-  }),
+  })
 )
 
 export const updateTrackInGenericTrackListAtom = atomRuntime.fn(
@@ -78,7 +78,7 @@ export const updateTrackInGenericTrackListAtom = atomRuntime.fn(
     const registry = yield* Registry.AtomRegistry
     registry.set(
       genericTrackListAtom,
-      GenericTrackListAtomAction.UpdateTrackData({ newTrackData: track }),
+      GenericTrackListAtomAction.UpdateTrackData({ newTrackData: track })
     )
-  }),
+  })
 )

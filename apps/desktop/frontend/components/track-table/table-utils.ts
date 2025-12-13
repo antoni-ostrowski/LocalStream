@@ -1,12 +1,12 @@
 import {
   compareItems,
   rankItem,
-  type RankingInfo,
-} from '@tanstack/match-sorter-utils'
-import type { FilterFn } from '@tanstack/react-table'
-import { sortingFns, type SortingFn } from '@tanstack/react-table'
+  type RankingInfo
+} from "@tanstack/match-sorter-utils"
+import type { FilterFn } from "@tanstack/react-table"
+import { sortingFns, type SortingFn } from "@tanstack/react-table"
 
-declare module '@tanstack/react-table' {
+declare module "@tanstack/react-table" {
   //add fuzzy filter to the filterFns
   interface FilterFns {
     fuzzy: FilterFn<unknown>
@@ -23,7 +23,7 @@ export const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 
   // Store the itemRank info
   addMeta({
-    itemRank,
+    itemRank
   })
 
   // Return if the item should be filtered in/out

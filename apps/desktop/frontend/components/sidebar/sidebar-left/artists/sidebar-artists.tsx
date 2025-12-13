@@ -1,13 +1,13 @@
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
-import { SidebarMenuButton, SidebarMenuSub } from '@/components/ui/sidebar'
-import { ChevronDown, Users } from 'lucide-react'
-import { sidebarIconSize, SidebarItemText } from '../sidebar-left'
-import AllArtists from './all-artists'
-import FavArtists from './fav-artists'
+  CollapsibleTrigger
+} from "@/components/ui/collapsible"
+import { SidebarMenuButton, SidebarMenuSub } from "@/components/ui/sidebar"
+import { ChevronDown, Users } from "lucide-react"
+import { sidebarIconSize, SidebarItemText } from "../sidebar-left"
+import AllArtists from "./all-artists"
+import FavArtists from "./fav-artists"
 
 export default function SidebarArtists() {
   return (

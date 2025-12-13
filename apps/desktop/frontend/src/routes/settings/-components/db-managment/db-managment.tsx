@@ -3,7 +3,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card"
 import { DatabaseIcon } from "lucide-react"
 import UpdateDbPath from "./update-db-path"

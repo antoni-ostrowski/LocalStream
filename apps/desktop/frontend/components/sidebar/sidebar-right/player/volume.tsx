@@ -2,7 +2,7 @@ import { sqlcDb } from "@/wailsjs/go/models"
 import { Volume2, VolumeOff } from "lucide-react"
 
 export default function VolumeControls({
-  currentTrack,
+  currentTrack
 }: {
   currentTrack: sqlcDb.Track
 }) {

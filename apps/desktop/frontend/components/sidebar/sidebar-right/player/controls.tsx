@@ -5,7 +5,7 @@ import { useAtom } from "@effect-atom/atom-react"
 import { SkipBack, SkipForward } from "lucide-react"
 
 export default function Controls({
-  currentTrack,
+  currentTrack
 }: {
   currentTrack: sqlcDb.Track
 }) {

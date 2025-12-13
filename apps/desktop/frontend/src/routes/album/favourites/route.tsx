@@ -12,9 +12,7 @@ export const Route = createFileRoute("/album/favourites")({
   // },
   component: RouteComponent,
   pendingComponent: () => <FullScreenLoading />,
-  errorComponent: ({ error }) => (
-    <FullScreenError errorDetail={error.message} />
-  ),
+  errorComponent: ({ error }) => <FullScreenError errorDetail={error.message} />
 })
 
 function RouteComponent() {

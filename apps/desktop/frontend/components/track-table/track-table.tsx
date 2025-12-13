@@ -7,7 +7,7 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
-  type ColumnFiltersState,
+  type ColumnFiltersState
 } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { useEffect, useRef, useState } from "react"
@@ -18,7 +18,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "../ui/table"
 import { fuzzyFilter, fuzzySort } from "./table-utils"
 import TrackInteractions from "./track-interactions"
@@ -31,7 +31,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
       id: "artwork",
       header: `(${tracks.length.toString()})`,
       maxSize: 0.01,
-      cell: (props) => <RenderTableArtwork track={props.row.original} />,
+      cell: (props) => <RenderTableArtwork track={props.row.original} />
     }),
 
     columnHelper.accessor("title", {
@@ -43,19 +43,19 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
         </div>
       ),
       filterFn: "fuzzy",
-      sortingFn: fuzzySort,
+      sortingFn: fuzzySort
     }),
 
     columnHelper.accessor("artist", {
       header: "Artist",
       size: 20,
-      cell: (info) => <p className="truncate">{info.getValue()}</p>,
+      cell: (info) => <p className="truncate">{info.getValue()}</p>
     }),
 
     columnHelper.accessor("album", {
       header: "Album",
       size: 20,
-      cell: (info) => <p className="truncate">{info.getValue()}</p>,
+      cell: (info) => <p className="truncate">{info.getValue()}</p>
     }),
 
     columnHelper.accessor("is_missing", {
@@ -65,7 +65,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
         <p className="text-muted-foreground truncate">
           {info.getValue().Bool && "N/A"}
         </p>
-      ),
+      )
     }),
 
     columnHelper.display({
@@ -75,8 +75,8 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
         <div className="flex flex-row items-center justify-end">
           <TrackInteractions {...{ track: props.row.original }} />
         </div>
-      ),
-    }),
+      )
+    })
   ]
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -89,15 +89,15 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     filterFns: {
-      fuzzy: fuzzyFilter, //define as a filter function that can be used in column definitions
+      fuzzy: fuzzyFilter //define as a filter function that can be used in column definitions
     },
     state: {
       columnFilters,
-      globalFilter,
+      globalFilter
     },
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "fuzzy", //apply fuzzy filter to the global filter (most common use case for fuzzy filter)
+    globalFilterFn: "fuzzy" //apply fuzzy filter to the global filter (most common use case for fuzzy filter)
   })
 
   const parentRef = useRef<HTMLDivElement>(null)
@@ -106,7 +106,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
     count: table.getRowModel().rows.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 40,
-    overscan: 20,
+    overscan: 20
   })
 
   useEffect(() => {
@@ -142,7 +142,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext(),
+                          header.getContext()
                         )}
                   </TableHead>
                 )
@@ -162,7 +162,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
                       height: `${virtualRow.size}px`,
                       transform: `translateY(${
                         virtualRow.start - index * virtualRow.size
-                      }px)`,
+                      }px)`
                     }}
                     key={row.original.id}
                     data-state={row.getIsSelected() && "selected"}
@@ -171,7 +171,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext(),
+                          cell.getContext()
                         )}
                       </TableCell>
                     ))}

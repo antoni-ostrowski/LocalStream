@@ -10,7 +10,7 @@ const remoteQueueAtom = atomRuntime.atom(
     const q = yield* Queries
     const queue = yield* q.listQueue
     return yield* Effect.succeed(queue)
-  }),
+  })
 )
 
 type Action = Data.TaggedEnum<{
@@ -34,13 +34,13 @@ export const queueAtom = Object.assign(
         PrependToQueue: ({ newQueueTrack }) =>
           Array.prepend(currentState.value, newQueueTrack),
         DeleteFromQueue: ({ trackDoDelete }) =>
-          currentState.value.filter((value) => trackDoDelete.id !== value.id),
+          currentState.value.filter((value) => trackDoDelete.id !== value.id)
       })
 
       ctx.setSelf(Result.success(update))
-    },
+    }
   ),
-  { remote: remoteQueueAtom },
+  { remote: remoteQueueAtom }
 )
 
 export const appendToQueueAtom = atomRuntime.fn(
@@ -52,11 +52,11 @@ export const appendToQueueAtom = atomRuntime.fn(
 
     registry.set(
       queueAtom,
-      QueueAtomAction.AppendToQueue({ newQueueTrack: track }),
+      QueueAtomAction.AppendToQueue({ newQueueTrack: track })
     )
 
     registry.refresh(queueAtom.remote)
-  }),
+  })
 )
 
 export const prependToQueueAtom = atomRuntime.fn(
@@ -68,11 +68,11 @@ export const prependToQueueAtom = atomRuntime.fn(
 
     registry.set(
       queueAtom,
-      QueueAtomAction.PrependToQueue({ newQueueTrack: track }),
+      QueueAtomAction.PrependToQueue({ newQueueTrack: track })
     )
 
     registry.refresh(queueAtom.remote)
-  }),
+  })
 )
 
 export const deleteFromQueueAtom = atomRuntime.fn(
@@ -83,9 +83,9 @@ export const deleteFromQueueAtom = atomRuntime.fn(
 
     registry.set(
       queueAtom,
-      QueueAtomAction.DeleteFromQueue({ trackDoDelete: track }),
+      QueueAtomAction.DeleteFromQueue({ trackDoDelete: track })
     )
 
     registry.refresh(queueAtom.remote)
-  }),
+  })
 )

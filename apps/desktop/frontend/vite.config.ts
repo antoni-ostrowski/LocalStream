@@ -7,13 +7,13 @@ import viteTsConfigPaths from "vite-tsconfig-paths"
 export default defineConfig({
   plugins: [
     viteTsConfigPaths({
-      projects: ["./tsconfig.json"],
+      projects: ["./tsconfig.json"]
     }),
     tanstackRouter({
       target: "react",
-      autoCodeSplitting: true,
+      autoCodeSplitting: true
     }),
     react(),
-    tailwindcss(),
-  ],
+    tailwindcss()
+  ]
 })

@@ -6,13 +6,13 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
 import {
   createSourceDirAtom,
   settingsAtom,
-  updatePrefsAtom,
+  updatePrefsAtom
 } from "@/src/api/atoms/settings-atom"
 import { config } from "@/wailsjs/go/models"
 import { Result, useAtom, useAtomValue } from "@effect-atom/atom-react"
@@ -100,7 +100,7 @@ export default function MusicSources() {
 
 function ActiveSources({
   sourceDirs,
-  prefs,
+  prefs
 }: {
   sourceDirs: string[]
   prefs: config.Preferences
@@ -126,7 +126,7 @@ function ActiveSources({
 
 function Source({
   source,
-  prefs,
+  prefs
 }: {
   source: string
   prefs: config.Preferences
@@ -136,7 +136,7 @@ function Source({
     if (!prefs) return
     const newPrefs = {
       databasePath: prefs.databasePath,
-      sourceDirs: prefs.sourceDirs.filter((a) => a !== source),
+      sourceDirs: prefs.sourceDirs.filter((a) => a !== source)
     } as config.Preferences
 
     updatePrefs(newPrefs)

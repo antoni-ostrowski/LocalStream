@@ -5,7 +5,7 @@ import { useAppForm } from "@/lib/app-form/app-form"
 import {
   defaultPreferencesAtom,
   settingsAtom,
-  updatePrefsAtom,
+  updatePrefsAtom
 } from "@/src/api/atoms/settings-atom"
 import { config } from "@/wailsjs/go/models"
 import { Result, useAtom, useAtomValue } from "@effect-atom/atom-react"
@@ -14,7 +14,7 @@ import { toast } from "sonner"
 import z from "zod"
 
 const formSchema = z.object({
-  newDatabasePath: z.string().min(1, "Empty file path!"),
+  newDatabasePath: z.string().min(1, "Empty file path!")
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -47,7 +47,7 @@ export default function UpdateDbPath() {
 
 function DoUpdating({
   preferences,
-  defaultPreferences,
+  defaultPreferences
 }: {
   preferences: config.Preferences
   defaultPreferences: config.Preferences
@@ -55,21 +55,21 @@ function DoUpdating({
   const [, updatePrefs] = useAtom(updatePrefsAtom)
   const form = useAppForm({
     defaultValues: {
-      newDatabasePath: preferences.databasePath,
+      newDatabasePath: preferences.databasePath
     } satisfies FormData as FormData,
     validators: {
-      onSubmit: formSchema,
+      onSubmit: formSchema
     },
     onSubmit: async ({ value }) => {
       const newPrefs = {
         databasePath: value.newDatabasePath,
-        sourceDirs: preferences.sourceDirs,
+        sourceDirs: preferences.sourceDirs
       } as config.Preferences
       updatePrefs(newPrefs)
       toast.success("Succesfully changed the database path.", {
-        description: "Please reopen the app to load new database.",
+        description: "Please reopen the app to load new database."
       })
-    },
+    }
   })
 
   return (

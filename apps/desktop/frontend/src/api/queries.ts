@@ -5,94 +5,63 @@ import {
   GetTrackArtwork,
   ListAllTracks,
   ListFavTracks,
-  ListQueue,
+  ListQueue
 } from "@/wailsjs/go/main/App"
 import { sqlcDb } from "@/wailsjs/go/models"
-import { Array, Effect } from "effect"
-import { GenericError, NotFound } from "./errors"
+import { Array, Effect, pipe } from "effect"
+import { wailsCall } from "./effect-utils"
+import {
+  GenericError,
+  GetCurrentTrackError,
+  GetTrackArtworkError,
+  ListQueueError,
+  ListTracksError,
+  NoTracksFound
+} from "./errors"
 
 export class Queries extends Effect.Service<Queries>()("Queries", {
   effect: Effect.gen(function* () {
-    const listAllTracks = Effect.tryPromise({
-      try: async () => await ListAllTracks(),
-      catch: () => new GenericError({ message: "Failed to list all tracks" }),
-    }).pipe(
-      Effect.flatMap((tracks) =>
-        Effect.if(Array.isEmptyArray(tracks), {
-          onTrue: () => new NotFound({ message: "Not tracks found" }),
-          onFalse: () => Effect.succeed(tracks),
-        }),
-      ),
-    )
-
-    const listFavTracks = Effect.tryPromise({
-      try: async () => await ListFavTracks(),
-      catch: () => new GenericError({ message: "Failed to list fav tracks" }),
-    }).pipe(
-      Effect.flatMap((tracks) =>
-        Effect.if(Array.isEmptyArray(tracks), {
-          onTrue: () =>
-            Effect.fail(new NotFound({ message: "No fav tracks found" })),
-          onFalse: () =>
-            Effect.succeed(tracks).pipe(
-              Effect.tap((value) =>
-                Effect.logInfo(`Found ${value.length} fav tracks`),
-              ),
-            ),
-        }),
-      ),
-    )
-
-    const getTrackArtwork = Effect.fn(function* (track: sqlcDb.Track) {
-      return yield* Effect.tryPromise({
-        try: async () => await GetTrackArtwork(track),
-        catch: () => new GenericError({ message: "Failed to get artwork" }),
-      }).pipe(Effect.flatMap((artwork) => Effect.succeed(artwork)))
-    })
-
-    const listQueue = Effect.tryPromise({
-      try: async () => await ListQueue(),
-      catch: () => new GenericError({ message: "Failed to list queue" }),
-    }).pipe(
-      Effect.flatMap((queueTracks) =>
-        Effect.if(Array.isEmptyArray(queueTracks), {
-          onTrue: () =>
-            Effect.fail(new NotFound({ message: "No queue list found" })),
-          onFalse: () =>
-            Effect.succeed(queueTracks).pipe(
-              Effect.tap((value) =>
-                Effect.logInfo(`Found ${value.length} fav tracks`),
-              ),
-            ),
-        }),
-      ),
-    )
-
-    const getCurrentPlayingTrack = Effect.tryPromise({
-      try: async () => await GetCurrentTrack(),
-      catch: () =>
-        new GenericError({ message: "Failed to get current playing track" }),
-    }).pipe(Effect.flatMap((currentTrack) => Effect.succeed(currentTrack)))
-
-    const getSettings = Effect.tryPromise({
-      try: async () => await GetPreferences(),
-      catch: () => new GenericError({ message: "Failed to get preferences" }),
-    }).pipe(Effect.flatMap((prefs) => Effect.succeed(prefs)))
-
-    const getDefaultSettings = Effect.tryPromise({
-      try: async () => await GetDefaultPreferences(),
-      catch: () =>
-        new GenericError({ message: "Failed to get default preferences" }),
-    }).pipe(Effect.flatMap((prefs) => Effect.succeed(prefs)))
-
     return {
-      listAllTracks,
-      listFavTracks,
-      getTrackArtwork,
-      listQueue,
-      getCurrentPlayingTrack,
-      getSettings,
-      getDefaultSettings,
+      listAllTracks: getListOfTracks(ListAllTracks),
+      listFavTracks: getListOfTracks(ListFavTracks),
+      getTrackArtwork: Effect.fn((track: sqlcDb.Track) =>
+        wailsCall(() => GetTrackArtwork(track), GetTrackArtworkError)
+      ),
+      listQueue: getListOfTracks(ListQueue).pipe(
+        Effect.catchTag("ListTracksError", () =>
+          Effect.fail(new ListQueueError({}))
+        )
+      ),
+      getCurrentPlayingTrack: wailsCall(
+        () => GetCurrentTrack(),
+        GetCurrentTrackError
+      ),
+      getSettings: wailsCall(() => GetPreferences(), GenericError),
+      getDefaultSettings: wailsCall(() => GetDefaultPreferences(), GenericError)
     }
-  }),
+  })
 }) {}
+
+const getListOfTracks = Effect.fn(function* (
+  trackGetter: () => Promise<Array<sqlcDb.Track>>
+) {
+  return yield* pipe(
+    Effect.tryPromise({
+      try: async () => await trackGetter(),
+      catch: (cause) =>
+        new ListTracksError({
+          cause
+        })
+    }),
+    Effect.andThen((tracks) =>
+      Effect.if(Array.isEmptyArray(tracks), {
+        onTrue: () => new NoTracksFound({}),
+        onFalse: () => Effect.succeed(tracks)
+      })
+    ),
+    Effect.tapBoth({
+      onSuccess: (tracks) => Effect.logInfo(tracks),
+      onFailure: (error) => Effect.logError(error)
+    })
+  )
+})

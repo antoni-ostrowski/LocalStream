@@ -7,9 +7,7 @@ import { createFileRoute } from "@tanstack/react-router"
 export const Route = createFileRoute("/artist/all")({
   component: RouteComponent,
   pendingComponent: () => <FullScreenLoading />,
-  errorComponent: ({ error }) => (
-    <FullScreenError errorDetail={error.message} />
-  ),
+  errorComponent: ({ error }) => <FullScreenError errorDetail={error.message} />
 })
 
 function RouteComponent() {

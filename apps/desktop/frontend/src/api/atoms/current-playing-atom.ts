@@ -11,7 +11,7 @@ const remoteCurrentPlayingAtom = atomRuntime.atom(
     const currentPlaying = yield* q.getCurrentPlayingTrack
     const trackOption: Option.Option<sqlcDb.Track> = Option.some(currentPlaying)
     return yield* Effect.succeed(trackOption)
-  }),
+  })
 )
 
 type Action = Data.TaggedEnum<{
@@ -43,15 +43,15 @@ export const currentPlayingAtom = Object.assign(
               } else {
                 return Option.some(currentPlaying)
               }
-            },
+            }
           })
-        },
+        }
       })
 
       ctx.setSelf(Result.success(update))
-    },
+    }
   ),
-  { remote: remoteCurrentPlayingAtom },
+  { remote: remoteCurrentPlayingAtom }
 )
 
 export const updateCurrentPlayingAtom = atomRuntime.fn(
@@ -60,10 +60,10 @@ export const updateCurrentPlayingAtom = atomRuntime.fn(
     registry.set(
       currentPlayingAtom,
       CurrentPlayingAtomAction.UpdateCurrentPlaying({
-        newCurrentPlaying: track,
-      }),
+        newCurrentPlaying: track
+      })
     )
-  }),
+  })
 )
 
 export const updateCurrentPlayingStateAtom = atomRuntime.fn(
@@ -72,10 +72,10 @@ export const updateCurrentPlayingStateAtom = atomRuntime.fn(
     registry.set(
       currentPlayingAtom,
       CurrentPlayingAtomAction.UpdateCurrentPlayingState({
-        newCurrentPlayingState: newState,
-      }),
+        newCurrentPlayingState: newState
+      })
     )
-  }),
+  })
 )
 
 export const playNowAtom = atomRuntime.fn(
@@ -89,11 +89,11 @@ export const playNowAtom = atomRuntime.fn(
     registry.set(
       currentPlayingAtom,
       CurrentPlayingAtomAction.UpdateCurrentPlaying({
-        newCurrentPlaying: track,
-      }),
+        newCurrentPlaying: track
+      })
     )
     registry.refresh(currentPlayingAtom.remote)
-  }),
+  })
 )
 
 export const pauseResumeAtom = atomRuntime.fn(
@@ -105,5 +105,5 @@ export const pauseResumeAtom = atomRuntime.fn(
     yield* Effect.logDebug("Paused/Resumed successfully!")
 
     registery.refresh(currentPlayingAtom.remote)
-  }),
+  })
 )

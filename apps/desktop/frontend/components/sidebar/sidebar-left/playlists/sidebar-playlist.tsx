@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger,
+  CollapsibleTrigger
 } from "@/components/ui/collapsible"
 import { SidebarMenuButton, SidebarMenuSub } from "@/components/ui/sidebar"
 import { ChevronDown, List, ListVideo } from "lucide-react"

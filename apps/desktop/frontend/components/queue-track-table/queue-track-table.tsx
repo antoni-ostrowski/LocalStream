@@ -8,7 +8,7 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
-  useReactTable,
+  useReactTable
 } from "@tanstack/react-table"
 import { Dot, Trash } from "lucide-react"
 import { useState } from "react"
@@ -22,7 +22,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "../ui/table"
 
 const columnHelper = createColumnHelper<sqlcDb.Track>()
@@ -34,8 +34,8 @@ export default function QueueTrackTable() {
   return (
     <>
       {Result.builder(queueListAtom)
-        .onErrorTag("NotFound", () => <p>no queue items</p>)
-        .onError((error) => <p>error: {error.message}</p>)
+        .onErrorTag("NoTracksFound", () => <p>no queue items</p>)
+        .onErrorTag("ListQueueError", () => <p>something went wrong</p>)
         .onSuccess((queue) => <QueueTable {...{ queueTracks: queue }} />)
         .orNull()}
     </>
@@ -48,7 +48,7 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
       id: "artwork",
       header: `(${queueTracks.length.toString()})`,
       maxSize: 0.01,
-      cell: (props) => <RenderTableArtwork track={props.row.original} />,
+      cell: (props) => <RenderTableArtwork track={props.row.original} />
     }),
 
     columnHelper.accessor("title", {
@@ -56,8 +56,8 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
       size: 30,
       cell: ({
         row: {
-          original: { title, artist, album },
-        },
+          original: { title, artist, album }
+        }
       }) => (
         <div className="flex flex-col">
           <div className="flex w-full flex-col items-start justify-start">
@@ -71,7 +71,7 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
         </div>
       ),
       filterFn: "fuzzy",
-      sortingFn: fuzzySort,
+      sortingFn: fuzzySort
     }),
 
     columnHelper.display({
@@ -87,8 +87,8 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
           />
           <Deletor track={props.row.original} />
         </div>
-      ),
-    }),
+      )
+    })
   ]
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -101,15 +101,15 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     filterFns: {
-      fuzzy: fuzzyFilter,
+      fuzzy: fuzzyFilter
     },
     state: {
       columnFilters,
-      globalFilter,
+      globalFilter
     },
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "fuzzy",
+    globalFilterFn: "fuzzy"
   })
 
   return (
@@ -124,7 +124,7 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
                     ? null
                     : flexRender(
                         header.column.columnDef.header,
-                        header.getContext(),
+                        header.getContext()
                       )}
                 </TableHead>
               )
@@ -145,7 +145,7 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}

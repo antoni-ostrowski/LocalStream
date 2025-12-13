@@ -5,7 +5,7 @@ export default function FullScreenError({
   errorMessage = "Something went wrong.",
   errorDetail,
   actionButton,
-  type = "error",
+  type = "error"
 }: {
   errorMessage?: string
   errorDetail?: string

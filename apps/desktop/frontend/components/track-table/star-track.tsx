@@ -13,7 +13,7 @@ export default function StarTrack({ track }: { track: sqlcDb.Track }) {
       onClick={() => {
         starTrack(track)
         Result.builder(state).onError((err) =>
-          toast.error(`Error: ${err.message}`),
+          toast.error(`Error: ${err.message}`)
         )
       }}
     >

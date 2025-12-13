@@ -3,7 +3,7 @@ import PageTitleWrapper from "@/components/page-title-wrapper"
 import TrackTable from "@/components/track-table/track-table"
 import {
   genericTrackListAtom,
-  GenericTrackListAtomAction,
+  GenericTrackListAtomAction
 } from "@/src/api/atoms/generic-track-list-atom"
 import { atomRuntime } from "@/src/api/make-runtime"
 import { Queries } from "@/src/api/queries"
@@ -11,14 +11,14 @@ import {
   Registry,
   Result,
   useAtomSet,
-  useAtomValue,
+  useAtomValue
 } from "@effect-atom/atom-react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Effect } from "effect"
 import { useEffect } from "react"
 
 export const Route = createFileRoute("/track/favourites")({
-  component: RouteComponent,
+  component: RouteComponent
 })
 
 const setGenericTracksToFavTracks = atomRuntime.fn(
@@ -30,10 +30,10 @@ const setGenericTracksToFavTracks = atomRuntime.fn(
     registry.set(
       genericTrackListAtom,
       GenericTrackListAtomAction.UpdateTrackList({
-        newTrackList: favTracks,
-      }),
+        newTrackList: favTracks
+      })
     )
-  }),
+  })
 )
 
 function RouteComponent() {
