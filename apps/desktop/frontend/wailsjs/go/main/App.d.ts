@@ -4,9 +4,11 @@ import {sqlcDb} from '../models';
 import {playback} from '../models';
 import {config} from '../models';
 
-export function AddToQueue(arg1:sqlcDb.Track):Promise<void>;
+export function AppendToQueue(arg1:sqlcDb.Track):Promise<void>;
 
 export function CreateSourceDir():Promise<void>;
+
+export function DeleteFromQueue(arg1:number):Promise<void>;
 
 export function GetCurrent():Promise<playback.Playable>;
 
@@ -25,6 +27,8 @@ export function ListQueue():Promise<Array<sqlcDb.Track>>;
 export function PauseResume():Promise<playback.Playable>;
 
 export function PlayTrack(arg1:sqlcDb.Track):Promise<playback.Playable>;
+
+export function PrependToQueue(arg1:sqlcDb.Track):Promise<void>;
 
 export function ReloadAppResources():Promise<void>;
 

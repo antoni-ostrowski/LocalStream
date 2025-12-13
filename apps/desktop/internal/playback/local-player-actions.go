@@ -62,8 +62,8 @@ func (p *LocalPlayer) PauseResume() Playable {
 	return Playable{}
 }
 
-func (p *LocalPlayer) AddToQueue(ctx context.Context, track sqlcDb.Track) error {
-	runtime.LogInfo(ctx, "Trying to add to queue")
+func (p *LocalPlayer) AppendToQueue(ctx context.Context, track sqlcDb.Track) error {
+	runtime.LogInfo(ctx, "Trying to append to queue")
 	playable, err := p.createPlayableFromTrack(track)
 	runtime.LogInfo(ctx, "created playable")
 	if err != nil {
@@ -73,8 +73,39 @@ func (p *LocalPlayer) AddToQueue(ctx context.Context, track sqlcDb.Track) error 
 	defer speaker.Unlock()
 	runtime.LogInfo(ctx, "attemtping to append playable")
 	p.queue.streamers = append(p.queue.streamers, playable)
+
 	runtime.LogInfo(ctx, "appended to queue correclty")
 	runtime.LogInfof(ctx, "queue after addition - %v", len(p.queue.streamers))
+	return nil
+}
+
+func (p *LocalPlayer) PrependToQueue(ctx context.Context, track sqlcDb.Track) error {
+	runtime.LogInfo(ctx, "Trying to prepend to queue")
+	playable, err := p.createPlayableFromTrack(track)
+	runtime.LogInfo(ctx, "created playable")
+	if err != nil {
+		return err
+	}
+	speaker.Lock()
+	defer speaker.Unlock()
+	runtime.LogInfo(ctx, "attemtping to prepend playable")
+
+	newBiggerQueue := append(p.queue.streamers, &Playable{})
+
+	copy(newBiggerQueue[2:], newBiggerQueue[1:])
+
+	newBiggerQueue[1] = playable
+	p.queue.streamers = newBiggerQueue
+
+	runtime.LogInfo(ctx, "prepended to queue correclty")
+	runtime.LogInfof(ctx, "queue after addition - %v", len(p.queue.streamers))
+	return nil
+}
+
+func (p *LocalPlayer) DeleteFromQueue(ctx context.Context, trackIndex int) error {
+	speaker.Lock()
+	defer speaker.Unlock()
+
 	return nil
 }
 

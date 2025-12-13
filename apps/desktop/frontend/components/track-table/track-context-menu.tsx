@@ -5,14 +5,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { usePlaybackControls } from "@/src/api/mutations"
-import { AddToQueue } from "@/wailsjs/go/main/App"
+import {
+  appendToQueueAtom,
+  prependToQueueAtom,
+} from "@/src/api/atoms/queue-atom"
 import { sqlcDb } from "@/wailsjs/go/models"
+import { useAtom } from "@effect-atom/atom-react"
 import { MoreHorizontal } from "lucide-react"
 import { Button } from "../ui/button"
 
 export default function TrackContextMenu({ track }: { track: sqlcDb.Track }) {
-  const { addToQueueEnd } = usePlaybackControls()
+  const [_, appendToQueue] = useAtom(appendToQueueAtom)
+  const [__, prependToQueue] = useAtom(prependToQueueAtom)
+  // const { addToQueueEnd } = usePlaybackControls()
 
   return (
     <>
@@ -25,13 +30,19 @@ export default function TrackContextMenu({ track }: { track: sqlcDb.Track }) {
         <DropdownMenuContent className="w-56" align="start">
           <DropdownMenuGroup>
             <DropdownMenuItem
-              onClick={async () => {
-                console.log("trying to add to queue")
-                await AddToQueue(track)
-                console.log("aaddeed to queue")
+              onClick={() => {
+                prependToQueue(track)
               }}
             >
-              Add to queue
+              Play next
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={() => {
+                appendToQueue(track)
+              }}
+            >
+              Play last
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>

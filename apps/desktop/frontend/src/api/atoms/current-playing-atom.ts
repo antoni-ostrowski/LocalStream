@@ -81,13 +81,13 @@ export const updateCurrentPlayingStateAtom = atomRuntime.fn(
 
 export const playNowAtom = atomRuntime.fn(
   Effect.fn(function* (track: sqlcDb.Track) {
-    const registery = yield* Registry.AtomRegistry
+    const registry = yield* Registry.AtomRegistry
     const m = yield* Mutations
 
     yield* m.playbackControls.playNow(track)
     yield* Effect.logDebug("Play now successfully!")
 
-    registery.refresh(currentPlayingAtom.remote)
+    registry.refresh(currentPlayingAtom.remote)
   }),
 )
 

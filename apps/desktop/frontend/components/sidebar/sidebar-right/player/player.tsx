@@ -2,6 +2,7 @@ import { useTrackArtwork } from "@/lib/hooks/get-artwork"
 import { currentPlayingAtom } from "@/src/api/atoms/current-playing-atom"
 import { Result, useAtomValue } from "@effect-atom/atom-react"
 import { Option } from "effect"
+import { Star } from "lucide-react"
 import { type RefObject } from "react"
 import Controls from "./controls"
 import Metadata from "./metadata"
@@ -27,6 +28,23 @@ export default function Player() {
               onSome: (currentTrack) => (
                 <div className="flex flex-col gap-2 p-4">
                   <Metadata {...{ currentTrack }} />
+
+                  <Star
+                    size={15}
+                    className="cursor-pointer"
+                    fill={
+                      currentTrack.Track.starred.Valid &&
+                      currentTrack.Track.starred.Int64
+                        ? "yellow"
+                        : ""
+                    }
+                    color={
+                      currentTrack.Track.starred.Valid &&
+                      currentTrack.Track.starred.Int64
+                        ? "yellow"
+                        : "white"
+                    }
+                  />
                   <div className="flex w-full flex-col items-center justify-center gap-5">
                     <VolumeControls {...{ currentTrack }} />
                     <Controls {...{ currentTrack }} />

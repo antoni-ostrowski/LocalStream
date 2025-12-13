@@ -9,6 +9,7 @@ import { Option } from "effect"
 import { PauseIcon, PlayIcon } from "lucide-react"
 import { Button } from "../ui/button"
 import StarTrack from "./star-track"
+import TrackContextMenu from "./track-context-menu"
 
 export default function TrackInteractions({
   track,
@@ -21,7 +22,7 @@ export default function TrackInteractions({
     <div className="flex flex-row items-center justify-start gap-1">
       {showPlayNow && <PlayNowBtn {...{ track }} />}
       <StarTrack {...{ track }} />
-      {/* <TrackContextMenu {...{ track }} /> */}
+      <TrackContextMenu {...{ track }} />
     </div>
   )
 }

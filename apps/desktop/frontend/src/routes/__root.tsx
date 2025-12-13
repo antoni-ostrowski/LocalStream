@@ -48,7 +48,6 @@ function RootComponent() {
     <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <RegistryProvider>
-          {/* <MountGoEventHandler /> */}
           <div className={`flex min-h-screen flex-col`}>
             <div className={`flex items-center gap-2 border-b`}>
               <div className={`flex-1`}>

@@ -66,12 +66,33 @@ func (a *App) PauseResume() playback.Playable {
 	return playable
 }
 
-func (a *App) AddToQueue(track sqlcDb.Track) error {
+func (a *App) AppendToQueue(track sqlcDb.Track) error {
 	runtime.LogInfo(a.ctx, "Adding to queue")
-	err := a.localPlayer.AddToQueue(a.ctx, track)
+	err := a.localPlayer.AppendToQueue(a.ctx, track)
 	if err != nil {
 		runtime.LogErrorf(a.ctx, "Failed to add to queue: %v", err)
 		return fmt.Errorf("Failed to add to queue: %v", err)
+	}
+
+	return nil
+}
+
+func (a *App) PrependToQueue(track sqlcDb.Track) error {
+	runtime.LogInfo(a.ctx, "prepenign to queue")
+	err := a.localPlayer.PrependToQueue(a.ctx, track)
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "Failed to add to queue: %v", err)
+		return fmt.Errorf("Failed to add to queue: %v", err)
+	}
+
+	return nil
+}
+
+func (a *App) DeleteFromQueue(trackIndex int) error {
+	err := a.localPlayer.DeleteFromQueue(a.ctx, trackIndex)
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "Failed to delete from queue: %v", err)
+		return fmt.Errorf("Failed to delete from queue: %v", err)
 	}
 
 	return nil

@@ -1,8 +1,10 @@
 import {
-  AddToQueue,
+  AppendToQueue,
   CreateSourceDir,
+  DeleteFromQueue,
   PauseResume,
   PlayTrack,
+  PrependToQueue,
   ReloadAppResources,
   StarTrack,
   UpdatePreferences,
@@ -34,6 +36,28 @@ export class Mutations extends Effect.Service<Mutations>()("Mutations", {
         try: async () => await PauseResume(),
         catch: () =>
           new GenericError({ message: "Failed to play pause resume" }),
+      }),
+
+      appendToQueue: Effect.fn(function* (track: sqlcDb.Track) {
+        return yield* Effect.tryPromise({
+          try: async () => await AppendToQueue(track),
+          catch: () => new GenericError({ message: "Failed to add to queue" }),
+        })
+      }),
+
+      prependToQueue: Effect.fn(function* (track: sqlcDb.Track) {
+        return yield* Effect.tryPromise({
+          try: async () => await PrependToQueue(track),
+          catch: () => new GenericError({ message: "Failed to add to queue" }),
+        })
+      }),
+
+      deleteFromQueue: Effect.fn(function* (trackIndex: number) {
+        return yield* Effect.tryPromise({
+          try: async () => await DeleteFromQueue(trackIndex),
+          catch: () =>
+            new GenericError({ message: "Failed to delete from queue" }),
+        })
       }),
     }
 
@@ -83,19 +107,17 @@ export function usePlaybackControls() {
     //   },
     //   mutationFn: (track: sqlcDb.Track) => PlayTrack(track),
     // }),
-
-    pauseResume: useMutation({
-      onError: ({ message }) => {
-        toast.error("Failed to play/pause track!", { description: message })
-      },
-      mutationFn: () => PauseResume(),
-    }),
-
-    addToQueueEnd: useMutation({
-      onError: ({ message }) => {
-        toast.error("Failed to add to queue!", { description: message })
-      },
-      mutationFn: (track: sqlcDb.Track) => AddToQueue(track),
-    }),
+    // pauseResume: useMutation({
+    //   onError: ({ message }) => {
+    //     toast.error("Failed to play/pause track!", { description: message })
+    //   },
+    //   mutationFn: () => PauseResume(),
+    // }),
+    // addToQueueEnd: useMutation({
+    //   onError: ({ message }) => {
+    //     toast.error("Failed to add to queue!", { description: message })
+    //   },
+    //   mutationFn: (track: sqlcDb.Track) => AddToQueue(track),
+    // }),
   }
 }

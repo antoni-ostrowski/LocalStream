@@ -29,6 +29,7 @@ export const GenericTrackListAtomAction = Data.taggedEnum<Action>()
 // we will be writing to this atom, NOT the remote one
 // this is a derived atom from remoteAtom
 // this is our modifyable cache
+// public for reads
 export const genericTrackListAtom = Object.assign(
   Atom.writable(
     (get: Atom.Context) => get(remoteGenericTrackListAtom),
@@ -61,6 +62,7 @@ export const genericTrackListAtom = Object.assign(
   { remote: remoteGenericTrackListAtom },
 )
 
+// public funcs to write to writable atom
 export const updateGenericTrackListAtom = atomRuntime.fn(
   Effect.fn(function* (tracks: sqlcDb.Track[]) {
     const registry = yield* Registry.AtomRegistry
