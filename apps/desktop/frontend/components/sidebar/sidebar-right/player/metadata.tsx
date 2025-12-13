@@ -1,5 +1,5 @@
 import TrackInteractions from "@/components/track-table/track-interactions"
-import { useTrackArtwork } from "@/lib/hooks"
+import { useTrackArtwork } from "@/lib/hooks/get-artwork"
 import { playback } from "@/wailsjs/go/models"
 import { Dot } from "lucide-react"
 

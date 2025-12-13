@@ -17,13 +17,29 @@ export class Mutations extends Effect.Service<Mutations>()("Mutations", {
   effect: Effect.gen(function* () {
     const starTrack = Effect.fn(function* (track: sqlcDb.Track) {
       return yield* Effect.tryPromise({
-        try: async () => StarTrack(track),
+        try: async () => await StarTrack(track),
         catch: () => new GenericError({ message: "Failed to star track" }),
       })
     })
 
+    const playbackControls = {
+      playNow: Effect.fn(function* (track: sqlcDb.Track) {
+        return yield* Effect.tryPromise({
+          try: async () => await PlayTrack(track),
+          catch: () => new GenericError({ message: "Failed to play track" }),
+        })
+      }),
+
+      pauseResume: Effect.tryPromise({
+        try: async () => await PauseResume(),
+        catch: () =>
+          new GenericError({ message: "Failed to play pause resume" }),
+      }),
+    }
+
     return {
       starTrack,
+      playbackControls,
     }
   }),
 }) {}
@@ -59,23 +75,14 @@ export function useReloadAppResources() {
   })
 }
 
-export function useStarTrack() {
-  return useMutation({
-    onError: ({ message }) => {
-      toast.error("Failed to star track!", { description: message })
-    },
-    mutationFn: (track: sqlcDb.Track) => StarTrack(track),
-  })
-}
-
 export function usePlaybackControls() {
   return {
-    playNow: useMutation({
-      onError: ({ message }) => {
-        toast.error("Failed to play track!", { description: message })
-      },
-      mutationFn: (track: sqlcDb.Track) => PlayTrack(track),
-    }),
+    // playNow: useMutation({
+    //   onError: ({ message }) => {
+    //     toast.error("Failed to play track!", { description: message })
+    //   },
+    //   mutationFn: (track: sqlcDb.Track) => PlayTrack(track),
+    // }),
 
     pauseResume: useMutation({
       onError: ({ message }) => {

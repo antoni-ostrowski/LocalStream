@@ -34,10 +34,10 @@ func (p *LocalPlayer) GetCurrent(ctx context.Context) (Playable, error) {
 
 }
 
-func (p *LocalPlayer) Play(track sqlcDb.Track) error {
+func (p *LocalPlayer) Play(track sqlcDb.Track) (Playable, error) {
 	playable, err := p.createPlayableFromTrack(track)
 	if err != nil {
-		return err
+		return Playable{}, err
 	}
 
 	speaker.Lock()
@@ -49,15 +49,17 @@ func (p *LocalPlayer) Play(track sqlcDb.Track) error {
 		p.queue.streamers = append(p.queue.streamers, playable)
 	}
 
-	return nil
+	return *playable, nil
 }
 
-func (p *LocalPlayer) PauseResume() {
+func (p *LocalPlayer) PauseResume() Playable {
 	speaker.Lock()
 	defer speaker.Unlock()
 	if len(p.queue.streamers) > 0 {
 		p.queue.streamers[0].Ctrl.Paused = !p.queue.streamers[0].Ctrl.Paused
+		return *p.queue.streamers[0]
 	}
+	return Playable{}
 }
 
 func (p *LocalPlayer) AddToQueue(ctx context.Context, track sqlcDb.Track) error {

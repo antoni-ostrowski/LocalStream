@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
-import { usePlaybackControls } from "@/src/api/mutations"
+import { pauseResumeAtom } from "@/src/api/atoms/current-playing-atom"
 import { playback } from "@/wailsjs/go/models"
+import { useAtom } from "@effect-atom/atom-react"
 import { Pause, Play, SkipBack, SkipForward } from "lucide-react"
 
 export default function Controls({
@@ -8,9 +9,7 @@ export default function Controls({
 }: {
   currentTrack: playback.Playable
 }) {
-  const {
-    pauseResume: { mutate: pauseResume },
-  } = usePlaybackControls()
+  const [_, pauseResume] = useAtom(pauseResumeAtom)
 
   return (
     <div className="flex flex-row gap-4">

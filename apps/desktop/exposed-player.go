@@ -51,18 +51,19 @@ func (a *App) GetCurrent() (playback.Playable, error) {
 	return playable, nil
 }
 
-func (a *App) PlayTrack(track sqlcDb.Track) error {
-	err := a.localPlayer.Play(track)
+func (a *App) PlayTrack(track sqlcDb.Track) (playback.Playable, error) {
+	playable, err := a.localPlayer.Play(track)
 	if err != nil {
 		runtime.LogErrorf(a.ctx, "Failed to start playback: %v", err)
-		return fmt.Errorf("Failed to start playback: %v", err)
+		return playback.Playable{}, fmt.Errorf("Failed to start playback: %v", err)
 	}
 
-	return nil
+	return playable, nil
 }
 
-func (a *App) PauseResume() {
-	a.localPlayer.PauseResume()
+func (a *App) PauseResume() playback.Playable {
+	playable := a.localPlayer.PauseResume()
+	return playable
 }
 
 func (a *App) AddToQueue(track sqlcDb.Track) error {

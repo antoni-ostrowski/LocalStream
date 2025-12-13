@@ -22,9 +22,9 @@ export function ListFavTracks():Promise<Array<sqlcDb.Track>>;
 
 export function ListQueue():Promise<Array<sqlcDb.Track>>;
 
-export function PauseResume():Promise<void>;
+export function PauseResume():Promise<playback.Playable>;
 
-export function PlayTrack(arg1:sqlcDb.Track):Promise<void>;
+export function PlayTrack(arg1:sqlcDb.Track):Promise<playback.Playable>;
 
 export function ReloadAppResources():Promise<void>;
 

@@ -1,5 +1,6 @@
 import { getCurrentEpoch } from "@/lib/utils"
 import { atomRuntime } from "@/src/api/atom-runtime"
+import { currentPlayingAtom } from "@/src/api/atoms/current-playing-atom"
 import {
   genericTrackListAtom,
   GenericTrackListAtomAction,
@@ -46,6 +47,7 @@ const starTrackAtom = atomRuntime.fn(
         newTrackData: newTrack,
       }),
     )
+    registry.refresh(currentPlayingAtom.remote)
   }),
 )
 

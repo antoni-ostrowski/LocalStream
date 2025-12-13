@@ -1,5 +1,7 @@
-import { queries } from "@/src/api/queries"
+import { useTrackArtwork } from "@/lib/hooks/get-artwork"
+import { currentPlayingAtom } from "@/src/api/atoms/current-playing-atom"
 import { Result, useAtomValue } from "@effect-atom/atom-react"
+import { Option } from "effect"
 import { type RefObject } from "react"
 import Controls from "./controls"
 import Metadata from "./metadata"
@@ -7,33 +9,43 @@ import VolumeControls from "./volume"
 export type AudioRefType = RefObject<HTMLVideoElement | null>
 export type ProgressBarRefType = RefObject<HTMLInputElement | null>
 
+// the mock needs to be fully 1;1 to real inferface, make the real UI ?mockable?
+// using mock UI prevents from flashes and enables to jsut refresh the atoms which makes stuff simpler
+// and we dont loose the UX
 export default function Player() {
-  const currentPlayingAtom = useAtomValue(queries.player.getCurrentPlaying)
+  const currentPlaying = useAtomValue(currentPlayingAtom)
+  console.log({ currentPlaying })
   return (
     <>
-      {Result.builder(currentPlayingAtom)
+      {Result.builder(currentPlaying)
+        .onInitialOrWaiting(() => <Mock />)
+        .onError(() => <Mock />)
         .onSuccess((currentTrack) => (
-          <div className="flex flex-col gap-2 p-4">
-            <Metadata {...{ currentTrack }} />
-            <div className="flex w-full flex-col items-center justify-center gap-5">
-              {/* <ProgressBar */}
-              {/*   {...{ */}
-              {/*     currentTrack, */}
-              {/*     audioRef, */}
-              {/*     handlePause, */}
-              {/*     handlePlay, */}
-              {/*     progressBarRef, */}
-              {/*     currentTime, */}
-              {/*     setCurrentTime, */}
-              {/*   }} */}
-              {/* /> */}
-
-              <VolumeControls {...{ currentTrack }} />
-              <Controls {...{ currentTrack }} />
-            </div>
-          </div>
+          <>
+            {Option.match(currentTrack, {
+              onNone: () => <p>nic</p>,
+              onSome: (currentTrack) => (
+                <div className="flex flex-col gap-2 p-4">
+                  <Metadata {...{ currentTrack }} />
+                  <div className="flex w-full flex-col items-center justify-center gap-5">
+                    <VolumeControls {...{ currentTrack }} />
+                    <Controls {...{ currentTrack }} />
+                  </div>
+                </div>
+              ),
+            })}
+          </>
         ))
         .orNull()}
     </>
+  )
+}
+function Mock() {
+  const { renderArtworkOrFallback } = useTrackArtwork(null)
+  return (
+    <div className="flex flex-col gap-2 p-4">
+      {renderArtworkOrFallback()}
+      <div className="flex w-full flex-col items-center justify-center gap-5"></div>
+    </div>
   )
 }

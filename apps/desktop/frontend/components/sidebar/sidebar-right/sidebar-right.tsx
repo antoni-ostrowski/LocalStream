@@ -1,4 +1,5 @@
 import { Sidebar, SidebarContent } from "@/components/ui/sidebar"
+import Player from "./player/player"
 
 export default function SidebarRight() {
   return (
@@ -8,7 +9,7 @@ export default function SidebarRight() {
     >
       <SidebarContent>
         {/* <QueueTrackTable /> */}
-        {/* <Player /> */}
+        <Player />
         {/* {data2 && <div>now playing {data2.Track.title}</div>} */}
         {/* {data && */}
         {/*   data.map((a) => { */}

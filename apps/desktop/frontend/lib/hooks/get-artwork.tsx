@@ -5,9 +5,11 @@ import { sqlcDb } from "@/wailsjs/go/models"
 import { Atom, Result, useAtomValue } from "@effect-atom/atom-react"
 import { Effect } from "effect"
 
-const artworkAtom = Atom.family((track: sqlcDb.Track) =>
+const artworkAtom = Atom.family((track: sqlcDb.Track | null) =>
   atomRuntime.atom(
     Effect.gen(function* () {
+      if (!track)
+        return yield* new GenericError({ message: "no track provided" })
       const q = yield* Queries
       const a = yield* q.getTrackArtwork(track)
       return a
@@ -15,7 +17,7 @@ const artworkAtom = Atom.family((track: sqlcDb.Track) =>
   ),
 )
 
-export function useTrackArtwork(track: sqlcDb.Track) {
+export function useTrackArtwork(track: sqlcDb.Track | null) {
   const artworkResult = useAtomValue(artworkAtom(track))
   return {
     renderArtworkOrFallback: () => RenderArtworkOrFallback(artworkResult),
