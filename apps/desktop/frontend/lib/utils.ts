@@ -1,5 +1,5 @@
 import { clsx, type ClassValue } from "clsx"
-import { DateTime, Duration, Effect } from "effect"
+import { Duration } from "effect"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
@@ -34,9 +34,4 @@ export function tryCatchSync<T, E = Error>(func: () => T): Result<T, E> {
   }
 }
 
-export const getCurrentEpoch = Effect.gen(function* () {
-  const epochMillis = yield* DateTime.now.pipe(
-    Effect.flatMap((utcDateTime) => Effect.succeed(utcDateTime.epochMillis))
-  )
-  return Duration.millis(epochMillis)
-})
+export const getCurrentTimeEpoch = Duration.millis(Date.now())

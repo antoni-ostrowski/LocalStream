@@ -1,4 +1,4 @@
-import { getCurrentEpoch } from "@/lib/utils"
+import { getCurrentTimeEpoch } from "@/lib/utils"
 import { sql, sqlcDb } from "@/wailsjs/go/models"
 import { Atom, Registry } from "@effect-atom/atom-react"
 import { Duration, Effect } from "effect"
@@ -23,15 +23,13 @@ export const starTrackAtom = atomRuntime.fn(
         Effect.tapError((error) =>
           Effect.logError(error, { trackId: track.id })
         ),
-        Effect.andThen(() =>
-          getCurrentEpoch.pipe(
-            Effect.map((millisEpoch) => ({
-              isTrackCurrentlyStarred:
-                track.starred.Valid && track.starred.Int64 > 0,
-              currentSecondsEpoch: Math.floor(Duration.toSeconds(millisEpoch))
-            }))
+        Effect.andThen(() => ({
+          isTrackCurrentlyStarred:
+            track.starred.Valid && track.starred.Int64 > 0,
+          currentSecondsEpoch: Math.floor(
+            Duration.toSeconds(getCurrentTimeEpoch)
           )
-        ),
+        })),
         Effect.andThen(({ currentSecondsEpoch, isTrackCurrentlyStarred }) => {
           if (isTrackCurrentlyStarred) {
             return new sql.NullInt64({ Valid: false, Int64: 0 })
