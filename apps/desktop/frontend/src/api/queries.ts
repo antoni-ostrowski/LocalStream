@@ -1,6 +1,7 @@
 import {
   GetCurrentTrack,
   GetDefaultPreferences,
+  GetPlaybackState,
   GetPreferences,
   GetTrackArtwork,
   ListAllTracks,
@@ -37,7 +38,11 @@ export class Queries extends Effect.Service<Queries>()("Queries", {
         GetCurrentTrackError
       ),
       getSettings: wailsCall(() => GetPreferences(), GenericError),
-      getDefaultSettings: wailsCall(() => GetDefaultPreferences(), GenericError)
+      getDefaultSettings: wailsCall(
+        () => GetDefaultPreferences(),
+        GenericError
+      ),
+      getPlaybackState: wailsCall(() => GetPlaybackState(), GenericError)
     }
   })
 }) {}

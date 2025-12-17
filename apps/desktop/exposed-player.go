@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"image"
+	"localStream/internal/playback"
 	"localStream/sqlcDb"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -50,15 +51,6 @@ func (a *App) GetCurrentTrack() (sqlcDb.Track, error) {
 	}
 
 	return currentTrack, nil
-}
-
-func (a *App) GetPlaybackState() error {
-	// if err != nil {
-	// 	runtime.LogErrorf(a.ctx, "Failed to get current track: %v", err)
-	// 	return sqlcDb.Track{}, fmt.Errorf("Failed to get current track: %v", err)
-	// }
-
-	return nil
 }
 
 func (a *App) PlayTrack(track sqlcDb.Track) error {
@@ -122,4 +114,17 @@ func (a *App) ListQueue() ([]sqlcDb.Track, error) {
 	}
 
 	return currentQueueTracks, nil
+}
+
+func (a *App) GetPlaybackState() (playback.PlaybackState, error) {
+	playbackState := a.localPlayer.GetPlaybackState(a.ctx)
+	track, err := a.db.Queries.GetTrackFromId(a.ctx, playbackState.PlayingTrackId)
+
+	if err != nil {
+		return playback.PlaybackState{}, fmt.Errorf("Failed to get track for current playback state - %v", err)
+	}
+	return playback.PlaybackState{
+		PlayingTrackId: playbackState.PlayingTrackId,
+		Length:         playbackState.Length,
+		PlayingTrack:   track}, nil
 }

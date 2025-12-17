@@ -35,3 +35,27 @@ export function tryCatchSync<T, E = Error>(func: () => T): Result<T, E> {
 }
 
 export const getCurrentTimeEpoch = Duration.millis(Date.now())
+
+export function formatSongLength(totalSeconds: number): string {
+  // Ensure the input is a valid non-negative number.
+  if (
+    typeof totalSeconds !== "number" ||
+    totalSeconds < 0 ||
+    !isFinite(totalSeconds)
+  ) {
+    console.warn(
+      `Invalid input for formatSongLength: ${totalSeconds}. Returning '00:00'.`
+    )
+    return "00:00"
+  }
+
+  // Calculate minutes and seconds from the total seconds.
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = Math.floor(totalSeconds % 60) // Use Math.floor to handle decimals
+
+  // Pad single-digit minutes and seconds with a leading zero.
+  const formattedMinutes = String(minutes).padStart(2, "0")
+  const formattedSeconds = String(seconds).padStart(2, "0")
+
+  return `${formattedMinutes}:${formattedSeconds}`
+}

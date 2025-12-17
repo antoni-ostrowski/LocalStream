@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gopxl/beep"
+	"github.com/gopxl/beep/effects"
 	"github.com/gopxl/beep/flac"
 	"github.com/gopxl/beep/generators"
 	"github.com/gopxl/beep/mp3"
@@ -24,14 +25,17 @@ type PlayerCommand struct {
 }
 
 type LocalPlayer struct {
-	currentStreamer beep.Streamer
+	// Focus on controllling this
+	currentStreamer beep.StreamSeeker
 	currentPlayable *Playable
 	queue           []*Playable
 	cmdChan         chan PlayerCommand
 	quitChan        chan struct{}
 }
 
+// this just controls whatever streamer I gave it
 var globalCtrl *beep.Ctrl
+var globalVolume *effects.Volume
 
 func (p *LocalPlayer) Init(ctx context.Context) {
 	runtime.LogInfo(ctx, "Initing local player")
@@ -45,9 +49,15 @@ func (p *LocalPlayer) Init(ctx context.Context) {
 	speaker.Init(sr, sr.N(time.Second/10))
 
 	// initially stream silence forever
-	globalCtrl = &beep.Ctrl{Streamer: generators.Silence(-1), Paused: false}
+	// this is the input for the global streaming
+	globalVolume = &effects.Volume{
+		Streamer: generators.Silence(-1),
+		Base:     2,
+		Volume:   0,
+		Silent:   false,
+	}
+	globalCtrl = &beep.Ctrl{Streamer: globalVolume, Paused: false}
 	speaker.Play(globalCtrl)
-
 	// kick of the orchestrator routine
 	go p.PlayerLoop(ctx)
 
@@ -61,11 +71,11 @@ func (p *LocalPlayer) createPlayableFromTrack(ctx context.Context, trackId strin
 		return &Playable{}, fmt.Errorf("Failed to decode file - %v\n", err)
 	}
 
-	playable := NewPlayable(streamer, format.SampleRate, trackId)
+	playable := NewPlayable(streamer, format.SampleRate, trackId, format)
 	return playable, nil
 }
 
-func (p *LocalPlayer) decodeFile(path string) (beep.Streamer, beep.Format, error) {
+func (p *LocalPlayer) decodeFile(path string) (beep.StreamSeeker, beep.Format, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, beep.Format{}, fmt.Errorf("failed to open file: %w", err)

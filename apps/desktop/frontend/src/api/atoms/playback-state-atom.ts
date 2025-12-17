@@ -1,20 +1,19 @@
-import { sqlcDb } from "@/wailsjs/go/models"
+import { playback, sqlcDb } from "@/wailsjs/go/models"
 import { Atom, Registry, Result } from "@effect-atom/atom-react"
-import { Data, Effect, Option } from "effect"
+import { Data, Effect } from "effect"
 import { atomRuntime } from "../make-runtime"
 import { Queries } from "../queries"
 
 const remotePlaybackStateAtom = atomRuntime.atom(
   Effect.fn(function* () {
     const q = yield* Queries
-    const currentPlaying = yield* q.getCurrentPlayingTrack
-    const trackOption: Option.Option<sqlcDb.Track> = Option.some(currentPlaying)
-    return yield* Effect.succeed(trackOption)
+    const playbackState = yield* q.getPlaybackState
+    return yield* Effect.succeed(playbackState)
   })
 )
 
 type Action = Data.TaggedEnum<{
-  UpdateCurrentPlaying: { readonly newCurrentPlaying: sqlcDb.Track }
+  UpdatePlaybackState: { readonly newPlaybackState: playback.PlaybackState }
 }>
 
 export const playbackStateAtomAction = Data.taggedEnum<Action>()
@@ -26,27 +25,15 @@ export const playbackStateAtom = Object.assign(
       const currentState = ctx.get(playbackStateAtom)
       if (!Result.isSuccess(currentState)) return
 
-      const update = playbackStateAtomAction.$match(action, {
-        UpdateCurrentPlaying: ({ newCurrentPlaying }) => {
-          return Option.some(newCurrentPlaying)
-        }
-      })
-
-      ctx.setSelf(Result.success(update))
+      // ctx.setSelf(Result.success(update))
     }
   ),
   { remote: remotePlaybackStateAtom }
 )
 
-export const updateCurrentPlayingAtom = atomRuntime.fn(
+export const updatePlaybackStateAtom = atomRuntime.fn(
   Effect.fn(function* (track: sqlcDb.Track) {
     const registry = yield* Registry.AtomRegistry
-    registry.set(
-      playbackStateAtom,
-      playbackStateAtomAction.UpdateCurrentPlaying({
-        newCurrentPlaying: track
-      })
-    )
   })
 )
 

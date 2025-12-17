@@ -13,4 +13,11 @@ type Player interface {
 	AppendToQueue(ctx context.Context, track sqlcDb.Track) error
 	PrependToQueue(ctx context.Context, track sqlcDb.Track) error
 	DeleteFromQueue(ctx context.Context, track sqlcDb.Track) error
+	GetPlaybackState(ctx context.Context) PlaybackState
+}
+
+type PlaybackState struct {
+	PlayingTrackId string       `jso:"playingTrackId"`
+	PlayingTrack   sqlcDb.Track `json:"playingTrack"`
+	Length         int          `json:"length"`
 }

@@ -4,6 +4,7 @@ import { Data, Effect, Option } from "effect"
 import { atomRuntime } from "../make-runtime"
 import { Mutations } from "../mutations"
 import { Queries } from "../queries"
+import { playbackStateAtom } from "./playback-state-atom"
 
 const remoteCurrentPlayingAtom = atomRuntime.atom(
   Effect.fn(function* () {
@@ -75,6 +76,7 @@ export const updateCurrentPlayingStateAtom = atomRuntime.fn(
         newCurrentPlayingState: newState
       })
     )
+    registry.refresh(playbackStateAtom.remote)
   })
 )
 
@@ -93,17 +95,19 @@ export const playNowAtom = atomRuntime.fn(
       })
     )
     registry.refresh(currentPlayingAtom.remote)
+    registry.refresh(playbackStateAtom.remote)
   })
 )
 
 export const pauseResumeAtom = atomRuntime.fn(
   Effect.fn(function* () {
-    const registery = yield* Registry.AtomRegistry
+    const registry = yield* Registry.AtomRegistry
     const m = yield* Mutations
 
     yield* m.playbackControls.pauseResume
     yield* Effect.logDebug("Paused/Resumed successfully!")
 
-    registery.refresh(currentPlayingAtom.remote)
+    registry.refresh(currentPlayingAtom.remote)
+    registry.refresh(playbackStateAtom.remote)
   })
 )

@@ -1,10 +1,10 @@
 import { useTrackArtwork } from "@/lib/hooks/get-artwork"
-import { currentPlayingAtom } from "@/src/api/atoms/current-playing-atom"
+import { playbackStateAtom } from "@/src/api/atoms/playback-state-atom"
 import { Result, useAtomValue } from "@effect-atom/atom-react"
-import { Option } from "effect"
 import { type RefObject } from "react"
 import Controls from "./controls"
 import Metadata from "./metadata"
+import ProgressBar from "./progress"
 import VolumeControls from "./volume"
 export type AudioRefType = RefObject<HTMLVideoElement | null>
 export type ProgressBarRefType = RefObject<HTMLInputElement | null>
@@ -13,28 +13,24 @@ export type ProgressBarRefType = RefObject<HTMLInputElement | null>
 // using mock UI prevents from flashes and enables to jsut refresh the atoms which makes stuff simpler
 // and we dont loose the UX
 export default function Player() {
-  const currentPlaying = useAtomValue(currentPlayingAtom)
-  console.log("in player ", { currentPlaying })
+  const playbackState = useAtomValue(playbackStateAtom)
   return (
     <>
-      {Result.builder(currentPlaying)
+      {Result.builder(playbackState)
         .onInitialOrWaiting(() => <Mock />)
         .onError(() => <Mock />)
-        .onSuccess((currentTrack) => (
+        .onSuccess(({ length, playingTrack }) => (
           <>
-            {Option.match(currentTrack, {
-              onNone: () => <p>nic</p>,
-              onSome: (currentTrack) => (
-                <div className="flex flex-col gap-2 p-4">
-                  <Metadata {...{ currentTrack }} />
+            full length: {length}
+            <div className="flex flex-col gap-2 p-4">
+              <Metadata {...{ currentTrack: playingTrack }} />
+              <ProgressBar {...{ length, currentTrack: playingTrack }} />
 
-                  <div className="flex w-full flex-col items-center justify-center gap-5">
-                    <VolumeControls {...{ currentTrack }} />
-                    <Controls {...{ currentTrack }} />
-                  </div>
-                </div>
-              )
-            })}
+              <div className="flex w-full flex-col items-center justify-center gap-5">
+                <VolumeControls {...{ currentTrack: playingTrack }} />
+                <Controls {...{ currentTrack: playingTrack }} />
+              </div>
+            </div>
           </>
         ))
         .orNull()}

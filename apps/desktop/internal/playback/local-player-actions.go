@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"localStream/sqlcDb"
+	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -60,4 +61,9 @@ func (p *LocalPlayer) DeleteFromQueue(ctx context.Context, track sqlcDb.Track) e
 
 func (p *LocalPlayer) ListQueue(ctx context.Context) []*Playable {
 	return p.queue
+}
+
+func (p *LocalPlayer) GetPlaybackState(ctx context.Context) PlaybackState {
+	leng := int(p.currentPlayable.format.SampleRate.D(p.currentStreamer.Len()).Round(time.Second).Seconds())
+	return PlaybackState{PlayingTrackId: p.currentPlayable.TrackId, Length: leng}
 }

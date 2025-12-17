@@ -2,6 +2,8 @@ package playback
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/gopxl/beep/generators"
 	"github.com/gopxl/beep/speaker"
@@ -10,9 +12,15 @@ import (
 
 func (p *LocalPlayer) PlayerLoop(ctx context.Context) {
 	var trackFinishedChan <-chan struct{}
-
+	ticker := time.NewTicker(250 * time.Millisecond)
+	defer ticker.Stop()
+	// the for loop is controling everything, but the select is actually blocking
+	// and listening for events, when the select executes anything, we start the next iteration
+	// which always checks for the channel to listen on for the track finished
 	for {
-		// set the channel to listen on (?)
+		// set the channel to listen on, if something is playing this gets set too
+		// playing track finished channel, if nothing is playing its set to nil which
+		// go will block forever on
 		if p.currentPlayable != nil {
 			trackFinishedChan = p.currentPlayable.TrackFinished
 		} else {
@@ -38,6 +46,16 @@ func (p *LocalPlayer) PlayerLoop(ctx context.Context) {
 			runtime.LogDebug(ctx, "quiz chn came up")
 			speaker.Close()
 			return
+		case <-ticker.C:
+			isAnythingPlaying := p.currentStreamer != nil && !globalCtrl.Paused
+			if isAnythingPlaying {
+				speaker.Lock()
+				// fmt.Println(format.SampleRate.D(streamer.Position()).Round(time.Second))
+				toEmit := int(p.currentPlayable.format.SampleRate.D(p.currentStreamer.Position()).Round(time.Second).Seconds())
+				runtime.EventsEmit(ctx, "progress", toEmit)
+				fmt.Printf("p.currentStreamer.Position(): %v\n", toEmit)
+				speaker.Unlock()
+			}
 		}
 
 	}
@@ -51,7 +69,8 @@ func (p *LocalPlayer) handleCmd(ctx context.Context, cmd PlayerCommand) {
 
 	if cmd.CommandType == "PAUSE_RESUME" {
 		if p.currentPlayable != nil {
-			p.currentPlayable.Ctrl.Paused = !p.currentPlayable.Ctrl.Paused
+			globalCtrl.Paused = !globalCtrl.Paused
+			// p.currentPlayable.Ctrl.Paused = !p.currentPlayable.Ctrl.Paused
 		} else {
 			globalCtrl.Paused = !globalCtrl.Paused
 		}
@@ -102,13 +121,18 @@ func (p *LocalPlayer) handleTrackEnd(ctx context.Context) {
 
 	} else {
 		// if no tracks in queue, stream silence
-		globalCtrl.Streamer = generators.Silence(-1)
-
+		p.currentStreamer = nil
+		globalVolume.Streamer = generators.Silence(-1)
 	}
 }
 
 func (p *LocalPlayer) setCurrent(ctx context.Context, playable *Playable) {
 	runtime.LogDebug(ctx, "Set current playable invoked")
 	p.currentPlayable = playable
-	globalCtrl.Streamer = playable.Streamer
+	// streamer is the seeker one the parent
+	p.currentStreamer = playable.Streamer
+	// the global is streaming a callback streamer that is based on the seeker
+	globalVolume.Streamer = playable.CallbackStreamer
+
+	// when i update the seeker the callback streamer should update too (maybe)
 }

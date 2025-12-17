@@ -7,7 +7,6 @@ import { GenericError } from "../errors"
 import { atomRuntime } from "../make-runtime"
 import { Mutations } from "../mutations"
 import { Queries } from "../queries"
-import { currentPlayingAtom } from "./current-playing-atom"
 import {
   genericTrackListAtom,
   GenericTrackListAtomAction
@@ -53,7 +52,6 @@ export const starTrackAtom = atomRuntime.fn(
               newTrackData: newTrack
             })
           )
-          registry.refresh(currentPlayingAtom.remote)
           registry.refresh(queueAtom.remote)
         })
       )
