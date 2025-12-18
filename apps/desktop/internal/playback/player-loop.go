@@ -113,6 +113,11 @@ func (p *LocalPlayer) handleCmd(ctx context.Context, cmd PlayerCommand) {
 		return
 	}
 
+	if cmd.CommandType == "SKIP" {
+		p.handleTrackEnd(ctx)
+		return
+	}
+
 }
 
 func (p *LocalPlayer) handleTrackEnd(ctx context.Context) {
@@ -149,4 +154,15 @@ func (p *LocalPlayer) setCurrent(ctx context.Context, playable *Playable) {
 	globalMixer.Add(playable.CallbackStreamer)
 
 	globalCtrl.Paused = false
+}
+
+func (p *LocalPlayer) StopAndCloseCurrent() {
+	globalMixer.Clear()
+
+	if p.currentPlayable != nil && p.currentPlayable.Closer != nil {
+		err := p.currentPlayable.Closer.Close()
+		if err != nil {
+			fmt.Printf("Error closing file: %v\n", err)
+		}
+	}
 }

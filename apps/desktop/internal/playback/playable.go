@@ -6,13 +6,14 @@ import (
 
 type Playable struct {
 	Streamer         beep.StreamSeeker
+	Closer           beep.StreamSeekCloser
 	format           beep.Format
 	CallbackStreamer beep.Streamer
 	TrackFinished    chan struct{}
 	TrackId          string
 }
 
-func NewPlayable(initialStreamer beep.StreamSeeker, trackSampleRate beep.SampleRate, trackId string, format beep.Format) *Playable {
+func NewPlayable(initialStreamer beep.StreamSeekCloser, trackSampleRate beep.SampleRate, trackId string, format beep.Format) *Playable {
 	finished := make(chan struct{}, 1)
 
 	sr := beep.SampleRate(44100)
@@ -27,6 +28,7 @@ func NewPlayable(initialStreamer beep.StreamSeeker, trackSampleRate beep.SampleR
 
 	return &Playable{
 		Streamer:         initialStreamer,
+		Closer:           initialStreamer,
 		format:           format,
 		CallbackStreamer: callbackStreamer,
 		TrackId:          trackId,

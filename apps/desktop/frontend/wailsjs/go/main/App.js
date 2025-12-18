@@ -74,6 +74,10 @@ export function Seek(arg1) {
   return window['go']['main']['App']['Seek'](arg1);
 }
 
+export function SkipTrack() {
+  return window['go']['main']['App']['SkipTrack']();
+}
+
 export function StarTrack(arg1) {
   return window['go']['main']['App']['StarTrack'](arg1);
 }

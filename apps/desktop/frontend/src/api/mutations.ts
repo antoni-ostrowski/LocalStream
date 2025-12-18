@@ -6,6 +6,7 @@ import {
   PlayTrack,
   PrependToQueue,
   ReloadAppResources,
+  SkipTrack,
   StarTrack,
   UpdatePreferences
 } from "@/wailsjs/go/main/App"
@@ -25,6 +26,7 @@ export class Mutations extends Effect.Service<Mutations>()("Mutations", {
           wailsCall(() => PlayTrack(track), GenericError)
         ),
         pauseResume: wailsCall(() => PauseResume(), GenericError),
+        skipTrack: wailsCall(() => SkipTrack(), GenericError),
         appendToQueue: Effect.fn((track: sqlcDb.Track) =>
           wailsCall(() => AppendToQueue(track), GenericError)
         ),

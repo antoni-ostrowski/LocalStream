@@ -74,3 +74,7 @@ func (p *LocalPlayer) GetPlaybackState(ctx context.Context) PlaybackState {
 func (p *LocalPlayer) Seek(ctx context.Context, seekTo int) {
 	p.cmdChan <- PlayerCommand{CommandType: "SEEK", SeekTo: seekTo}
 }
+
+func (p *LocalPlayer) SkipTrack(ctx context.Context) {
+	p.cmdChan <- PlayerCommand{CommandType: "SKIP"}
+}

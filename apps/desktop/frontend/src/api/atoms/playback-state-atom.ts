@@ -88,3 +88,24 @@ export const playNowAtom = atomRuntime.fn(
     registry.refresh(playbackStateAtom.remote)
   })
 )
+
+export const skipTrackAtom = atomRuntime.fn(
+  Effect.fn(function* () {
+    // const registry = yield* Registry.AtomRegistry
+    const m = yield* Mutations
+
+    yield* m.playbackControls.skipTrack
+    yield* Effect.logDebug("Skipped track successfully!")
+
+    // registry.set(
+    //   playbackStateAtom,
+    //   PlaybackStateAtomAction.UpdatePlayingTrack({
+    //     newPlayingTrack
+    //   })
+    // )
+    //
+    // registry.set(playbackStateAtom, PlaybackStateAtomAction.UpdateIsPlaying({}))
+    //
+    // registry.refresh(playbackStateAtom.remote)
+  })
+)

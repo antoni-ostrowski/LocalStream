@@ -134,3 +134,7 @@ func (a *App) GetPlaybackState() (playback.PlaybackState, error) {
 func (a *App) Seek(seekTo int) {
 	a.localPlayer.Seek(a.ctx, seekTo)
 }
+
+func (a *App) SkipTrack() {
+	a.localPlayer.SkipTrack(a.ctx)
+}

@@ -40,6 +40,8 @@ export function ReloadAppResources():Promise<void>;
 
 export function Seek(arg1:number):Promise<void>;
 
+export function SkipTrack():Promise<void>;
+
 export function StarTrack(arg1:sqlcDb.Track):Promise<void>;
 
 export function UpdatePreferences(arg1:config.Preferences):Promise<void>;

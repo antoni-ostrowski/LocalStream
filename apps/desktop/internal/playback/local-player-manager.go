@@ -80,7 +80,7 @@ func (p *LocalPlayer) createPlayableFromTrack(ctx context.Context, trackId strin
 	return playable, nil
 }
 
-func (p *LocalPlayer) decodeFile(path string) (beep.StreamSeeker, beep.Format, error) {
+func (p *LocalPlayer) decodeFile(path string) (beep.StreamSeekCloser, beep.Format, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, beep.Format{}, fmt.Errorf("failed to open file: %w", err)

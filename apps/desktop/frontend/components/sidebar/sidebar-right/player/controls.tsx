@@ -1,15 +1,17 @@
 import { Button } from "@/components/ui/button"
-import { pauseResumeAtom } from "@/src/api/atoms/playback-state-atom"
+import {
+  pauseResumeAtom,
+  skipTrackAtom
+} from "@/src/api/atoms/playback-state-atom"
 import { useAtom } from "@effect-atom/atom-react"
 import { Pause, Play, SkipBack, SkipForward } from "lucide-react"
-import { useState } from "react"
 
 export default function Controls({
   remoteIsPlaying
 }: {
   remoteIsPlaying: boolean
 }) {
-  const [isPlaying, setIsPlaying] = useState(remoteIsPlaying)
+  const [, skipTrack] = useAtom(skipTrackAtom)
   const [_, pauseResume] = useAtom(pauseResumeAtom)
 
   return (
@@ -20,17 +22,15 @@ export default function Controls({
       <Button
         variant={"outline"}
         className="w-min cursor-pointer"
-        onClick={() => {
-          pauseResume(!remoteIsPlaying)
-          // setIsPlaying((prev) => {
-          //   pauseResume(!prev)
-          //   return !prev
-          // })
-        }}
+        onClick={() => pauseResume({})}
       >
         {remoteIsPlaying ? <Play /> : <Pause />}
       </Button>
-      <Button variant={"outline"} className="w-min cursor-pointer">
+      <Button
+        variant={"outline"}
+        className="w-min cursor-pointer"
+        onClick={() => skipTrack()}
+      >
         <SkipForward />
       </Button>
     </div>
