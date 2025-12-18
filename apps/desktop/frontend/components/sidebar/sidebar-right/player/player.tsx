@@ -15,7 +15,6 @@ import {
 } from "@effect-atom/atom-react"
 import { Effect } from "effect"
 import { useEffect, type RefObject } from "react"
-import { toast } from "sonner"
 import Controls from "./controls"
 import Metadata from "./metadata"
 import ProgressBar from "./progress"
@@ -48,7 +47,6 @@ export default function Player() {
 
   useEffect(() => {
     EventsOn("playback", (trackId: string, newTrackLength: number) => {
-      toast.success(`new playback update, ${newTrackLength} `)
       update({ trackId: trackId, newLength: newTrackLength })
     })
   }, [])
@@ -62,7 +60,9 @@ export default function Player() {
           <>
             <div className="flex flex-col gap-2 p-4">
               <Metadata {...{ currentTrack: playingTrack }} />
-              <ProgressBar {...{ length, currentTrack: playingTrack }} />
+              <ProgressBar
+                {...{ length, currentTrack: playingTrack, isPlaying }}
+              />
 
               <div className="flex w-full flex-col items-center justify-center gap-5">
                 <VolumeControls {...{ currentTrack: playingTrack }} />

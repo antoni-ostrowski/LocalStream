@@ -17,7 +17,7 @@ const remotePlaybackStateAtom = atomRuntime.atom(
 )
 
 type Action = Data.TaggedEnum<{
-  UpdateIsPlaying: { readonly a: string }
+  UpdateIsPlaying: { readonly newState?: boolean }
   UpdatePlayingTrack: { readonly newPlayingTrack: sqlcDb.Track }
   UpdatePlayingTrackLength: { readonly newLegth: number }
 }>
@@ -32,9 +32,9 @@ export const playbackStateAtom = Object.assign(
       if (!Result.isSuccess(currentState)) return
       Effect.runSync(Effect.logInfo("inside the atom func run"))
       const update = PlaybackStateAtomAction.$match(action, {
-        UpdateIsPlaying: () => ({
+        UpdateIsPlaying: ({ newState }) => ({
           ...currentState.value,
-          isPlaying: !currentState.value.isPlaying
+          isPlaying: newState ?? !currentState.value.isPlaying
         }),
         UpdatePlayingTrack: ({ newPlayingTrack }) => ({
           ...currentState.value,
@@ -54,7 +54,7 @@ export const playbackStateAtom = Object.assign(
 )
 
 export const pauseResumeAtom = atomRuntime.fn(
-  Effect.fn(function* () {
+  Effect.fn(function* (arg: { newState?: boolean }) {
     const registry = yield* Registry.AtomRegistry
     const m = yield* Mutations
 
@@ -63,7 +63,7 @@ export const pauseResumeAtom = atomRuntime.fn(
 
     registry.set(
       playbackStateAtom,
-      PlaybackStateAtomAction.UpdateIsPlaying({ a: "jasdk" })
+      PlaybackStateAtomAction.UpdateIsPlaying({ newState: arg?.newState })
     )
   })
 )
@@ -83,10 +83,7 @@ export const playNowAtom = atomRuntime.fn(
       })
     )
 
-    registry.set(
-      playbackStateAtom,
-      PlaybackStateAtomAction.UpdateIsPlaying({ a: "fd" })
-    )
+    registry.set(playbackStateAtom, PlaybackStateAtomAction.UpdateIsPlaying({}))
 
     registry.refresh(playbackStateAtom.remote)
   })
