@@ -1,11 +1,21 @@
 import { useTrackArtwork } from "@/lib/hooks/get-artwork"
 import {
   playbackStateAtom,
-  updatePlaybackStateAtom
+  PlaybackStateAtomAction
 } from "@/src/api/atoms/playback-state-atom"
+import { queueAtom } from "@/src/api/atoms/queue-atom"
+import { atomRuntime } from "@/src/api/make-runtime"
+import { Queries } from "@/src/api/queries"
 import { EventsOn } from "@/wailsjs/runtime/runtime"
-import { Result, useAtom, useAtomValue } from "@effect-atom/atom-react"
+import {
+  Registry,
+  Result,
+  useAtom,
+  useAtomValue
+} from "@effect-atom/atom-react"
+import { Effect } from "effect"
 import { useEffect, type RefObject } from "react"
+import { toast } from "sonner"
 import Controls from "./controls"
 import Metadata from "./metadata"
 import ProgressBar from "./progress"
@@ -13,25 +23,42 @@ import VolumeControls from "./volume"
 export type AudioRefType = RefObject<HTMLVideoElement | null>
 export type ProgressBarRefType = RefObject<HTMLInputElement | null>
 
-// the mock needs to be fully 1;1 to real inferface, make the real UI ?mockable?
-// using mock UI prevents from flashes and enables to jsut refresh the atoms which makes stuff simpler
-// and we dont loose the UX
+export const updatePlayingTrack = atomRuntime.fn(
+  Effect.fn(function* (args: { trackId: string; newLength: number }) {
+    const registry = yield* Registry.AtomRegistry
+    const q = yield* Queries
+    const track = yield* q.getTrackById(args.trackId)
+    registry.set(
+      playbackStateAtom,
+      PlaybackStateAtomAction.UpdatePlayingTrack({ newPlayingTrack: track })
+    )
+    registry.set(
+      playbackStateAtom,
+      PlaybackStateAtomAction.UpdatePlayingTrackLength({
+        newLegth: args.newLength
+      })
+    )
+    registry.refresh(queueAtom.remote)
+  })
+)
+
 export default function Player() {
   const playbackState = useAtomValue(playbackStateAtom)
-  const [, update] = useAtom(updatePlaybackStateAtom)
+  const [, update] = useAtom(updatePlayingTrack)
 
   useEffect(() => {
-    EventsOn("playback", () => {
-      update()
+    EventsOn("playback", (trackId: string, newTrackLength: number) => {
+      toast.success(`new playback update, ${newTrackLength} `)
+      update({ trackId: trackId, newLength: newTrackLength })
     })
-  }, [update])
+  }, [])
 
   return (
     <>
       {Result.builder(playbackState)
         .onInitialOrWaiting(() => <Mock />)
         .onError(() => <Mock />)
-        .onSuccess(({ length, playingTrack }) => (
+        .onSuccess(({ length, playingTrack, isPlaying }) => (
           <>
             <div className="flex flex-col gap-2 p-4">
               <Metadata {...{ currentTrack: playingTrack }} />
@@ -39,12 +66,14 @@ export default function Player() {
 
               <div className="flex w-full flex-col items-center justify-center gap-5">
                 <VolumeControls {...{ currentTrack: playingTrack }} />
-                <Controls {...{ currentTrack: playingTrack }} />
+                <Controls {...{ remoteIsPlaying: isPlaying }} />
               </div>
             </div>
           </>
         ))
-        .orNull()}
+        .orElse(() => (
+          <Mock />
+        ))}
     </>
   )
 }

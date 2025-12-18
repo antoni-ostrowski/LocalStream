@@ -124,9 +124,11 @@ func (a *App) GetPlaybackState() (playback.PlaybackState, error) {
 		return playback.PlaybackState{}, fmt.Errorf("Failed to get track for current playback state - %v", err)
 	}
 	return playback.PlaybackState{
+		IsPlaying:      playbackState.IsPlaying,
 		PlayingTrackId: playbackState.PlayingTrackId,
 		Length:         playbackState.Length,
 		PlayingTrack:   track}, nil
+
 }
 
 func (a *App) Seek(seekTo int) {

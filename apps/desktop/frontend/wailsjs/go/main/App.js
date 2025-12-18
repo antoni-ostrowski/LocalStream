@@ -38,6 +38,10 @@ export function GetTrackArtwork(arg1) {
   return window['go']['main']['App']['GetTrackArtwork'](arg1);
 }
 
+export function GetTrackById(arg1) {
+  return window['go']['main']['App']['GetTrackById'](arg1);
+}
+
 export function ListAllTracks() {
   return window['go']['main']['App']['ListAllTracks']();
 }

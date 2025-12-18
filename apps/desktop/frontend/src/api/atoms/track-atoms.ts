@@ -10,8 +10,11 @@ import {
   genericTrackListAtom,
   GenericTrackListAtomAction
 } from "./generic-track-list-atom"
-import { playbackStateAtom } from "./playback-state-atom"
-import { queueAtom } from "./queue-atom"
+import {
+  playbackStateAtom,
+  PlaybackStateAtomAction
+} from "./playback-state-atom"
+import { queueAtom, QueueAtomAction } from "./queue-atom"
 
 export const starTrackAtom = atomRuntime.fn(
   Effect.fn(function* (track: sqlcDb.Track) {
@@ -46,8 +49,17 @@ export const starTrackAtom = atomRuntime.fn(
             newTrackData: newTrack
           })
         )
-        registry.refresh(queueAtom.remote)
-        registry.refresh(playbackStateAtom.remote)
+        registry.set(
+          queueAtom,
+          QueueAtomAction.ModifyTrackInTheQueue({ newTrackState: newTrack })
+        )
+
+        registry.set(
+          playbackStateAtom,
+          PlaybackStateAtomAction.UpdatePlayingTrack({
+            newPlayingTrack: newTrack
+          })
+        )
       })
     )
   })

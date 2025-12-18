@@ -21,4 +21,5 @@ type PlaybackState struct {
 	PlayingTrackId string       `jso:"playingTrackId"`
 	PlayingTrack   sqlcDb.Track `json:"playingTrack"`
 	Length         int          `json:"length"`
+	IsPlaying      bool         `json:"isPlaying"`
 }

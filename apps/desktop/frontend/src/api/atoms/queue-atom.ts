@@ -17,6 +17,7 @@ type Action = Data.TaggedEnum<{
   AppendToQueue: { readonly newQueueTrack: sqlcDb.Track }
   PrependToQueue: { readonly newQueueTrack: sqlcDb.Track }
   DeleteFromQueue: { readonly trackDoDelete: sqlcDb.Track }
+  ModifyTrackInTheQueue: { readonly newTrackState: sqlcDb.Track }
 }>
 
 export const QueueAtomAction = Data.taggedEnum<Action>()
@@ -34,7 +35,18 @@ export const queueAtom = Object.assign(
         PrependToQueue: ({ newQueueTrack }) =>
           Array.prepend(currentState.value, newQueueTrack),
         DeleteFromQueue: ({ trackDoDelete }) =>
-          currentState.value.filter((value) => trackDoDelete.id !== value.id)
+          currentState.value.filter((value) => trackDoDelete.id !== value.id),
+        ModifyTrackInTheQueue: ({ newTrackState }) => {
+          const newQueueList = currentState.value.map((track) => {
+            if (track.id === newTrackState.id) {
+              return {
+                ...newTrackState
+              } as sqlcDb.Track
+            }
+            return track
+          })
+          return newQueueList
+        }
       })
 
       ctx.setSelf(Result.success(update))
@@ -95,5 +107,16 @@ export const refreshQueue = atomRuntime.fn(
     const registry = yield* Registry.AtomRegistry
 
     registry.refresh(queueAtom.remote)
+  })
+)
+
+export const modifyTrackInQueue = atomRuntime.fn(
+  Effect.fn(function* (track: sqlcDb.Track) {
+    const registry = yield* Registry.AtomRegistry
+
+    registry.set(
+      queueAtom,
+      QueueAtomAction.ModifyTrackInTheQueue({ newTrackState: track })
+    )
   })
 )

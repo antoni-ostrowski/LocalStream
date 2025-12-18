@@ -4,6 +4,7 @@ import {
   GetPlaybackState,
   GetPreferences,
   GetTrackArtwork,
+  GetTrackById,
   ListAllTracks,
   ListFavTracks,
   ListQueue
@@ -42,7 +43,10 @@ export class Queries extends Effect.Service<Queries>()("Queries", {
         () => GetDefaultPreferences(),
         GenericError
       ),
-      getPlaybackState: wailsCall(() => GetPlaybackState(), GenericError)
+      getPlaybackState: wailsCall(() => GetPlaybackState(), GenericError),
+      getTrackById: Effect.fn((trackId: string) =>
+        wailsCall(() => GetTrackById(trackId), GenericError)
+      )
     }
   })
 }) {}

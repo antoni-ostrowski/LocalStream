@@ -1,11 +1,9 @@
 import {
-  currentPlayingAtom,
   pauseResumeAtom,
   playNowAtom
-} from "@/src/api/atoms/current-playing-atom"
+} from "@/src/api/atoms/playback-state-atom"
 import { sqlcDb } from "@/wailsjs/go/models"
-import { Result, useAtom, useAtomValue } from "@effect-atom/atom-react"
-import { Option } from "effect"
+import { useAtom } from "@effect-atom/atom-react"
 import { PauseIcon, PlayIcon } from "lucide-react"
 import { Button } from "../ui/button"
 import StarTrack from "./star-track"
@@ -28,79 +26,27 @@ export default function TrackInteractions({
 }
 
 function PlayNowBtn({ track }: { track: sqlcDb.Track }) {
-  const currentPlaying = useAtomValue(currentPlayingAtom)
   const [, playNow] = useAtom(playNowAtom)
   const [, pauseResume] = useAtom(pauseResumeAtom)
   return (
     <>
-      {Result.builder(currentPlaying)
-        .onError(() => (
-          <>
-            <Button variant={"ghost"} onClick={() => playNow(track)}>
-              <PlayIcon className="cursor-pointer" size={15} />
-            </Button>
-          </>
-        ))
-        .onSuccess((currentTrackOption) =>
-          Option.match(currentTrackOption, {
-            onSome: (currentTrack) => {
-              {
-                /* const isThisTrackPlayingRightNow = */
-              }
-              {
-                /*   !currentTrack.Ctrl?.Paused && currentTrack.Track.id === track.id */
-              }
-
-              return (
-                <>
-                  <Button
-                    variant="ghost"
-                    onClick={() => {
-                      console.log("pause rems")
-                      pauseResume()
-                    }}
-                  >
-                    <PauseIcon className="cursor-pointer" size={15} />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => {
-                      playNow(track)
-                    }}
-                  >
-                    <PlayIcon className="cursor-pointer" size={15} />
-                  </Button>
-                </>
-              )
-            },
-            onNone: () => (
-              <>
-                <Button>jfklds</Button>
-              </>
-            )
-          })
-        )
-        .orElse(() => (
-          <>
-            <Button
-              variant="ghost"
-              onClick={() => {
-                console.log("pause rems")
-                pauseResume()
-              }}
-            >
-              <PauseIcon className="cursor-pointer" size={15} />
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => {
-                playNow(track)
-              }}
-            >
-              <PlayIcon className="cursor-pointer" size={15} />
-            </Button>
-          </>
-        ))}
+      <Button
+        variant="ghost"
+        onClick={() => {
+          console.log("pause rems")
+          pauseResume()
+        }}
+      >
+        <PauseIcon className="cursor-pointer" size={15} />
+      </Button>
+      <Button
+        variant="ghost"
+        onClick={() => {
+          playNow(track)
+        }}
+      >
+        <PlayIcon className="cursor-pointer" size={15} />
+      </Button>
     </>
   )
 }

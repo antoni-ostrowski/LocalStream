@@ -118,12 +118,12 @@ func (p *LocalPlayer) decodeFile(path string) (beep.StreamSeeker, beep.Format, e
 	return nil, beep.Format{}, fmt.Errorf("could not decode audio file (tried mp3, wav, etc.): %s", path)
 }
 
-func (p *LocalPlayer) getCurrentStreamerProgress() int {
+func (p *LocalPlayer) GetCurrentStreamerProgress() int {
 	secs := int(p.currentPlayable.format.SampleRate.D(p.currentStreamer.Position()).Round(time.Second).Seconds())
 	return secs
 }
 
-func (p *LocalPlayer) getCurrentStreamerLength() int {
+func (p *LocalPlayer) GetCurrentStreamerLength() int {
 	secs := int(p.currentPlayable.format.SampleRate.D(p.currentStreamer.Len()).Round(time.Second).Seconds())
 	return secs
 }

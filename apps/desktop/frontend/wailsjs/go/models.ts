@@ -23,6 +23,7 @@ export namespace playback {
 	    PlayingTrackId: string;
 	    playingTrack: sqlcDb.Track;
 	    length: number;
+	    isPlaying: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new PlaybackState(source);
@@ -33,6 +34,7 @@ export namespace playback {
 	        this.PlayingTrackId = source["PlayingTrackId"];
 	        this.playingTrack = this.convertValues(source["playingTrack"], sqlcDb.Track);
 	        this.length = source["length"];
+	        this.isPlaying = source["isPlaying"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

@@ -25,10 +25,11 @@ export default function ProgressBar({
     if (progressBarInputRef.current) {
       const newTime = parseInt(progressBarInputRef.current.value)
       console.log({ newTime })
+      setProgress(newTime)
       void (async () => {
         await Seek(newTime)
       })()
-      setProgress(newTime)
+      console.log({ progress })
     }
   }
 
@@ -46,7 +47,7 @@ export default function ProgressBar({
           onChange={handleSliderChange}
         />
         <div className="flex w-full justify-between">
-          <p>{progress}</p>
+          <p>{formatSongLength(progress)}</p>
           <p>{formatSongLength(length)}</p>
         </div>
       </div>

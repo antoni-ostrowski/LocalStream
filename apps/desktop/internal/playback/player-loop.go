@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gopxl/beep/generators"
 	"github.com/gopxl/beep/speaker"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -50,7 +49,7 @@ func (p *LocalPlayer) PlayerLoop(ctx context.Context) {
 			isAnythingPlaying := p.currentStreamer != nil && !globalCtrl.Paused
 			if isAnythingPlaying {
 				speaker.Lock()
-				toEmit := p.getCurrentStreamerProgress()
+				toEmit := p.GetCurrentStreamerProgress()
 				runtime.EventsEmit(ctx, "progress", toEmit)
 				fmt.Printf("p.currentStreamer.Position(): %v\n", toEmit)
 				speaker.Unlock()
@@ -69,7 +68,8 @@ func (p *LocalPlayer) handleCmd(ctx context.Context, cmd PlayerCommand) {
 	if cmd.CommandType == "PAUSE_RESUME" {
 		if p.currentPlayable != nil {
 			globalCtrl.Paused = !globalCtrl.Paused
-			// p.currentPlayable.Ctrl.Paused = !p.currentPlayable.Ctrl.Paused
+			toEmit := p.GetCurrentStreamerProgress()
+			runtime.EventsEmit(ctx, "progress", toEmit)
 		} else {
 			globalCtrl.Paused = !globalCtrl.Paused
 		}
@@ -103,14 +103,12 @@ func (p *LocalPlayer) handleCmd(ctx context.Context, cmd PlayerCommand) {
 
 	if cmd.CommandType == "SEEK" {
 		runtime.LogInfof(ctx, "trying to seek")
-		runtime.LogInfof(ctx, "before seek - %v", p.currentStreamer.Position())
-		runtime.LogInfof(ctx, "seek to int - %v", cmd.SeekTo)
 		seekTime := time.Duration(cmd.SeekTo) * time.Second
 		runtime.LogInfof(ctx, "seek time - %v", seekTime)
 		samples := p.currentPlayable.format.SampleRate.N(seekTime)
 		p.currentStreamer.Seek(samples)
 		runtime.LogInfof(ctx, "after seek - %v", p.currentStreamer.Position())
-		toEmit := p.getCurrentStreamerProgress()
+		toEmit := p.GetCurrentStreamerProgress()
 		runtime.EventsEmit(ctx, "progress", toEmit)
 		return
 	}
@@ -127,12 +125,16 @@ func (p *LocalPlayer) handleTrackEnd(ctx context.Context) {
 		runtime.LogInfof(ctx, "Transitioning to next track: %v", nextTrack.TrackId)
 
 		p.setCurrent(ctx, nextTrack)
-		runtime.EventsEmit(ctx, "playback")
+		length := p.GetCurrentStreamerLength()
+
+		runtime.EventsEmit(ctx, "playback", nextTrack.TrackId, length)
 	} else {
 		runtime.LogInfo(ctx, "Queue empty, stopping playback")
 		p.currentPlayable = nil
 		p.currentStreamer = nil
-		globalVolume.Streamer = generators.Silence(-1)
+
+		globalMixer.Clear()
+
 	}
 }
 

@@ -22,6 +22,8 @@ export function GetPreferences():Promise<config.Preferences>;
 
 export function GetTrackArtwork(arg1:sqlcDb.Track):Promise<string>;
 
+export function GetTrackById(arg1:string):Promise<sqlcDb.Track>;
+
 export function ListAllTracks():Promise<Array<sqlcDb.Track>>;
 
 export function ListFavTracks():Promise<Array<sqlcDb.Track>>;

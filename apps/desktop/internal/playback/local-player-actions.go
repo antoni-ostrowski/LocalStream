@@ -63,8 +63,12 @@ func (p *LocalPlayer) ListQueue(ctx context.Context) []*Playable {
 }
 
 func (p *LocalPlayer) GetPlaybackState(ctx context.Context) PlaybackState {
-	length := p.getCurrentStreamerLength()
-	return PlaybackState{PlayingTrackId: p.currentPlayable.TrackId, Length: length}
+	isPlaying := globalCtrl.Paused
+	length := p.GetCurrentStreamerLength()
+	return PlaybackState{
+		PlayingTrackId: p.currentPlayable.TrackId,
+		Length:         length,
+		IsPlaying:      isPlaying}
 }
 
 func (p *LocalPlayer) Seek(ctx context.Context, seekTo int) {

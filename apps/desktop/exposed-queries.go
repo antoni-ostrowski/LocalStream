@@ -45,3 +45,11 @@ func (a *App) ListFavTracks() ([]sqlcDb.Track, error) {
 
 	return favTracks, nil
 }
+
+func (a *App) GetTrackById(trackId string) (sqlcDb.Track, error) {
+	track, err := a.db.Queries.GetTrackFromId(a.ctx, trackId)
+	if err != nil {
+		return sqlcDb.Track{}, fmt.Errorf("Failed to find track with that id %v %v", trackId, err)
+	}
+	return track, nil
+}
