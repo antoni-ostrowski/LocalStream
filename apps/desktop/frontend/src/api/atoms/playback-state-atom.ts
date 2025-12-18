@@ -1,8 +1,9 @@
-import { playback, sqlcDb } from "@/wailsjs/go/models"
+import { playback } from "@/wailsjs/go/models"
 import { Atom, Registry, Result } from "@effect-atom/atom-react"
 import { Data, Effect } from "effect"
 import { atomRuntime } from "../make-runtime"
 import { Queries } from "../queries"
+import { queueAtom } from "./queue-atom"
 
 const remotePlaybackStateAtom = atomRuntime.atom(
   Effect.fn(function* () {
@@ -32,19 +33,9 @@ export const playbackStateAtom = Object.assign(
 )
 
 export const updatePlaybackStateAtom = atomRuntime.fn(
-  Effect.fn(function* (track: sqlcDb.Track) {
+  Effect.fn(function* () {
     const registry = yield* Registry.AtomRegistry
+    registry.refresh(playbackStateAtom.remote)
+    registry.refresh(queueAtom.remote)
   })
 )
-
-// export const updateCurrentPlayingStateAtom = atomRuntime.fn(
-//   Effect.fn(function* (newState: sqlcDb.Track) {
-//     const registry = yield* Registry.AtomRegistry
-//     registry.set(
-//       playbackStateAtom,
-//       playbackStateAtomAction.UpdateCurrentPlayingState({
-//         newCurrentPlayingState: newState,
-//       }),
-//     )
-//   }),
-// )

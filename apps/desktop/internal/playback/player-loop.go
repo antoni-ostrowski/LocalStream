@@ -50,8 +50,7 @@ func (p *LocalPlayer) PlayerLoop(ctx context.Context) {
 			isAnythingPlaying := p.currentStreamer != nil && !globalCtrl.Paused
 			if isAnythingPlaying {
 				speaker.Lock()
-				// fmt.Println(format.SampleRate.D(streamer.Position()).Round(time.Second))
-				toEmit := int(p.currentPlayable.format.SampleRate.D(p.currentStreamer.Position()).Round(time.Second).Seconds())
+				toEmit := p.getCurrentStreamerProgress()
 				runtime.EventsEmit(ctx, "progress", toEmit)
 				fmt.Printf("p.currentStreamer.Position(): %v\n", toEmit)
 				speaker.Unlock()
@@ -90,7 +89,6 @@ func (p *LocalPlayer) handleCmd(ctx context.Context, cmd PlayerCommand) {
 	}
 
 	if cmd.CommandType == "DELETE_FROM_QUEUE" {
-
 		n := 0
 		for _, x := range p.queue {
 			if x.TrackId != cmd.Playable.TrackId {
@@ -103,24 +101,36 @@ func (p *LocalPlayer) handleCmd(ctx context.Context, cmd PlayerCommand) {
 		return
 	}
 
+	if cmd.CommandType == "SEEK" {
+		runtime.LogInfof(ctx, "trying to seek")
+		runtime.LogInfof(ctx, "before seek - %v", p.currentStreamer.Position())
+		runtime.LogInfof(ctx, "seek to int - %v", cmd.SeekTo)
+		seekTime := time.Duration(cmd.SeekTo) * time.Second
+		runtime.LogInfof(ctx, "seek time - %v", seekTime)
+		samples := p.currentPlayable.format.SampleRate.N(seekTime)
+		p.currentStreamer.Seek(samples)
+		runtime.LogInfof(ctx, "after seek - %v", p.currentStreamer.Position())
+		toEmit := p.getCurrentStreamerProgress()
+		runtime.EventsEmit(ctx, "progress", toEmit)
+		return
+	}
+
 }
 
 func (p *LocalPlayer) handleTrackEnd(ctx context.Context) {
-	runtime.LogInfo(ctx, "Track end signal")
-
-	p.currentPlayable = nil
+	runtime.LogInfo(ctx, "Track end signal received")
 
 	if len(p.queue) > 0 {
-		// load next track
-
 		nextTrack := p.queue[0]
-
 		p.queue = p.queue[1:]
 
-		p.setCurrent(ctx, nextTrack)
+		runtime.LogInfof(ctx, "Transitioning to next track: %v", nextTrack.TrackId)
 
+		p.setCurrent(ctx, nextTrack)
+		runtime.EventsEmit(ctx, "playback")
 	} else {
-		// if no tracks in queue, stream silence
+		runtime.LogInfo(ctx, "Queue empty, stopping playback")
+		p.currentPlayable = nil
 		p.currentStreamer = nil
 		globalVolume.Streamer = generators.Silence(-1)
 	}
@@ -128,11 +138,13 @@ func (p *LocalPlayer) handleTrackEnd(ctx context.Context) {
 
 func (p *LocalPlayer) setCurrent(ctx context.Context, playable *Playable) {
 	runtime.LogDebug(ctx, "Set current playable invoked")
-	p.currentPlayable = playable
-	// streamer is the seeker one the parent
-	p.currentStreamer = playable.Streamer
-	// the global is streaming a callback streamer that is based on the seeker
-	globalVolume.Streamer = playable.CallbackStreamer
 
-	// when i update the seeker the callback streamer should update too (maybe)
+	p.currentPlayable = playable
+	p.currentStreamer = playable.Streamer
+
+	globalMixer.Clear()
+
+	globalMixer.Add(playable.CallbackStreamer)
+
+	globalCtrl.Paused = false
 }

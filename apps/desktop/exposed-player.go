@@ -128,3 +128,7 @@ func (a *App) GetPlaybackState() (playback.PlaybackState, error) {
 		Length:         playbackState.Length,
 		PlayingTrack:   track}, nil
 }
+
+func (a *App) Seek(seekTo int) {
+	a.localPlayer.Seek(a.ctx, seekTo)
+}

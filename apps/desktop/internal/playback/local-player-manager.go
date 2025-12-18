@@ -9,7 +9,6 @@ import (
 	"github.com/gopxl/beep"
 	"github.com/gopxl/beep/effects"
 	"github.com/gopxl/beep/flac"
-	"github.com/gopxl/beep/generators"
 	"github.com/gopxl/beep/mp3"
 	"github.com/gopxl/beep/speaker"
 	"github.com/gopxl/beep/wav"
@@ -22,6 +21,7 @@ var _ Player = (*LocalPlayer)(nil)
 type PlayerCommand struct {
 	Playable    *Playable
 	CommandType string
+	SeekTo      int
 }
 
 type LocalPlayer struct {
@@ -36,6 +36,7 @@ type LocalPlayer struct {
 // this just controls whatever streamer I gave it
 var globalCtrl *beep.Ctrl
 var globalVolume *effects.Volume
+var globalMixer *beep.Mixer
 
 func (p *LocalPlayer) Init(ctx context.Context) {
 	runtime.LogInfo(ctx, "Initing local player")
@@ -46,12 +47,16 @@ func (p *LocalPlayer) Init(ctx context.Context) {
 
 	// init speaker
 	sr := beep.SampleRate(44100)
-	speaker.Init(sr, sr.N(time.Second/10))
 
 	// initially stream silence forever
 	// this is the input for the global streaming
+	// mixer is parent streamer, which streamer whatever
+	// we gave to it or silence if the streamer gets drained
+	globalMixer = &beep.Mixer{}
+	speaker.Init(sr, sr.N(time.Second/10))
 	globalVolume = &effects.Volume{
-		Streamer: generators.Silence(-1),
+		// Streamer: generators.Silence(-1),
+		Streamer: globalMixer,
 		Base:     2,
 		Volume:   0,
 		Silent:   false,
@@ -111,4 +116,14 @@ func (p *LocalPlayer) decodeFile(path string) (beep.StreamSeeker, beep.Format, e
 	f.Close()
 
 	return nil, beep.Format{}, fmt.Errorf("could not decode audio file (tried mp3, wav, etc.): %s", path)
+}
+
+func (p *LocalPlayer) getCurrentStreamerProgress() int {
+	secs := int(p.currentPlayable.format.SampleRate.D(p.currentStreamer.Position()).Round(time.Second).Seconds())
+	return secs
+}
+
+func (p *LocalPlayer) getCurrentStreamerLength() int {
+	secs := int(p.currentPlayable.format.SampleRate.D(p.currentStreamer.Len()).Round(time.Second).Seconds())
+	return secs
 }

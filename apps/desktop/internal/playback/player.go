@@ -14,6 +14,7 @@ type Player interface {
 	PrependToQueue(ctx context.Context, track sqlcDb.Track) error
 	DeleteFromQueue(ctx context.Context, track sqlcDb.Track) error
 	GetPlaybackState(ctx context.Context) PlaybackState
+	Seek(ctx context.Context, seekTo int)
 }
 
 type PlaybackState struct {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"localStream/sqlcDb"
-	"time"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -64,6 +63,10 @@ func (p *LocalPlayer) ListQueue(ctx context.Context) []*Playable {
 }
 
 func (p *LocalPlayer) GetPlaybackState(ctx context.Context) PlaybackState {
-	leng := int(p.currentPlayable.format.SampleRate.D(p.currentStreamer.Len()).Round(time.Second).Seconds())
-	return PlaybackState{PlayingTrackId: p.currentPlayable.TrackId, Length: leng}
+	length := p.getCurrentStreamerLength()
+	return PlaybackState{PlayingTrackId: p.currentPlayable.TrackId, Length: length}
+}
+
+func (p *LocalPlayer) Seek(ctx context.Context, seekTo int) {
+	p.cmdChan <- PlayerCommand{CommandType: "SEEK", SeekTo: seekTo}
 }

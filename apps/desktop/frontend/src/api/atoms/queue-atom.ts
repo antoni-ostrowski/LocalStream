@@ -89,3 +89,11 @@ export const deleteFromQueueAtom = atomRuntime.fn(
     registry.refresh(queueAtom.remote)
   })
 )
+
+export const refreshQueue = atomRuntime.fn(
+  Effect.fn(function* () {
+    const registry = yield* Registry.AtomRegistry
+
+    registry.refresh(queueAtom.remote)
+  })
+)

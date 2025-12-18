@@ -1,7 +1,11 @@
 import { useTrackArtwork } from "@/lib/hooks/get-artwork"
-import { playbackStateAtom } from "@/src/api/atoms/playback-state-atom"
-import { Result, useAtomValue } from "@effect-atom/atom-react"
-import { type RefObject } from "react"
+import {
+  playbackStateAtom,
+  updatePlaybackStateAtom
+} from "@/src/api/atoms/playback-state-atom"
+import { EventsOn } from "@/wailsjs/runtime/runtime"
+import { Result, useAtom, useAtomValue } from "@effect-atom/atom-react"
+import { useEffect, type RefObject } from "react"
 import Controls from "./controls"
 import Metadata from "./metadata"
 import ProgressBar from "./progress"
@@ -14,6 +18,14 @@ export type ProgressBarRefType = RefObject<HTMLInputElement | null>
 // and we dont loose the UX
 export default function Player() {
   const playbackState = useAtomValue(playbackStateAtom)
+  const [, update] = useAtom(updatePlaybackStateAtom)
+
+  useEffect(() => {
+    EventsOn("playback", () => {
+      update()
+    })
+  }, [update])
+
   return (
     <>
       {Result.builder(playbackState)
@@ -21,7 +33,6 @@ export default function Player() {
         .onError(() => <Mock />)
         .onSuccess(({ length, playingTrack }) => (
           <>
-            full length: {length}
             <div className="flex flex-col gap-2 p-4">
               <Metadata {...{ currentTrack: playingTrack }} />
               <ProgressBar {...{ length, currentTrack: playingTrack }} />
