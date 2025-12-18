@@ -16,6 +16,7 @@ type Player interface {
 	GetPlaybackState(ctx context.Context) PlaybackState
 	Seek(ctx context.Context, seekTo int)
 	SkipTrack(ctx context.Context)
+	ChangeVolume(ctx context.Context, newVolume float64)
 }
 
 type PlaybackState struct {

@@ -138,3 +138,7 @@ func (a *App) Seek(seekTo int) {
 func (a *App) SkipTrack() {
 	a.localPlayer.SkipTrack(a.ctx)
 }
+
+func (a *App) ChangeVolume(volume float64) {
+	a.localPlayer.ChangeVolume(a.ctx, float64(volume))
+}

@@ -15,19 +15,19 @@ export default function Controls({
   const [_, pauseResume] = useAtom(pauseResumeAtom)
 
   return (
-    <div className="flex flex-row gap-4">
-      <Button variant={"outline"} className="w-min cursor-pointer">
+    <div className="flex w-full flex-row items-center justify-center gap-4">
+      <Button variant={"ghost"} className="w-min cursor-pointer">
         <SkipBack />
       </Button>
       <Button
-        variant={"outline"}
+        variant={"ghost"}
         className="w-min cursor-pointer"
         onClick={() => pauseResume({})}
       >
         {remoteIsPlaying ? <Play /> : <Pause />}
       </Button>
       <Button
-        variant={"outline"}
+        variant={"ghost"}
         className="w-min cursor-pointer"
         onClick={() => skipTrack()}
       >

@@ -1,5 +1,6 @@
 import {
   AppendToQueue,
+  ChangeVolume,
   CreateSourceDir,
   DeleteFromQueue,
   PauseResume,
@@ -35,6 +36,9 @@ export class Mutations extends Effect.Service<Mutations>()("Mutations", {
         ),
         deleteFromQueue: Effect.fn((track: sqlcDb.Track) =>
           wailsCall(() => DeleteFromQueue(track), GenericError)
+        ),
+        changeVolume: Effect.fn((newVolume: number) =>
+          wailsCall(() => ChangeVolume(newVolume), GenericError)
         )
       },
       settings: {

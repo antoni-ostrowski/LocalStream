@@ -22,6 +22,7 @@ type PlayerCommand struct {
 	Playable    *Playable
 	CommandType string
 	SeekTo      int
+	newVolume   float64
 }
 
 type LocalPlayer struct {
@@ -55,7 +56,6 @@ func (p *LocalPlayer) Init(ctx context.Context) {
 	globalMixer = &beep.Mixer{}
 	speaker.Init(sr, sr.N(time.Second/10))
 	globalVolume = &effects.Volume{
-		// Streamer: generators.Silence(-1),
 		Streamer: globalMixer,
 		Base:     2,
 		Volume:   0,

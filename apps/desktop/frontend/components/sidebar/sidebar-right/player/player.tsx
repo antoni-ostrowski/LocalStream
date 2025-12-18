@@ -60,13 +60,13 @@ export default function Player() {
           <>
             <div className="flex flex-col gap-2 p-4">
               <Metadata {...{ currentTrack: playingTrack }} />
+
               <ProgressBar
                 {...{ length, currentTrack: playingTrack, isPlaying }}
               />
-
-              <div className="flex w-full flex-col items-center justify-center gap-5">
-                <VolumeControls {...{ currentTrack: playingTrack }} />
+              <div className="flex w-full flex-col items-center justify-center gap-8">
                 <Controls {...{ remoteIsPlaying: isPlaying }} />
+                <VolumeControls />
               </div>
             </div>
           </>

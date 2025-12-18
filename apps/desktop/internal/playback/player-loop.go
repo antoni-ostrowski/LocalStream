@@ -101,7 +101,7 @@ func (p *LocalPlayer) handleCmd(ctx context.Context, cmd PlayerCommand) {
 		return
 	}
 
-	if cmd.CommandType == "SEEK" {
+	if cmd.CommandType == "SEEK" && cmd.SeekTo != 0 {
 		runtime.LogInfof(ctx, "trying to seek")
 		seekTime := time.Duration(cmd.SeekTo) * time.Second
 		runtime.LogInfof(ctx, "seek time - %v", seekTime)
@@ -115,6 +115,27 @@ func (p *LocalPlayer) handleCmd(ctx context.Context, cmd PlayerCommand) {
 
 	if cmd.CommandType == "SKIP" {
 		p.handleTrackEnd(ctx)
+		return
+	}
+
+	if cmd.CommandType == "CHANGE_VOLUME" && cmd.newVolume != 0 {
+		val := cmd.newVolume
+
+		if val <= 0.02 {
+			globalVolume.Silent = true
+			return
+		}
+
+		globalVolume.Silent = false
+
+		// 3. Map Linear Slider to Exponential Volume
+		// Formula: (Slider - 1.0) * Sensitivity
+		// If val is 1.0 -> Volume is 0   (2^0 = 100%)
+		// If val is 0.5 -> Volume is -2.5 (Much quieter)
+		// If val is 0.0 -> Volume is -5.0 (Near silent)
+		globalVolume.Volume = (val - 1.0) * 5
+
+		runtime.LogInfof(ctx, "Slider: %v -> Internal Volume: %v", val, globalVolume.Volume)
 		return
 	}
 

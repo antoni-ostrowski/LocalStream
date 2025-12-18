@@ -6,6 +6,10 @@ export function AppendToQueue(arg1) {
   return window['go']['main']['App']['AppendToQueue'](arg1);
 }
 
+export function ChangeVolume(arg1) {
+  return window['go']['main']['App']['ChangeVolume'](arg1);
+}
+
 export function CreateSourceDir() {
   return window['go']['main']['App']['CreateSourceDir']();
 }

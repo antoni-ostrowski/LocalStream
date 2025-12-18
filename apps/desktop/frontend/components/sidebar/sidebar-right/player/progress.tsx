@@ -39,25 +39,23 @@ export default function ProgressBar({
   }
 
   return (
-    <>
-      <div className="flex w-full flex-col items-center justify-center gap-2">
-        <input
-          className="w-full bg-gray-300"
-          ref={progressBarInputRef}
-          type="range"
-          step={0.001}
-          value={progress}
-          max={length}
-          min={0}
-          onMouseUp={() => pauseResume({ newState: !isPlaying })}
-          onMouseDown={() => pauseResume({ newState: !isPlaying })}
-          onChange={handleSliderChange}
-        />
-        <div className="flex w-full justify-between">
-          <p>{formatSongLength(progress)}</p>
-          <p>{formatSongLength(length)}</p>
-        </div>
+    <div className="flex w-full flex-col items-center justify-center gap-2">
+      <input
+        className="w-full bg-gray-300"
+        ref={progressBarInputRef}
+        type="range"
+        step={0.001}
+        value={progress}
+        max={length}
+        min={0}
+        onMouseUp={() => pauseResume({ newState: !isPlaying })}
+        onMouseDown={() => pauseResume({ newState: !isPlaying })}
+        onChange={handleSliderChange}
+      />
+      <div className="flex w-full justify-between">
+        <p>{formatSongLength(progress)}</p>
+        <p>{formatSongLength(length)}</p>
       </div>
-    </>
+    </div>
   )
 }

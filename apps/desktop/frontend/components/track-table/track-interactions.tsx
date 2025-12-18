@@ -34,7 +34,7 @@ function PlayNowBtn({ track }: { track: sqlcDb.Track }) {
         variant="ghost"
         onClick={() => {
           console.log("pause rems")
-          pauseResume()
+          pauseResume({})
         }}
       >
         <PauseIcon className="cursor-pointer" size={15} />

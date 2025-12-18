@@ -78,3 +78,7 @@ func (p *LocalPlayer) Seek(ctx context.Context, seekTo int) {
 func (p *LocalPlayer) SkipTrack(ctx context.Context) {
 	p.cmdChan <- PlayerCommand{CommandType: "SKIP"}
 }
+
+func (p *LocalPlayer) ChangeVolume(ctx context.Context, newVolume float64) {
+	p.cmdChan <- PlayerCommand{CommandType: "CHANGE_VOLUME", newVolume: newVolume}
+}
