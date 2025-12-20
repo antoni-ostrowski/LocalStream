@@ -19,10 +19,11 @@ import (
 var _ Player = (*LocalPlayer)(nil)
 
 type PlayerCommand struct {
-	Playable    *Playable
-	CommandType string
-	SeekTo      int
-	newVolume   float64
+	Playable      *Playable
+	CommandType   string
+	SeekTo        int
+	NewVolume     float64
+	IndexToDelete int
 }
 
 type LocalPlayer struct {

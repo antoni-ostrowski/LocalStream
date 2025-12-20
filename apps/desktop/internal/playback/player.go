@@ -12,7 +12,7 @@ type Player interface {
 	ListQueue(ctx context.Context) []*Playable
 	AppendToQueue(ctx context.Context, track sqlcDb.Track) error
 	PrependToQueue(ctx context.Context, track sqlcDb.Track) error
-	DeleteFromQueue(ctx context.Context, track sqlcDb.Track) error
+	DeleteFromQueue(ctx context.Context, index int) error
 	GetPlaybackState(ctx context.Context) PlaybackState
 	Seek(ctx context.Context, seekTo int)
 	SkipTrack(ctx context.Context)

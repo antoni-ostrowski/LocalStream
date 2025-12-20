@@ -85,9 +85,12 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
           onClick={() => console.log("div")}
         >
           <TrackInteractions
-            {...{ track: props.row.original, showPlayNow: false }}
+            {...{
+              track: props.row.original,
+              showPlayNow: false
+            }}
           />
-          <Deletor track={props.row.original} />
+          <Deletor trackQueueIndex={props.row.index} />
         </div>
       )
     })
@@ -167,10 +170,10 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
   )
 }
 
-function Deletor({ track }: { track: sqlcDb.Track }) {
+function Deletor({ trackQueueIndex }: { trackQueueIndex: number }) {
   const [_, deleteFromQueue] = useAtom(deleteFromQueueAtom)
   return (
-    <Button onClick={() => deleteFromQueue(track)}>
+    <Button onClick={() => deleteFromQueue(trackQueueIndex)}>
       <Trash />
     </Button>
   )

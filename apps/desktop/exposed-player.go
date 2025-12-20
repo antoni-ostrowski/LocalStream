@@ -91,8 +91,8 @@ func (a *App) PrependToQueue(track sqlcDb.Track) error {
 	return nil
 }
 
-func (a *App) DeleteFromQueue(track sqlcDb.Track) error {
-	err := a.localPlayer.DeleteFromQueue(a.ctx, track)
+func (a *App) DeleteFromQueue(index int) error {
+	err := a.localPlayer.DeleteFromQueue(a.ctx, index)
 	if err != nil {
 		runtime.LogErrorf(a.ctx, "Failed to delete from queue: %v", err)
 		return fmt.Errorf("Failed to delete from queue: %v", err)

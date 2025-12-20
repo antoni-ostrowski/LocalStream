@@ -196,21 +196,3 @@ export function RenderTableArtwork({ track }: { track: sqlcDb.Track }) {
   const { renderArtworkOrFallback } = useTrackArtwork(track)
   return <>{renderArtworkOrFallback()}</>
 }
-
-// function Updater({ track }: { track: sqlcDb.Track }) {
-//   const [updateState, update] = useAtom(updateTrackInGenericTrackListAtom, {
-//     mode: "promiseExit",
-//   })
-//   return (
-//     <Button
-//       onClick={async () => {
-//         await update({
-//           ...track,
-//           title: `fjdkslafjlk`,
-//         } as sqlcDb.Track)
-//       }}
-//     >
-//       update
-//     </Button>
-//   )
-// }

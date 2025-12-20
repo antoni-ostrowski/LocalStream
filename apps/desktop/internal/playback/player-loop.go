@@ -90,8 +90,8 @@ func (p *LocalPlayer) handleCmd(ctx context.Context, cmd PlayerCommand) {
 
 	if cmd.CommandType == "DELETE_FROM_QUEUE" {
 		n := 0
-		for _, x := range p.queue {
-			if x.TrackId != cmd.Playable.TrackId {
+		for index, x := range p.queue {
+			if index != cmd.IndexToDelete {
 				p.queue[n] = x
 				n++
 			}
@@ -118,8 +118,8 @@ func (p *LocalPlayer) handleCmd(ctx context.Context, cmd PlayerCommand) {
 		return
 	}
 
-	if cmd.CommandType == "CHANGE_VOLUME" && cmd.newVolume != 0 {
-		val := cmd.newVolume
+	if cmd.CommandType == "CHANGE_VOLUME" && cmd.NewVolume != 0 {
+		val := cmd.NewVolume
 
 		if val <= 0.02 {
 			globalVolume.Silent = true

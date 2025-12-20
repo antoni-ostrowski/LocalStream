@@ -34,8 +34,8 @@ export class Mutations extends Effect.Service<Mutations>()("Mutations", {
         prependToQueue: Effect.fn((track: sqlcDb.Track) =>
           wailsCall(() => PrependToQueue(track), GenericError)
         ),
-        deleteFromQueue: Effect.fn((track: sqlcDb.Track) =>
-          wailsCall(() => DeleteFromQueue(track), GenericError)
+        deleteFromQueue: Effect.fn((index: number) =>
+          wailsCall(() => DeleteFromQueue(index), GenericError)
         ),
         changeVolume: Effect.fn((newVolume: number) =>
           wailsCall(() => ChangeVolume(newVolume), GenericError)

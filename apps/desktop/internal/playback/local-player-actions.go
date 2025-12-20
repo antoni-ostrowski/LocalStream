@@ -51,9 +51,9 @@ func (p *LocalPlayer) PrependToQueue(ctx context.Context, track sqlcDb.Track) er
 	return nil
 }
 
-func (p *LocalPlayer) DeleteFromQueue(ctx context.Context, track sqlcDb.Track) error {
+func (p *LocalPlayer) DeleteFromQueue(ctx context.Context, index int) error {
 	runtime.LogInfo(ctx, "Trying to delete from queue")
-	p.cmdChan <- PlayerCommand{CommandType: "DELETE_FROM_QUEUE", Playable: &Playable{TrackId: track.ID}}
+	p.cmdChan <- PlayerCommand{CommandType: "DELETE_FROM_QUEUE", IndexToDelete: index}
 	runtime.LogInfo(ctx, "delete from queue correclty")
 	return nil
 }
@@ -80,5 +80,5 @@ func (p *LocalPlayer) SkipTrack(ctx context.Context) {
 }
 
 func (p *LocalPlayer) ChangeVolume(ctx context.Context, newVolume float64) {
-	p.cmdChan <- PlayerCommand{CommandType: "CHANGE_VOLUME", newVolume: newVolume}
+	p.cmdChan <- PlayerCommand{CommandType: "CHANGE_VOLUME", NewVolume: newVolume}
 }

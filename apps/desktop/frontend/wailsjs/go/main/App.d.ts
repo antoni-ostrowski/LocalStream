@@ -10,7 +10,7 @@ export function ChangeVolume(arg1:number):Promise<void>;
 
 export function CreateSourceDir():Promise<void>;
 
-export function DeleteFromQueue(arg1:sqlcDb.Track):Promise<void>;
+export function DeleteFromQueue(arg1:number):Promise<void>;
 
 export function GetCurrentTrack():Promise<sqlcDb.Track>;
 

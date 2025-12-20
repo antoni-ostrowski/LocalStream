@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import {
   appendToQueueAtom,
-  deleteFromQueueAtom,
   prependToQueueAtom
 } from "@/src/api/atoms/queue-atom"
 import { sqlcDb } from "@/wailsjs/go/models"
@@ -18,7 +17,6 @@ import { Button } from "../ui/button"
 export default function TrackContextMenu({ track }: { track: sqlcDb.Track }) {
   const [, appendToQueue] = useAtom(appendToQueueAtom)
   const [, prependToQueue] = useAtom(prependToQueueAtom)
-  const [, deleteFromQueue] = useAtom(deleteFromQueueAtom)
 
   return (
     <>
@@ -44,14 +42,6 @@ export default function TrackContextMenu({ track }: { track: sqlcDb.Track }) {
               }}
             >
               Play last
-            </DropdownMenuItem>
-
-            <DropdownMenuItem
-              onClick={() => {
-                deleteFromQueue(track)
-              }}
-            >
-              delete from q
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
