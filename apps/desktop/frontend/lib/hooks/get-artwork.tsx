@@ -1,5 +1,5 @@
 import { artworkAtom } from "@/src/api/atoms/track-atoms"
-import { GenericError } from "@/src/api/errors"
+import { GenericError, GetTrackArtworkError } from "@/src/api/errors"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { Result, useAtomValue } from "@effect-atom/atom-react"
 
@@ -11,16 +11,13 @@ export function useTrackArtwork(track: sqlcDb.Track | null) {
 }
 
 export function RenderArtworkOrFallback(
-  atom: Result.Result<string, GenericError>
+  atom: Result.Result<string, GenericError | GetTrackArtworkError>
 ) {
   return (
     <>
       {Result.builder(atom)
         .onError(() => (
-          <img
-            className="w-full rounded-md"
-            src={"../../../../placeholder.webp"}
-          />
+          <img className="w-full rounded-md" src={"/placeholder.webp"} />
         ))
         .onSuccess((artwork) => (
           <img className="w-full rounded-md" src={artwork} />

@@ -7,7 +7,7 @@
     "generate-routes": "tsr generate",
     "watch-routes": "tsr watch",
     "dev": "bun run watch-routes & vite --port 3000",
-    "build": "bun run generate-routes  && vite build",
+    "build": "bun run generate-routes && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "oxlint --type-aware"
