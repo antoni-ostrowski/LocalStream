@@ -36,11 +36,18 @@ export const playbackStateAtom = Object.assign(
           ...currentState.value,
           isPlaying: newState ?? !currentState.value.isPlaying
         }),
-        UpdatePlayingTrack: ({ newPlayingTrack }) => ({
-          ...currentState.value,
-          playingTrack: newPlayingTrack,
-          PlayingTrackId: newPlayingTrack.id
-        }),
+
+        UpdatePlayingTrack: ({ newPlayingTrack }) => {
+          if (newPlayingTrack.id === currentState.value.playingTrack.id) {
+            return {
+              ...currentState.value,
+              playingTrack: newPlayingTrack,
+              PlayingTrackId: newPlayingTrack.id
+            }
+          } else {
+            return currentState.value
+          }
+        },
         UpdatePlayingTrackLength: ({ newLegth }) => ({
           ...currentState.value,
           length: newLegth
