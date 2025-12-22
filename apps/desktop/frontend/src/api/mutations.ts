@@ -1,13 +1,18 @@
+import { CreatePlaylistFormData } from "@/components/sidebar/sidebar-left/playlists/new-playlist"
 import {
   AppendToQueue,
   ChangeVolume,
+  CreatePlaylist,
   CreateSourceDir,
   DeleteFromQueue,
+  DeletePlaylist,
   PauseResume,
   PlayTrack,
   PrependToQueue,
   ReloadAppResources,
+  SelectPlaylistCoverFile,
   SkipTrack,
+  StarPlaylist,
   StarTrack,
   UpdatePreferences
 } from "@/wailsjs/go/main/App"
@@ -41,6 +46,25 @@ export class Mutations extends Effect.Service<Mutations>()("Mutations", {
           wailsCall(() => ChangeVolume(newVolume), GenericError)
         )
       },
+
+      createPlaylist: Effect.fn((input: CreatePlaylistFormData) =>
+        wailsCall(
+          () => CreatePlaylist(input.name, input.coverPath),
+          GenericError
+        )
+      ),
+      selectPlaylistCoverFile: wailsCall(
+        () => SelectPlaylistCoverFile(),
+        GenericError
+      ),
+      starPlaylist: Effect.fn((playlistId: string) =>
+        wailsCall(() => StarPlaylist(playlistId), GenericError)
+      ),
+
+      deletePlaylist: Effect.fn((playlistId: string) =>
+        wailsCall(() => DeletePlaylist(playlistId), GenericError)
+      ),
+
       settings: {
         reloadAppResources: wailsCall(() => ReloadAppResources(), GenericError),
 

@@ -5,35 +5,31 @@ import {
   GetPreferences,
   GetTrackArtwork,
   GetTrackById,
+  ListAllPlaylists,
   ListAllTracks,
+  ListFavPlaylists,
   ListFavTracks,
   ListQueue
 } from "@/wailsjs/go/main/App"
 import { sqlcDb } from "@/wailsjs/go/models"
-import { Array, Effect, pipe } from "effect"
-import { wailsCall } from "./effect-utils"
+import { Effect } from "effect"
+import { listFetcher, wailsCall } from "./effect-utils"
 import {
   GenericError,
   GetCurrentTrackError,
   GetTrackArtworkError,
-  ListQueueError,
-  ListTracksError,
-  NoTracksFound
+  ListQueueError
 } from "./errors"
 
 export class Queries extends Effect.Service<Queries>()("Queries", {
   effect: Effect.gen(function* () {
     return {
-      listAllTracks: getListOfTracks(ListAllTracks),
-      listFavTracks: getListOfTracks(ListFavTracks),
+      listAllTracks: listFetcher(ListAllTracks, GenericError),
+      listFavTracks: listFetcher(ListFavTracks, GenericError),
       getTrackArtwork: Effect.fn((track: sqlcDb.Track) =>
         wailsCall(() => GetTrackArtwork(track), GetTrackArtworkError)
       ),
-      listQueue: getListOfTracks(ListQueue).pipe(
-        Effect.catchTag("ListTracksError", () =>
-          Effect.fail(new ListQueueError({}))
-        )
-      ),
+      listQueue: listFetcher(ListQueue, ListQueueError),
       getCurrentPlayingTrack: wailsCall(
         () => GetCurrentTrack(),
         GetCurrentTrackError
@@ -46,31 +42,9 @@ export class Queries extends Effect.Service<Queries>()("Queries", {
       getPlaybackState: wailsCall(() => GetPlaybackState(), GenericError),
       getTrackById: Effect.fn((trackId: string) =>
         wailsCall(() => GetTrackById(trackId), GenericError)
-      )
+      ),
+      listAllPlaylists: listFetcher(ListAllPlaylists, GenericError),
+      listFavPlaylists: listFetcher(ListFavPlaylists, GenericError)
     }
   })
 }) {}
-
-const getListOfTracks = Effect.fn(function* (
-  trackGetter: () => Promise<Array<sqlcDb.Track>>
-) {
-  return yield* pipe(
-    Effect.tryPromise({
-      try: async () => await trackGetter(),
-      catch: (cause) =>
-        new ListTracksError({
-          cause
-        })
-    }),
-    Effect.andThen((tracks) =>
-      Effect.if(Array.isEmptyArray(tracks), {
-        onTrue: () => new NoTracksFound({}),
-        onFalse: () => Effect.succeed(tracks)
-      })
-    ),
-    Effect.tapBoth({
-      onSuccess: (tracks) => Effect.logInfo(tracks),
-      onFailure: (error) => Effect.logError(error)
-    })
-  )
-})

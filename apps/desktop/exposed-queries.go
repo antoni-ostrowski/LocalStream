@@ -2,9 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"fmt"
 	"localStream/internal/config"
 	"localStream/sqlcDb"
+	"os"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -27,7 +29,7 @@ func (a *App) ListAllTracks() ([]sqlcDb.Track, error) {
 	tracks, err := a.db.Queries.ListAllTracks(a.ctx)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			fmt.Printf("No tracks in list all tracks")
+			runtime.LogInfof(a.ctx, "No tracks in list all tracks")
 			return []sqlcDb.Track{}, nil
 		}
 		return []sqlcDb.Track{}, fmt.Errorf("Failed to get tracks: %v", err)
@@ -52,4 +54,39 @@ func (a *App) GetTrackById(trackId string) (sqlcDb.Track, error) {
 		return sqlcDb.Track{}, fmt.Errorf("Failed to find track with that id %v %v", trackId, err)
 	}
 	return track, nil
+}
+
+func (a *App) ListAllPlaylists() ([]sqlcDb.Playlist, error) {
+	runtime.LogInfo(a.ctx, "trying to list all playlists")
+	playlists, err := a.db.Queries.ListPlaylists(a.ctx)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			runtime.LogErrorf(a.ctx, "no playlists found ")
+			return []sqlcDb.Playlist{}, nil
+		}
+
+		return []sqlcDb.Playlist{}, fmt.Errorf("Failed to list all playlists %v", err)
+	}
+
+	return playlists, nil
+}
+
+func (a *App) GetImageFromPath(path string) (string, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("data:image/png;base64,%s", base64.StdEncoding.EncodeToString(data)), nil
+}
+
+func (a *App) ListFavPlaylists() ([]sqlcDb.Playlist, error) {
+	playlists, err := a.db.Queries.ListFavPlaylists(a.ctx)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			runtime.LogErrorf(a.ctx, "no fav playlists found ")
+			return []sqlcDb.Playlist{}, nil
+		}
+		return []sqlcDb.Playlist{}, fmt.Errorf("Failed to get fav playlists %vl", err)
+	}
+	return playlists, nil
 }

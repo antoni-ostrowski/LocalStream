@@ -14,8 +14,6 @@ import SidebarTracks from "./tracks/tracks"
 export const sidebarIconSize = 40
 
 export default function SidebarLeft() {
-  // const dbStatusQuery = useQuery(trpc.user.getDbStatus.queryOptions())
-
   return (
     <Sidebar
       className="sticky top-0 h-svh border-r bg-transparent lg:flex"
@@ -35,14 +33,10 @@ export default function SidebarLeft() {
               <SidebarItemText text="Settings" />
             </SidebarMenuButton>
           </Link>
-          {/* {!dbStatusQuery.isPending && !dbStatusQuery.isError && ( */}
-          <>
-            <SidebarTracks />
-            <SidebarPlaylists />
-            <SidebarArtists />
-            <SidebarAlbums />
-          </>
-          {/* )} */}
+          <SidebarTracks />
+          <SidebarPlaylists />
+          <SidebarArtists />
+          <SidebarAlbums />
         </SidebarMenu>
       </SidebarContent>
     </Sidebar>

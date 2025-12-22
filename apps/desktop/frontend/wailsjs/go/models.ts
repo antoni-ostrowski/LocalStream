@@ -107,6 +107,44 @@ export namespace sql {
 
 export namespace sqlcDb {
 	
+	export class Playlist {
+	    id: string;
+	    created_at: number;
+	    name: string;
+	    cover_path: sql.NullString;
+	    starred: sql.NullInt64;
+	
+	    static createFrom(source: any = {}) {
+	        return new Playlist(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.created_at = source["created_at"];
+	        this.name = source["name"];
+	        this.cover_path = this.convertValues(source["cover_path"], sql.NullString);
+	        this.starred = this.convertValues(source["starred"], sql.NullInt64);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class Track {
 	    id: string;
 	    created_at: number;

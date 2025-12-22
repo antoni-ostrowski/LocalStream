@@ -8,13 +8,19 @@ export function AppendToQueue(arg1:sqlcDb.Track):Promise<void>;
 
 export function ChangeVolume(arg1:number):Promise<void>;
 
+export function CreatePlaylist(arg1:string,arg2:string):Promise<sqlcDb.Playlist>;
+
 export function CreateSourceDir():Promise<void>;
 
 export function DeleteFromQueue(arg1:number):Promise<void>;
 
+export function DeletePlaylist(arg1:string):Promise<void>;
+
 export function GetCurrentTrack():Promise<sqlcDb.Track>;
 
 export function GetDefaultPreferences():Promise<config.Preferences>;
+
+export function GetImageFromPath(arg1:string):Promise<string>;
 
 export function GetIsAppReady():Promise<boolean>;
 
@@ -26,7 +32,11 @@ export function GetTrackArtwork(arg1:sqlcDb.Track):Promise<string>;
 
 export function GetTrackById(arg1:string):Promise<sqlcDb.Track>;
 
+export function ListAllPlaylists():Promise<Array<sqlcDb.Playlist>>;
+
 export function ListAllTracks():Promise<Array<sqlcDb.Track>>;
+
+export function ListFavPlaylists():Promise<Array<sqlcDb.Playlist>>;
 
 export function ListFavTracks():Promise<Array<sqlcDb.Track>>;
 
@@ -42,7 +52,11 @@ export function ReloadAppResources():Promise<void>;
 
 export function Seek(arg1:number):Promise<void>;
 
+export function SelectPlaylistCoverFile():Promise<string>;
+
 export function SkipTrack():Promise<void>;
+
+export function StarPlaylist(arg1:string):Promise<sqlcDb.Playlist>;
 
 export function StarTrack(arg1:sqlcDb.Track):Promise<void>;
 

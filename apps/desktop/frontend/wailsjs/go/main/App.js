@@ -10,6 +10,10 @@ export function ChangeVolume(arg1) {
   return window['go']['main']['App']['ChangeVolume'](arg1);
 }
 
+export function CreatePlaylist(arg1, arg2) {
+  return window['go']['main']['App']['CreatePlaylist'](arg1, arg2);
+}
+
 export function CreateSourceDir() {
   return window['go']['main']['App']['CreateSourceDir']();
 }
@@ -18,12 +22,20 @@ export function DeleteFromQueue(arg1) {
   return window['go']['main']['App']['DeleteFromQueue'](arg1);
 }
 
+export function DeletePlaylist(arg1) {
+  return window['go']['main']['App']['DeletePlaylist'](arg1);
+}
+
 export function GetCurrentTrack() {
   return window['go']['main']['App']['GetCurrentTrack']();
 }
 
 export function GetDefaultPreferences() {
   return window['go']['main']['App']['GetDefaultPreferences']();
+}
+
+export function GetImageFromPath(arg1) {
+  return window['go']['main']['App']['GetImageFromPath'](arg1);
 }
 
 export function GetIsAppReady() {
@@ -46,8 +58,16 @@ export function GetTrackById(arg1) {
   return window['go']['main']['App']['GetTrackById'](arg1);
 }
 
+export function ListAllPlaylists() {
+  return window['go']['main']['App']['ListAllPlaylists']();
+}
+
 export function ListAllTracks() {
   return window['go']['main']['App']['ListAllTracks']();
+}
+
+export function ListFavPlaylists() {
+  return window['go']['main']['App']['ListFavPlaylists']();
 }
 
 export function ListFavTracks() {
@@ -78,8 +98,16 @@ export function Seek(arg1) {
   return window['go']['main']['App']['Seek'](arg1);
 }
 
+export function SelectPlaylistCoverFile() {
+  return window['go']['main']['App']['SelectPlaylistCoverFile']();
+}
+
 export function SkipTrack() {
   return window['go']['main']['App']['SkipTrack']();
+}
+
+export function StarPlaylist(arg1) {
+  return window['go']['main']['App']['StarPlaylist'](arg1);
 }
 
 export function StarTrack(arg1) {

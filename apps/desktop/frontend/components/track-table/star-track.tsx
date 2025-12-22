@@ -21,7 +21,7 @@ export default function StarTrack({ track }: { track: sqlcDb.Track }) {
         size={15}
         className="cursor-pointer"
         fill={track.starred.Valid && track.starred.Int64 ? "yellow" : ""}
-        color={track.starred.Valid && track.starred.Int64 ? "yellow" : "white"}
+        color={"yellow"}
       />
     </Button>
   )

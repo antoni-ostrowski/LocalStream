@@ -1,5 +1,4 @@
-import { OctagonX, RotateCcw, TriangleAlert } from "lucide-react"
-import { Button } from "./ui/button"
+import { OctagonX, TriangleAlert } from "lucide-react"
 
 export default function FullScreenError({
   errorMessage = "Something went wrong.",
@@ -21,15 +20,6 @@ export default function FullScreenError({
       <h1 className="text-3xl font-bold">{errorMessage}</h1>
       <p className="max-w-[50%] text-center text-sm">{errorDetail}</p>
       <div className="flex w-1/6 flex-col items-center justify-center gap-3">
-        <Button
-          className="w-full"
-          variant={"outline"}
-          onClick={() => {
-            location.reload()
-          }}
-        >
-          <RotateCcw /> Reload page
-        </Button>
         {actionButton && (
           <div className="w-full [&_button]:w-full">{actionButton}</div>
         )}

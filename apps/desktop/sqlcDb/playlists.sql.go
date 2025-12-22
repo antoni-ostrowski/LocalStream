@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const createPlaylist = `-- name: CreatePlaylist :exec
+const createPlaylist = `-- name: CreatePlaylist :one
 INSERT INTO playlists (
   id,
   created_at,
@@ -24,6 +24,7 @@ INSERT INTO playlists (
   ?4,
   ?5
 )
+RETURNING id, created_at, name, cover_path, starred
 `
 
 type CreatePlaylistParams struct {
@@ -34,15 +35,23 @@ type CreatePlaylistParams struct {
 	Starred   sql.NullInt64  `json:"starred"`
 }
 
-func (q *Queries) CreatePlaylist(ctx context.Context, arg CreatePlaylistParams) error {
-	_, err := q.db.ExecContext(ctx, createPlaylist,
+func (q *Queries) CreatePlaylist(ctx context.Context, arg CreatePlaylistParams) (Playlist, error) {
+	row := q.db.QueryRowContext(ctx, createPlaylist,
 		arg.ID,
 		arg.CreatedAt,
 		arg.Name,
 		arg.CoverPath,
 		arg.Starred,
 	)
-	return err
+	var i Playlist
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.Name,
+		&i.CoverPath,
+		&i.Starred,
+	)
+	return i, err
 }
 
 const deletePlaylist = `-- name: DeletePlaylist :exec
@@ -54,12 +63,13 @@ func (q *Queries) DeletePlaylist(ctx context.Context, id string) error {
 	return err
 }
 
-const editPlaylist = `-- name: EditPlaylist :exec
+const editPlaylist = `-- name: EditPlaylist :one
 UPDATE playlists SET
     name = ?1,
     cover_path = ?2,
     starred = ?3
 WHERE id = ?4
+RETURNING id, created_at, name, cover_path, starred
 `
 
 type EditPlaylistParams struct {
@@ -69,14 +79,22 @@ type EditPlaylistParams struct {
 	ID        string         `json:"id"`
 }
 
-func (q *Queries) EditPlaylist(ctx context.Context, arg EditPlaylistParams) error {
-	_, err := q.db.ExecContext(ctx, editPlaylist,
+func (q *Queries) EditPlaylist(ctx context.Context, arg EditPlaylistParams) (Playlist, error) {
+	row := q.db.QueryRowContext(ctx, editPlaylist,
 		arg.Name,
 		arg.CoverPath,
 		arg.Starred,
 		arg.ID,
 	)
-	return err
+	var i Playlist
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.Name,
+		&i.CoverPath,
+		&i.Starred,
+	)
+	return i, err
 }
 
 const getPlaylist = `-- name: GetPlaylist :one
