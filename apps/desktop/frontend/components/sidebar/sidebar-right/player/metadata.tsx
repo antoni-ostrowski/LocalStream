@@ -1,5 +1,5 @@
 import TrackInteractions from "@/components/track-table/track-interactions"
-import { useTrackArtwork } from "@/lib/hooks/get-artwork"
+import { createArtworkLink } from "@/lib/utils"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { Dot } from "lucide-react"
 
@@ -8,11 +8,9 @@ export default function Metadata({
 }: {
   currentTrack: sqlcDb.Track
 }) {
-  const { renderArtworkOrFallback } = useTrackArtwork(currentTrack)
-
   return (
     <div className="flex flex-col items-center justify-center gap-2">
-      {renderArtworkOrFallback()}
+      <img src={createArtworkLink(currentTrack.path) ?? "/placeholder.webp"} />
       <div className="flex w-full flex-row items-center justify-between">
         <div className="flex w-full flex-col items-start justify-start">
           <h1 className="text-xl font-bold">{currentTrack.title}</h1>

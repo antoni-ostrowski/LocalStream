@@ -1,4 +1,4 @@
-import { useTrackArtwork } from "@/lib/hooks/get-artwork"
+import { createArtworkLink } from "@/lib/utils"
 import { sqlcDb } from "@/wailsjs/go/models"
 import {
   createColumnHelper,
@@ -193,6 +193,5 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
 }
 
 export function RenderTableArtwork({ track }: { track: sqlcDb.Track }) {
-  const { renderArtworkOrFallback } = useTrackArtwork(track)
-  return <>{renderArtworkOrFallback()}</>
+  return <img src={createArtworkLink(track.path)} className="w-10" />
 }

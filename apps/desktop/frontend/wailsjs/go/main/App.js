@@ -50,10 +50,6 @@ export function GetPreferences() {
   return window['go']['main']['App']['GetPreferences']();
 }
 
-export function GetTrackArtwork(arg1) {
-  return window['go']['main']['App']['GetTrackArtwork'](arg1);
-}
-
 export function GetTrackById(arg1) {
   return window['go']['main']['App']['GetTrackById'](arg1);
 }

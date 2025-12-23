@@ -34,8 +34,8 @@ export default function QueueTrackTable() {
   return (
     <>
       {Result.builder(queueListAtom)
-        .onErrorTag("NoTracksFound", () => null)
-        .onErrorTag("ListQueueError", () => (
+        .onErrorTag("ListQueueError", () => null)
+        .onErrorTag("NotFound", () => (
           <p className="text-center">something went wrong</p>
         ))
         .onSuccess((queue) => <QueueTable {...{ queueTracks: queue }} />)

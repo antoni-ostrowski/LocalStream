@@ -1,45 +1,12 @@
 package main
 
 import (
-	"bytes"
-	"encoding/base64"
 	"fmt"
-	"image"
 	"localStream/internal/playback"
 	"localStream/sqlcDb"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
-	"go.senan.xyz/taglib"
 )
-
-func (a *App) GetTrackArtwork(track sqlcDb.Track) (string, error) {
-	imageBytes, err := taglib.ReadImage(track.Path)
-	if err != nil {
-		return "", fmt.Errorf("Failed to read image: %v", err)
-	}
-	if imageBytes == nil {
-		return "", fmt.Errorf("Failed to read image: %v", err)
-	}
-
-	_, format, err := image.Decode(bytes.NewReader(imageBytes))
-	if err != nil {
-		runtime.LogErrorf(a.ctx, "Error decoding image to find format: %v", err)
-		format = "jpeg"
-	}
-
-	mimeType := fmt.Sprintf("image/%s", format)
-	if format == "gif" {
-		mimeType = "image/gif"
-	} else if format == "jpeg" || format == "jpg" {
-		mimeType = "image/jpeg"
-	}
-
-	base64String := base64.StdEncoding.EncodeToString(imageBytes)
-
-	dataURI := fmt.Sprintf("data:%s;base64,%s", mimeType, base64String)
-
-	return dataURI, nil
-}
 
 func (a *App) GetCurrentTrack() (sqlcDb.Track, error) {
 	currentTrackId := a.localPlayer.GetCurrentTrackId(a.ctx)

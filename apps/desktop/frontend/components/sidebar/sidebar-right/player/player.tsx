@@ -1,4 +1,3 @@
-import { useTrackArtwork } from "@/lib/hooks/get-artwork"
 import {
   playbackStateAtom,
   PlaybackStateAtomAction
@@ -79,10 +78,9 @@ export default function Player() {
 }
 
 function Mock() {
-  const { renderArtworkOrFallback } = useTrackArtwork(null)
   return (
     <div className="flex flex-col gap-2 p-4">
-      {renderArtworkOrFallback()}
+      <img src="/placeholder.webp" />
       <div className="flex w-full flex-col items-center justify-center gap-5"></div>
     </div>
   )

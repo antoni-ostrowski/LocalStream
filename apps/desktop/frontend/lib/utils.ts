@@ -59,3 +59,11 @@ export function formatSongLength(totalSeconds: number): string {
 
   return `${formattedMinutes}:${formattedSeconds}`
 }
+
+export function createFileLink(path: string) {
+  return "/files/" + encodeURIComponent(path)
+}
+
+export function createArtworkLink(path: string) {
+  return "/artwork/" + encodeURIComponent(path)
+}
