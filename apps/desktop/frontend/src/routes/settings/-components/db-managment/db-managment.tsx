@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
-import { DatabaseIcon } from "lucide-react"
+import { IconDatabase } from "@tabler/icons-react"
 import UpdateDbPath from "./update-db-path"
 
 export default function DbManagment() {
@@ -13,7 +13,7 @@ export default function DbManagment() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <DatabaseIcon />
+          <IconDatabase />
           <h1>Manage your data</h1>
         </CardTitle>
         <CardDescription>

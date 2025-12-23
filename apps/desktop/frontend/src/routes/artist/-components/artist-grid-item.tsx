@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card"
+import { IconPlus } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
-import { AudioLines } from "lucide-react"
 import FavArtist from "./fav-artist"
 
 // export type ArtistGridItemType =
@@ -18,7 +18,7 @@ export default function ArtistGridItem() {
           </div>
           <div className="flex items-center justify-center gap-2">
             <p>10</p>
-            <AudioLines />
+            <IconPlus />
           </div>
         </div>
       </Card>

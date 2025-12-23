@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card"
 import { triggerTrackSyncAtom } from "@/src/api/atoms/settings-atom"
 import { useAtom } from "@effect-atom/atom-react"
-import { RefreshCw } from "lucide-react"
+import { IconRefresh } from "@tabler/icons-react"
 
 export default function ManualTracksSync() {
   const [trackSyncState, triggerTrackSync] = useAtom(triggerTrackSyncAtom)
@@ -33,7 +33,7 @@ export default function ManualTracksSync() {
           size="lg"
           className="flex items-center gap-2"
         >
-          <RefreshCw
+          <IconRefresh
             className={`h-4 w-4 ${trackSyncState.waiting ? "animate-spin" : ""}`}
           />
           {trackSyncState.waiting

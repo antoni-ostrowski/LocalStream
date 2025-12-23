@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
-import { RefreshCw } from "lucide-react"
+import { IconRefresh } from "@tabler/icons-react"
 import ManualTracksSync from "./manual-sync"
 
 export default function LibraryManagment() {
@@ -13,7 +13,7 @@ export default function LibraryManagment() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <RefreshCw />
+          <IconRefresh />
           <h1>Library Management</h1>
         </CardTitle>
         <CardDescription>

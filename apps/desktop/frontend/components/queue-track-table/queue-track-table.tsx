@@ -1,6 +1,7 @@
 import { deleteFromQueueAtom, queueAtom } from "@/src/api/atoms/queue-atom"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { Result, useAtom, useAtomValue } from "@effect-atom/atom-react"
+import { IconDog, IconTrash } from "@tabler/icons-react"
 import {
   ColumnFiltersState,
   createColumnHelper,
@@ -10,7 +11,6 @@ import {
   getSortedRowModel,
   useReactTable
 } from "@tanstack/react-table"
-import { Dot, Trash } from "lucide-react"
 import { useState } from "react"
 import { fuzzyFilter, fuzzySort } from "../track-table/table-utils"
 import TrackInteractions from "../track-table/track-interactions"
@@ -66,7 +66,7 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
             <h1 className="text-md">{title}</h1>
             <div className="flex flex-row items-center justify-center gap-0">
               <h2 className="text-muted-foreground">{artist}</h2>
-              <Dot className="text-muted-foreground" />
+              <IconDog className="text-muted-foreground" />
               <h2 className="text-muted-foreground">{album}</h2>
             </div>
           </div>
@@ -174,7 +174,7 @@ function Deletor({ trackQueueIndex }: { trackQueueIndex: number }) {
   const [_, deleteFromQueue] = useAtom(deleteFromQueueAtom)
   return (
     <Button onClick={() => deleteFromQueue(trackQueueIndex)}>
-      <Trash />
+      <IconTrash />
     </Button>
   )
 }

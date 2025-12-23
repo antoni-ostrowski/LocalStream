@@ -4,7 +4,12 @@ import {
   skipTrackAtom
 } from "@/src/api/atoms/playback-state-atom"
 import { useAtom } from "@effect-atom/atom-react"
-import { Pause, Play, SkipBack, SkipForward } from "lucide-react"
+import {
+  IconPlayerPause,
+  IconPlayerPlay,
+  IconPlayerSkipBack,
+  IconPlayerSkipForward
+} from "@tabler/icons-react"
 
 export default function Controls({
   remoteIsPlaying
@@ -17,21 +22,21 @@ export default function Controls({
   return (
     <div className="flex w-full flex-row items-center justify-center gap-4">
       <Button variant={"ghost"} className="w-min cursor-pointer">
-        <SkipBack />
+        <IconPlayerSkipBack />
       </Button>
       <Button
         variant={"ghost"}
         className="w-min cursor-pointer"
         onClick={() => pauseResume({})}
       >
-        {remoteIsPlaying ? <Play /> : <Pause />}
+        {remoteIsPlaying ? <IconPlayerPlay /> : <IconPlayerPause />}
       </Button>
       <Button
         variant={"ghost"}
         className="w-min cursor-pointer"
         onClick={() => skipTrack()}
       >
-        <SkipForward />
+        <IconPlayerSkipForward />
       </Button>
     </div>
   )

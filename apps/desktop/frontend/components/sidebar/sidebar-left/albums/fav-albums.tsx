@@ -5,17 +5,11 @@ import {
   CollapsibleTrigger
 } from "@/components/ui/collapsible"
 import { SidebarMenuSub } from "@/components/ui/sidebar"
+import { IconChevronDown, IconStar } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
-import { ChevronDown, Star } from "lucide-react"
 import { sidebarIconSize, SidebarItemText } from "../sidebar-left"
 
 export default function FavAlbums() {
-  // const { data, isPending, isError } = useQuery(
-  //   trpc.metadata.listArtists.queryOptions({ favsOnly: true })
-  // )
-  //
-  // if (isError) return null
-  //
   return (
     <Collapsible>
       <CollapsibleTrigger asChild className="w-full">
@@ -23,9 +17,9 @@ export default function FavAlbums() {
           className="flex w-full items-center justify-start"
           variant={"ghost"}
         >
-          <Star size={sidebarIconSize} fill="yellow" color="yellow" />
+          <IconStar size={sidebarIconSize} fill="yellow" color="yellow" />
           <SidebarItemText text="Favourite Albums" />
-          <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+          <IconChevronDown className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
         </Button>
       </CollapsibleTrigger>
       <CollapsibleContent>
@@ -35,10 +29,9 @@ export default function FavAlbums() {
             <Button
               className="flex w-full items-center justify-start"
               variant={"ghost"}
-              asChild
             >
               <div>
-                <Star size={sidebarIconSize} fill="yellow" color="yellow" />
+                <IconStar size={sidebarIconSize} fill="yellow" color="yellow" />
                 <p>All Favourite Albums</p>
               </div>
             </Button>

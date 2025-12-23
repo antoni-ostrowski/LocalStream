@@ -1,6 +1,6 @@
 import { changeVolumeAtom } from "@/src/api/atoms/playback-state-atom"
 import { useAtom } from "@effect-atom/atom-react"
-import { Volume2, VolumeOff } from "lucide-react"
+import { IconVolume, IconVolumeOff } from "@tabler/icons-react"
 import { useState } from "react"
 
 export default function VolumeControls() {
@@ -14,7 +14,7 @@ export default function VolumeControls() {
   }
   return (
     <div className="flex w-full flex-row items-center justify-center gap-2">
-      <VolumeOff size={15} />
+      <IconVolumeOff size={15} />
       <input
         className="w-[90%] bg-gray-300"
         type="range"
@@ -24,7 +24,7 @@ export default function VolumeControls() {
         value={volume}
         onChange={handleVolumeChange}
       />
-      <Volume2 size={15} />
+      <IconVolume size={15} />
     </div>
   )
 }

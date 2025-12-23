@@ -4,8 +4,8 @@ import {
   SidebarMenu,
   SidebarMenuButton
 } from "@/components/ui/sidebar"
+import { IconMinimize, IconSettings } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
-import { Minimize, Settings } from "lucide-react"
 import SidebarAlbums from "./albums/sidebar-albums"
 import SidebarArtists from "./artists/sidebar-artists"
 import SidebarPlaylists from "./playlists/sidebar-playlist"
@@ -23,13 +23,13 @@ export default function SidebarLeft() {
         <SidebarMenu>
           <Link to="/">
             <SidebarMenuButton>
-              <Minimize size={sidebarIconSize} />
+              <IconMinimize size={sidebarIconSize} />
               <SidebarItemText text="Start" />
             </SidebarMenuButton>
           </Link>
           <Link to="/settings">
             <SidebarMenuButton>
-              <Settings size={sidebarIconSize} />
+              <IconSettings size={sidebarIconSize} />
               <SidebarItemText text="Settings" />
             </SidebarMenuButton>
           </Link>

@@ -23,8 +23,8 @@ import { atomRuntime } from "@/src/api/make-runtime"
 import { Mutations } from "@/src/api/mutations"
 import { GetImageFromPath } from "@/wailsjs/go/main/App"
 import { Registry, Result, useAtom } from "@effect-atom/atom-react"
+import { IconPlus } from "@tabler/icons-react"
 import { Effect, Schema } from "effect"
-import { Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import { sidebarIconSize } from "../sidebar-left"
 
@@ -80,15 +80,19 @@ export function NewPlaylist() {
   return (
     <>
       <Dialog onOpenChange={setIsOpen} open={isOpen}>
-        <DialogTrigger className="w-full" asChild>
-          <Button
-            className="flex w-full items-center justify-start"
-            variant={"ghost"}
-          >
-            <Plus size={sidebarIconSize} />
-            New Playlist
-          </Button>
-        </DialogTrigger>
+        <DialogTrigger
+          className="w-full"
+          render={(props) => (
+            <Button
+              {...props}
+              className="flex w-full items-center justify-start"
+              variant={"ghost"}
+            >
+              <IconPlus size={sidebarIconSize} />
+              New Playlist
+            </Button>
+          )}
+        ></DialogTrigger>
         <DialogContent>
           <DialogHeader className="flex flex-col gap-4">
             <DialogTitle>Create new playlist</DialogTitle>

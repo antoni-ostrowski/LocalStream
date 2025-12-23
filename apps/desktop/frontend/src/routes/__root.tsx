@@ -1,6 +1,5 @@
 import SidebarLeft from "@/components/sidebar/sidebar-left/sidebar-left"
 import SidebarRight from "@/components/sidebar/sidebar-right/sidebar-right"
-import { ThemeProvider } from "@/components/theme/theme-provider"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/sonner"
 import { RegistryProvider } from "@effect-atom/atom-react"
@@ -47,22 +46,20 @@ function RootComponent() {
   return (
     <>
       <RegistryProvider>
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <div className={`flex min-h-screen flex-col`}>
-            <div className={`flex items-center gap-2 border-b`}>
-              <div className={`flex-1`}>
-                <SidebarProvider>
-                  <SidebarLeft />
-                  <SidebarInset>
-                    <Outlet />
-                  </SidebarInset>
-                  <SidebarRight />
-                  <Toaster />
-                </SidebarProvider>
-              </div>
+        <div className={`flex min-h-screen flex-col`}>
+          <div className={`flex items-center gap-2 border-b`}>
+            <div className={`flex-1`}>
+              <SidebarProvider>
+                <SidebarLeft />
+                <SidebarInset>
+                  <Outlet />
+                </SidebarInset>
+                <SidebarRight />
+                <Toaster />
+              </SidebarProvider>
             </div>
           </div>
-        </ThemeProvider>
+        </div>
       </RegistryProvider>
       <TanStackRouterDevtools position="bottom-right" />
       <ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />

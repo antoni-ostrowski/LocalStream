@@ -1,4 +1,4 @@
-import { OctagonX, TriangleAlert } from "lucide-react"
+import { IconAlertTriangle, IconOctagon } from "@tabler/icons-react"
 
 export default function FullScreenError({
   errorMessage = "Something went wrong.",
@@ -13,9 +13,11 @@ export default function FullScreenError({
 }) {
   return (
     <div className="flex h-full w-full flex-1 flex-col items-center justify-center gap-4">
-      {type === "error" && <OctagonX className="text-destructive" size={100} />}
+      {type === "error" && (
+        <IconOctagon className="text-destructive" size={100} />
+      )}
       {type === "warning" && (
-        <TriangleAlert className="text-yellow-300" size={100} />
+        <IconAlertTriangle className="text-yellow-300" size={100} />
       )}
       <h1 className="text-3xl font-bold">{errorMessage}</h1>
       <p className="max-w-[50%] text-center text-sm">{errorDetail}</p>

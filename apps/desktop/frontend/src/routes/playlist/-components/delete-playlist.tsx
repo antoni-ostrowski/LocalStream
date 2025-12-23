@@ -7,8 +7,8 @@ import { atomRuntime } from "@/src/api/make-runtime"
 import { Mutations } from "@/src/api/mutations"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { Registry, useAtom } from "@effect-atom/atom-react"
+import { IconTrash } from "@tabler/icons-react"
 import { Effect } from "effect"
-import { Trash } from "lucide-react"
 
 const deletePlaylistAtom = atomRuntime.fn(
   Effect.fn(function* (playlist: sqlcDb.Playlist) {
@@ -27,11 +27,11 @@ export default function DeletePlaylist({
 }: {
   playlist: sqlcDb.Playlist
 }) {
-  const [state, deletePlaylist] = useAtom(deletePlaylistAtom)
+  const [, deletePlaylist] = useAtom(deletePlaylistAtom)
   return (
     <>
       <Button variant={"destructive"} onClick={() => deletePlaylist(playlist)}>
-        <Trash />
+        <IconTrash />
       </Button>
     </>
   )

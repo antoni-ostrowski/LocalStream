@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { Star } from "lucide-react"
+import { IconStar } from "@tabler/icons-react"
 
 export default function FavAlbum() {
   // {
@@ -22,7 +22,7 @@ export default function FavAlbum() {
         // })
       }}
     >
-      {false ? <Star fill="yellow" color="yellow" /> : <Star />}
+      {false ? <IconStar fill="yellow" color="yellow" /> : <IconStar />}
     </Button>
   )
 }

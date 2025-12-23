@@ -1,4 +1,3 @@
-import { Star } from "lucide-react"
 import { Button } from "../../../../components/ui/button"
 
 export default function FavArtist() {
@@ -21,7 +20,7 @@ export default function FavArtist() {
         // await mutateAsync({ artist: artistName })
       }}
     >
-      {false ? <Star fill="yellow" color="yellow" /> : <Star />}
+      {/* {false ? <IconStar fill="yellow" color="yellow" /> : <IconStar />} */}
     </Button>
   )
 }

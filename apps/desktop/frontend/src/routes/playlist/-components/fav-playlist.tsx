@@ -7,8 +7,8 @@ import { atomRuntime } from "@/src/api/make-runtime"
 import { Mutations } from "@/src/api/mutations"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { Registry, useAtom } from "@effect-atom/atom-react"
+import { IconStar } from "@tabler/icons-react"
 import { Effect } from "effect"
-import { Star } from "lucide-react"
 
 const starPlaylistAtom = atomRuntime.fn(
   Effect.fn(function* (playlistId: string) {
@@ -37,24 +37,11 @@ export default function FavPlaylist({
     <>
       <Button onClick={() => starPlaylist(playlist.id)}>
         {playlist.starred?.Valid ? (
-          <Star color="yellow" fill="yellow" />
+          <IconStar color="yellow" fill="yellow" />
         ) : (
-          <Star />
+          <IconStar />
         )}
       </Button>
     </>
   )
 }
-
-//   variant={"ghost"}
-//   onClick={async (e) => {
-//     e.preventDefault()
-//     e.stopPropagation()
-//     await mutateAsync({
-//       playlistId: playlist.id,
-//       currentStarStatus: playlist.starred,
-//     })
-//   }}
-// >
-//   <>{playlist.starred ? <Star fill="yellow" color="yellow" /> : <Star />}</>
-// </Button>

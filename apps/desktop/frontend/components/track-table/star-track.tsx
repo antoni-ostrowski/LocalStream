@@ -1,7 +1,7 @@
 import { starTrackAtom } from "@/src/api/atoms/track-atoms"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { Result, useAtom } from "@effect-atom/atom-react"
-import { Star } from "lucide-react"
+import { IconStar } from "@tabler/icons-react"
 import { toast } from "sonner"
 import { Button } from "../ui/button"
 
@@ -17,7 +17,7 @@ export default function StarTrack({ track }: { track: sqlcDb.Track }) {
         )
       }}
     >
-      <Star
+      <IconStar
         size={15}
         className="cursor-pointer"
         fill={track.starred.Valid && track.starred.Int64 ? "yellow" : ""}

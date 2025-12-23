@@ -5,8 +5,8 @@ import {
   CollapsibleTrigger
 } from "@/components/ui/collapsible"
 import { SidebarMenuButton, SidebarMenuSub } from "@/components/ui/sidebar"
+import { IconChevronDown, IconList, IconStar } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
-import { ChevronDown, List, ListVideo, Star } from "lucide-react"
 import { sidebarIconSize, SidebarItemText } from "../sidebar-left"
 import { NewPlaylist } from "./new-playlist"
 
@@ -16,9 +16,9 @@ export default function SidebarPlaylists() {
       <Collapsible defaultOpen className="group/collapsible">
         <CollapsibleTrigger asChild>
           <SidebarMenuButton className="flex w-full cursor-pointer items-center justify-start">
-            <ListVideo size={sidebarIconSize - 10} />
+            <IconList size={sidebarIconSize - 10} />
             <SidebarItemText text="Playlists" />
-            <ChevronDown className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+            <IconChevronDown className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
@@ -30,7 +30,7 @@ export default function SidebarPlaylists() {
                 className="flex w-full items-center justify-start"
                 variant={"ghost"}
               >
-                <Star size={sidebarIconSize} fill="yellow" color="yellow" />
+                <IconStar size={sidebarIconSize} fill="yellow" color="yellow" />
                 <SidebarItemText text="Favourite Playlists" />
               </Button>
             </Link>
@@ -39,7 +39,7 @@ export default function SidebarPlaylists() {
                 className="flex w-full items-center justify-start"
                 variant={"ghost"}
               >
-                <List size={sidebarIconSize} />
+                <IconList size={sidebarIconSize} />
                 <SidebarItemText text="My Playlists" />
               </Button>
             </Link>

@@ -14,9 +14,9 @@ import {
   useAtomSet,
   useAtomValue
 } from "@effect-atom/atom-react"
+import { IconStar } from "@tabler/icons-react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Effect } from "effect"
-import { Star } from "lucide-react"
 import { useEffect } from "react"
 import PlaylistGridItem from "../-components/playlist-grid-item"
 
@@ -66,7 +66,7 @@ function RouteComponent() {
         .onSuccess((playlists) => (
           <PageTitleWrapper
             title="Your Favourite Playlists"
-            icon={<Star color="yellow" fill="yellow" />}
+            icon={<IconStar color="yellow" fill="yellow" />}
           >
             <GridWrapper>
               {playlists.map((playlist) => (

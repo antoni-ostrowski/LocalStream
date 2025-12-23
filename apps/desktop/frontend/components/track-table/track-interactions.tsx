@@ -4,7 +4,7 @@ import {
 } from "@/src/api/atoms/playback-state-atom"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { useAtom } from "@effect-atom/atom-react"
-import { PauseIcon, PlayIcon } from "lucide-react"
+import { IconPlayerPause, IconPlayerPlay } from "@tabler/icons-react"
 import { Button } from "../ui/button"
 import StarTrack from "./star-track"
 import TrackContextMenu from "./track-context-menu"
@@ -37,7 +37,7 @@ function PlayNowBtn({ track }: { track: sqlcDb.Track }) {
           pauseResume({})
         }}
       >
-        <PauseIcon className="cursor-pointer" size={15} />
+        <IconPlayerPause className="cursor-pointer" size={15} />
       </Button>
       <Button
         variant="ghost"
@@ -45,7 +45,7 @@ function PlayNowBtn({ track }: { track: sqlcDb.Track }) {
           playNow(track)
         }}
       >
-        <PlayIcon className="cursor-pointer" size={15} />
+        <IconPlayerPlay className="cursor-pointer" size={15} />
       </Button>
     </>
   )

@@ -1,7 +1,6 @@
 import TrackInteractions from "@/components/track-table/track-interactions"
 import { createArtworkLink } from "@/lib/utils"
 import { sqlcDb } from "@/wailsjs/go/models"
-import { Dot } from "lucide-react"
 
 export default function Metadata({
   currentTrack
@@ -16,7 +15,7 @@ export default function Metadata({
           <h1 className="text-xl font-bold">{currentTrack.title}</h1>
           <div className="flex flex-row items-center justify-center gap-0">
             <h2 className="text-muted-foreground">{currentTrack.artist}</h2>
-            <Dot className="text-muted-foreground" />
+            {"."}
             <h2 className="text-muted-foreground">{currentTrack.album}</h2>
           </div>
         </div>

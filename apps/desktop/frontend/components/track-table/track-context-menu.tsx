@@ -11,7 +11,7 @@ import {
 } from "@/src/api/atoms/queue-atom"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { useAtom } from "@effect-atom/atom-react"
-import { MoreHorizontal } from "lucide-react"
+import { IconDots } from "@tabler/icons-react"
 import { Button } from "../ui/button"
 
 export default function TrackContextMenu({ track }: { track: sqlcDb.Track }) {
@@ -23,7 +23,7 @@ export default function TrackContextMenu({ track }: { track: sqlcDb.Track }) {
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Button variant={"ghost"}>
-            <MoreHorizontal />
+            <IconDots />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="start">

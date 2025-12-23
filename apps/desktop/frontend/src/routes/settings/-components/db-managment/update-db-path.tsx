@@ -9,7 +9,7 @@ import {
 } from "@/src/api/atoms/settings-atom"
 import { config } from "@/wailsjs/go/models"
 import { Result, useAtom, useAtomValue } from "@effect-atom/atom-react"
-import { PenOff, RefreshCcw } from "lucide-react"
+import { IconPencilOff, IconRefresh } from "@tabler/icons-react"
 import { toast } from "sonner"
 import z from "zod"
 
@@ -89,7 +89,7 @@ function DoUpdating({
         <CardFooter className="flex-row gap-2">
           <Button
             type="submit"
-            variant={"outline"}
+            variant={"destructive"}
             onClick={() => {
               form.state.values.newDatabasePath =
                 defaultPreferences.databasePath
@@ -99,7 +99,7 @@ function DoUpdating({
               <Spinner />
             ) : (
               <>
-                <PenOff /> Reset to default
+                <IconPencilOff /> Reset to default
               </>
             )}
           </Button>
@@ -108,7 +108,7 @@ function DoUpdating({
               <Spinner />
             ) : (
               <>
-                <RefreshCcw /> Update
+                <IconRefresh /> Update
               </>
             )}
           </Button>

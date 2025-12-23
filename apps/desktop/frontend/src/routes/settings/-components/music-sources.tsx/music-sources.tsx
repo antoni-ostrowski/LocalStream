@@ -16,7 +16,12 @@ import {
 } from "@/src/api/atoms/settings-atom"
 import { config } from "@/wailsjs/go/models"
 import { Result, useAtom, useAtomValue } from "@effect-atom/atom-react"
-import { FolderOpen, Music, Plus, Trash } from "lucide-react"
+import {
+  IconFolderOpen,
+  IconMusic,
+  IconPlus,
+  IconTrash
+} from "@tabler/icons-react"
 
 export default function MusicSources() {
   const [createSourceDirState, createSourceDir] = useAtom(createSourceDirAtom)
@@ -35,7 +40,7 @@ export default function MusicSources() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <FolderOpen />
+                <IconFolderOpen />
                 <h1>Music Sources</h1>
               </CardTitle>
               <CardDescription>
@@ -61,7 +66,6 @@ export default function MusicSources() {
 
                 <CardFooter>
                   <Button
-                    variant={"outline"}
                     type="submit"
                     className="flex items-center gap-2"
                     onClick={() => {
@@ -75,7 +79,7 @@ export default function MusicSources() {
                       </>
                     ) : (
                       <>
-                        <Plus className="h-4 w-4" />
+                        <IconPlus className="h-4 w-4" />
                         <p>Add Source</p>
                       </>
                     )}
@@ -145,11 +149,11 @@ function Source({
   return (
     <>
       <div className="bg-muted/50 flex items-center gap-3 rounded-lg p-3">
-        <Music className="text-muted-foreground h-4 w-4 shrink-0" />
+        <IconMusic className="text-muted-foreground h-4 w-4 shrink-0" />
         <span className="flex-1 truncate font-mono text-sm">{source}</span>
         <Badge>Active</Badge>
         <Button variant={"destructive"} onClick={handleUpdate}>
-          {updatePrefsState.waiting ? <Spinner /> : <Trash />}
+          {updatePrefsState.waiting ? <Spinner /> : <IconTrash />}
         </Button>
       </div>
     </>
