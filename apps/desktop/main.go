@@ -11,6 +11,9 @@ import (
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v2/pkg/options/linux"
+	"github.com/wailsapp/wails/v2/pkg/options/mac"
+	"github.com/wailsapp/wails/v2/pkg/options/windows"
 	"go.senan.xyz/taglib"
 )
 
@@ -29,6 +32,18 @@ func main() {
 			Middleware: func(next http.Handler) http.Handler {
 				return &MyHandler{NextHandler: next}
 			},
+		},
+		Linux: &linux.Options{
+			WindowIsTranslucent: true,
+		},
+		Windows: &windows.Options{
+			WindowIsTranslucent:  true,
+			WebviewIsTransparent: true,
+		},
+		Mac: &mac.Options{
+			WindowIsTranslucent:  true,
+			WebviewIsTransparent: true,
+			Appearance:           mac.NSAppearanceNameAccessibilityHighContrastVibrantDark,
 		},
 		OnStartup: app.onStartup,
 		Bind: []interface{}{
@@ -98,9 +113,18 @@ func artworkHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 2. If error or no bytes, redirect or serve the placeholder
 	if err != nil || imageBytes == nil {
-		// Redirect the browser to the frontend's placeholder asset
-		// Wails serves assets from the root, so this points to your dist/placeholder.webp
-		http.Redirect(w, r, "/placeholder.webp", http.StatusTemporaryRedirect)
+		// 1. Manually load the placeholder from your embedded assets
+		// Make sure the path matches your embed structure exactly
+		placeholder, err := assets.ReadFile("frontend/dist/placeholder.webp")
+		if err != nil {
+			http.Error(w, "Placeholder missing", 404)
+			return
+		}
+
+		// 2. Set the correct headers so WebKit knows it's an image
+		w.Header().Set("Content-Type", "image/webp")
+		w.Header().Set("Cache-Control", "public, max-age=3600")
+		w.Write(placeholder)
 		return
 	}
 
