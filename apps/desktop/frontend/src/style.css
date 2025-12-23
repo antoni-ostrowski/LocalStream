@@ -79,6 +79,7 @@ body {
 }
 
 :root {
+  --radius: 0.625rem;
   --background: oklch(L C H / 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(L C H / 0);
@@ -159,4 +160,3 @@ body {
     @apply font-sans;
   }
 }
-
