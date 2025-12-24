@@ -1,21 +1,16 @@
 import { formatSongLength } from "@/lib/utils"
-import { pauseResumeAtom } from "@/src/api/atoms/playback-state-atom"
 import { Seek } from "@/wailsjs/go/main/App"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { EventsOn } from "@/wailsjs/runtime/runtime"
-import { useAtom } from "@effect-atom/atom-react"
 import { useEffect, useRef, useState } from "react"
 
 export default function ProgressBar({
   currentTrack,
-  length,
-  isPlaying
+  length
 }: {
   currentTrack: sqlcDb.Track
   length: number
-  isPlaying: boolean
 }) {
-  const [, pauseResume] = useAtom(pauseResumeAtom)
   const progressBarInputRef = useRef<HTMLInputElement>(null)
   const [progress, setProgress] = useState(0)
 
@@ -48,8 +43,6 @@ export default function ProgressBar({
         value={progress}
         max={length}
         min={0}
-        onMouseUp={() => pauseResume({ newState: !isPlaying })}
-        onMouseDown={() => pauseResume({ newState: !isPlaying })}
         onChange={handleSliderChange}
       />
       <div className="flex w-full justify-between">
