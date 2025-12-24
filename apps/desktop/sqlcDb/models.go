@@ -41,7 +41,6 @@ type Track struct {
 	Year         sql.NullInt64  `json:"year"`
 	DurationInMs sql.NullInt64  `json:"duration_in_ms"`
 	Starred      sql.NullInt64  `json:"starred"`
-	QueueID      sql.NullString `json:"queue_id"`
 	IsMissing    sql.NullBool   `json:"is_missing"`
 }
 

@@ -29,7 +29,6 @@ INSERT INTO tracks (
     year,
     duration_in_ms,
     starred,
-    queue_id,
     is_missing
 ) VALUES (
     sqlc.arg(id),
@@ -43,7 +42,6 @@ INSERT INTO tracks (
     sqlc.arg(year),
     sqlc.arg(duration_in_ms),
     sqlc.arg(starred),
-    sqlc.arg(queue_id),
     sqlc.arg(is_missing)
 );
 
@@ -66,7 +64,6 @@ SELECT
     t.year, 
     t.duration_in_ms, 
     t.starred, 
-    t.queue_id,
     t.is_missing
 FROM 
     tracks_to_playlists AS ttp

@@ -10,7 +10,6 @@ CREATE TABLE IF NOT EXISTS tracks (
     year INTEGER,
     duration_in_ms INTEGER,
     starred INTEGER,
-    queue_id TEXT,
     is_missing BOOL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS tracks_path_unique ON tracks (path);
