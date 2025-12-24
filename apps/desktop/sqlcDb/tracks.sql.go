@@ -11,7 +11,7 @@ import (
 )
 
 const getTrackFromId = `-- name: GetTrackFromId :one
-SELECT id, created_at, path, title, artist, album, genre, year, duration_in_ms, starred, is_missing FROM tracks WHERE id LIKE ?1
+SELECT id, created_at, path, title, artist, album, genre, year, duration_seconds, starred, is_missing FROM tracks WHERE id LIKE ?1
 `
 
 func (q *Queries) GetTrackFromId(ctx context.Context, id string) (Track, error) {
@@ -26,7 +26,7 @@ func (q *Queries) GetTrackFromId(ctx context.Context, id string) (Track, error) 
 		&i.Album,
 		&i.Genre,
 		&i.Year,
-		&i.DurationInMs,
+		&i.DurationSeconds,
 		&i.Starred,
 		&i.IsMissing,
 	)
@@ -34,7 +34,7 @@ func (q *Queries) GetTrackFromId(ctx context.Context, id string) (Track, error) 
 }
 
 const getTrackFromPath = `-- name: GetTrackFromPath :one
-SELECT id, created_at, path, title, artist, album, genre, year, duration_in_ms, starred, is_missing FROM tracks WHERE path LIKE ?1
+SELECT id, created_at, path, title, artist, album, genre, year, duration_seconds, starred, is_missing FROM tracks WHERE path LIKE ?1
 `
 
 func (q *Queries) GetTrackFromPath(ctx context.Context, trackPath string) (Track, error) {
@@ -49,7 +49,7 @@ func (q *Queries) GetTrackFromPath(ctx context.Context, trackPath string) (Track
 		&i.Album,
 		&i.Genre,
 		&i.Year,
-		&i.DurationInMs,
+		&i.DurationSeconds,
 		&i.Starred,
 		&i.IsMissing,
 	)
@@ -67,7 +67,7 @@ INSERT INTO tracks (
     album,
     genre,
     year,
-    duration_in_ms,
+    duration_seconds,
     starred,
     is_missing
 ) VALUES (
@@ -87,17 +87,17 @@ INSERT INTO tracks (
 `
 
 type InsertTrackParams struct {
-	ID           string         `json:"id"`
-	CreatedAt    int64          `json:"created_at"`
-	Path         string         `json:"path"`
-	Title        string         `json:"title"`
-	Artist       string         `json:"artist"`
-	Album        string         `json:"album"`
-	Genre        sql.NullString `json:"genre"`
-	Year         sql.NullInt64  `json:"year"`
-	DurationInMs sql.NullInt64  `json:"duration_in_ms"`
-	Starred      sql.NullInt64  `json:"starred"`
-	IsMissing    sql.NullBool   `json:"is_missing"`
+	ID              string         `json:"id"`
+	CreatedAt       int64          `json:"created_at"`
+	Path            string         `json:"path"`
+	Title           string         `json:"title"`
+	Artist          string         `json:"artist"`
+	Album           string         `json:"album"`
+	Genre           sql.NullString `json:"genre"`
+	Year            sql.NullInt64  `json:"year"`
+	DurationSeconds sql.NullInt64  `json:"duration_seconds"`
+	Starred         sql.NullInt64  `json:"starred"`
+	IsMissing       sql.NullBool   `json:"is_missing"`
 }
 
 func (q *Queries) InsertTrack(ctx context.Context, arg InsertTrackParams) error {
@@ -110,7 +110,7 @@ func (q *Queries) InsertTrack(ctx context.Context, arg InsertTrackParams) error 
 		arg.Album,
 		arg.Genre,
 		arg.Year,
-		arg.DurationInMs,
+		arg.DurationSeconds,
 		arg.Starred,
 		arg.IsMissing,
 	)
@@ -118,7 +118,7 @@ func (q *Queries) InsertTrack(ctx context.Context, arg InsertTrackParams) error 
 }
 
 const listAllTracks = `-- name: ListAllTracks :many
-SELECT id, created_at, path, title, artist, album, genre, year, duration_in_ms, starred, is_missing FROM tracks ORDER by title
+SELECT id, created_at, path, title, artist, album, genre, year, duration_seconds, starred, is_missing FROM tracks ORDER by title
 `
 
 func (q *Queries) ListAllTracks(ctx context.Context) ([]Track, error) {
@@ -139,7 +139,7 @@ func (q *Queries) ListAllTracks(ctx context.Context) ([]Track, error) {
 			&i.Album,
 			&i.Genre,
 			&i.Year,
-			&i.DurationInMs,
+			&i.DurationSeconds,
 			&i.Starred,
 			&i.IsMissing,
 		); err != nil {
@@ -157,7 +157,7 @@ func (q *Queries) ListAllTracks(ctx context.Context) ([]Track, error) {
 }
 
 const listFavTracks = `-- name: ListFavTracks :many
-SELECT id, created_at, path, title, artist, album, genre, year, duration_in_ms, starred, is_missing FROM tracks WHERE starred IS NOT NULL ORDER by title
+SELECT id, created_at, path, title, artist, album, genre, year, duration_seconds, starred, is_missing FROM tracks WHERE starred IS NOT NULL ORDER by title
 `
 
 func (q *Queries) ListFavTracks(ctx context.Context) ([]Track, error) {
@@ -178,7 +178,7 @@ func (q *Queries) ListFavTracks(ctx context.Context) ([]Track, error) {
 			&i.Album,
 			&i.Genre,
 			&i.Year,
-			&i.DurationInMs,
+			&i.DurationSeconds,
 			&i.Starred,
 			&i.IsMissing,
 		); err != nil {
@@ -196,7 +196,7 @@ func (q *Queries) ListFavTracks(ctx context.Context) ([]Track, error) {
 }
 
 const listTracksByAlbum = `-- name: ListTracksByAlbum :many
-SELECT id, created_at, path, title, artist, album, genre, year, duration_in_ms, starred, is_missing FROM tracks WHERE album = ?1
+SELECT id, created_at, path, title, artist, album, genre, year, duration_seconds, starred, is_missing FROM tracks WHERE album = ?1
 `
 
 func (q *Queries) ListTracksByAlbum(ctx context.Context, albumName string) ([]Track, error) {
@@ -217,7 +217,7 @@ func (q *Queries) ListTracksByAlbum(ctx context.Context, albumName string) ([]Tr
 			&i.Album,
 			&i.Genre,
 			&i.Year,
-			&i.DurationInMs,
+			&i.DurationSeconds,
 			&i.Starred,
 			&i.IsMissing,
 		); err != nil {
@@ -235,7 +235,7 @@ func (q *Queries) ListTracksByAlbum(ctx context.Context, albumName string) ([]Tr
 }
 
 const listTracksByArtist = `-- name: ListTracksByArtist :many
-SELECT id, created_at, path, title, artist, album, genre, year, duration_in_ms, starred, is_missing FROM tracks WHERE artist LIKE ?1 ORDER by title
+SELECT id, created_at, path, title, artist, album, genre, year, duration_seconds, starred, is_missing FROM tracks WHERE artist LIKE ?1 ORDER by title
 `
 
 func (q *Queries) ListTracksByArtist(ctx context.Context, artist string) ([]Track, error) {
@@ -256,7 +256,7 @@ func (q *Queries) ListTracksByArtist(ctx context.Context, artist string) ([]Trac
 			&i.Album,
 			&i.Genre,
 			&i.Year,
-			&i.DurationInMs,
+			&i.DurationSeconds,
 			&i.Starred,
 			&i.IsMissing,
 		); err != nil {
@@ -284,7 +284,7 @@ SELECT
     t.album, 
     t.genre, 
     t.year, 
-    t.duration_in_ms, 
+    t.duration_seconds, 
     t.starred, 
     t.is_missing
 FROM 
@@ -315,7 +315,7 @@ func (q *Queries) ListTracksByPlaylist(ctx context.Context, playlistID string) (
 			&i.Album,
 			&i.Genre,
 			&i.Year,
-			&i.DurationInMs,
+			&i.DurationSeconds,
 			&i.Starred,
 			&i.IsMissing,
 		); err != nil {
@@ -357,20 +357,20 @@ UPDATE tracks SET
     album = ?3,
     genre = ?4,
     year = ?5,
-    duration_in_ms = ?6,
+    duration_seconds = ?6,
     is_missing = ?7
 WHERE id = ?8
 `
 
 type UpdateTrackParams struct {
-	Title        string         `json:"title"`
-	Artist       string         `json:"artist"`
-	Album        string         `json:"album"`
-	Genre        sql.NullString `json:"genre"`
-	Year         sql.NullInt64  `json:"year"`
-	DurationInMs sql.NullInt64  `json:"duration_in_ms"`
-	IsMissing    sql.NullBool   `json:"is_missing"`
-	ID           string         `json:"id"`
+	Title           string         `json:"title"`
+	Artist          string         `json:"artist"`
+	Album           string         `json:"album"`
+	Genre           sql.NullString `json:"genre"`
+	Year            sql.NullInt64  `json:"year"`
+	DurationSeconds sql.NullInt64  `json:"duration_seconds"`
+	IsMissing       sql.NullBool   `json:"is_missing"`
+	ID              string         `json:"id"`
 }
 
 func (q *Queries) UpdateTrack(ctx context.Context, arg UpdateTrackParams) error {
@@ -380,7 +380,7 @@ func (q *Queries) UpdateTrack(ctx context.Context, arg UpdateTrackParams) error 
 		arg.Album,
 		arg.Genre,
 		arg.Year,
-		arg.DurationInMs,
+		arg.DurationSeconds,
 		arg.IsMissing,
 		arg.ID,
 	)

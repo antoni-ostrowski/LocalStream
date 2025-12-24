@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS tracks (
     album TEXT NOT NULL,
     genre TEXT,
     year INTEGER,
-    duration_in_ms INTEGER,
+    duration_seconds INTEGER,
     starred INTEGER,
     is_missing BOOL
 );

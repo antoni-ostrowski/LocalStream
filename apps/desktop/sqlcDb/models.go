@@ -31,17 +31,17 @@ type Playlist struct {
 }
 
 type Track struct {
-	ID           string         `json:"id"`
-	CreatedAt    int64          `json:"created_at"`
-	Path         string         `json:"path"`
-	Title        string         `json:"title"`
-	Artist       string         `json:"artist"`
-	Album        string         `json:"album"`
-	Genre        sql.NullString `json:"genre"`
-	Year         sql.NullInt64  `json:"year"`
-	DurationInMs sql.NullInt64  `json:"duration_in_ms"`
-	Starred      sql.NullInt64  `json:"starred"`
-	IsMissing    sql.NullBool   `json:"is_missing"`
+	ID              string         `json:"id"`
+	CreatedAt       int64          `json:"created_at"`
+	Path            string         `json:"path"`
+	Title           string         `json:"title"`
+	Artist          string         `json:"artist"`
+	Album           string         `json:"album"`
+	Genre           sql.NullString `json:"genre"`
+	Year            sql.NullInt64  `json:"year"`
+	DurationSeconds sql.NullInt64  `json:"duration_seconds"`
+	Starred         sql.NullInt64  `json:"starred"`
+	IsMissing       sql.NullBool   `json:"is_missing"`
 }
 
 type TracksToPlaylist struct {

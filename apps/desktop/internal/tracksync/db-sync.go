@@ -100,14 +100,14 @@ func (s *TrackSyncMangaer) handleUpdates(ctx context.Context, toUpdate []sqlcDb.
 	for _, itemToUpdate := range toUpdate {
 		fmt.Printf("attemtping to update %v", itemToUpdate.Title)
 		err := qtx.UpdateTrack(ctx, sqlcDb.UpdateTrackParams{
-			ID:           itemToUpdate.ID,
-			Title:        itemToUpdate.Title,
-			Artist:       itemToUpdate.Artist,
-			Year:         itemToUpdate.Year,
-			Album:        itemToUpdate.Album,
-			DurationInMs: itemToUpdate.DurationInMs,
-			Genre:        itemToUpdate.Genre,
-			IsMissing:    itemToUpdate.IsMissing,
+			ID:              itemToUpdate.ID,
+			Title:           itemToUpdate.Title,
+			Artist:          itemToUpdate.Artist,
+			Year:            itemToUpdate.Year,
+			Album:           itemToUpdate.Album,
+			DurationSeconds: itemToUpdate.DurationSeconds,
+			Genre:           itemToUpdate.Genre,
+			IsMissing:       itemToUpdate.IsMissing,
 		})
 
 		if err != nil {
@@ -121,14 +121,14 @@ func (s *TrackSyncMangaer) handleMarkingMisses(ctx context.Context, toMark []sql
 
 	for _, itemToMark := range toMark {
 		err := qtx.UpdateTrack(ctx, sqlcDb.UpdateTrackParams{
-			ID:           itemToMark.ID,
-			Title:        itemToMark.Title,
-			Artist:       itemToMark.Artist,
-			Year:         itemToMark.Year,
-			Album:        itemToMark.Album,
-			DurationInMs: itemToMark.DurationInMs,
-			Genre:        itemToMark.Genre,
-			IsMissing:    sql.NullBool{Bool: true, Valid: true},
+			ID:              itemToMark.ID,
+			Title:           itemToMark.Title,
+			Artist:          itemToMark.Artist,
+			Year:            itemToMark.Year,
+			Album:           itemToMark.Album,
+			DurationSeconds: itemToMark.DurationSeconds,
+			Genre:           itemToMark.Genre,
+			IsMissing:       sql.NullBool{Bool: true, Valid: true},
 		})
 
 		if err != nil {

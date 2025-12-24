@@ -27,7 +27,7 @@ INSERT INTO tracks (
     album,
     genre,
     year,
-    duration_in_ms,
+    duration_seconds,
     starred,
     is_missing
 ) VALUES (
@@ -40,7 +40,7 @@ INSERT INTO tracks (
     sqlc.arg(album),
     sqlc.arg(genre),
     sqlc.arg(year),
-    sqlc.arg(duration_in_ms),
+    sqlc.arg(duration_seconds),
     sqlc.arg(starred),
     sqlc.arg(is_missing)
 );
@@ -62,7 +62,7 @@ SELECT
     t.album, 
     t.genre, 
     t.year, 
-    t.duration_in_ms, 
+    t.duration_seconds, 
     t.starred, 
     t.is_missing
 FROM 
@@ -82,6 +82,6 @@ UPDATE tracks SET
     album = sqlc.arg(album),
     genre = sqlc.arg(genre),
     year = sqlc.arg(year),
-    duration_in_ms = sqlc.arg(duration_in_ms),
+    duration_seconds = sqlc.arg(duration_seconds),
     is_missing = sqlc.arg(is_missing)
 WHERE id = sqlc.arg(id);

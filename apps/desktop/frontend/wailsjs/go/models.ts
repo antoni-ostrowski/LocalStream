@@ -154,9 +154,8 @@ export namespace sqlcDb {
 	    album: string;
 	    genre: sql.NullString;
 	    year: sql.NullInt64;
-	    duration_in_ms: sql.NullInt64;
+	    duration_seconds: sql.NullInt64;
 	    starred: sql.NullInt64;
-	    queue_id: sql.NullString;
 	    is_missing: sql.NullBool;
 	
 	    static createFrom(source: any = {}) {
@@ -173,9 +172,8 @@ export namespace sqlcDb {
 	        this.album = source["album"];
 	        this.genre = this.convertValues(source["genre"], sql.NullString);
 	        this.year = this.convertValues(source["year"], sql.NullInt64);
-	        this.duration_in_ms = this.convertValues(source["duration_in_ms"], sql.NullInt64);
+	        this.duration_seconds = this.convertValues(source["duration_seconds"], sql.NullInt64);
 	        this.starred = this.convertValues(source["starred"], sql.NullInt64);
-	        this.queue_id = this.convertValues(source["queue_id"], sql.NullString);
 	        this.is_missing = this.convertValues(source["is_missing"], sql.NullBool);
 	    }
 	

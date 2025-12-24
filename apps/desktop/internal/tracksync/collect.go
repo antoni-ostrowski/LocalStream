@@ -208,22 +208,24 @@ func (s *TrackSyncMangaer) scanSourceDirForFiles(ctx context.Context, root strin
 func (s *TrackSyncMangaer) processFile(path string) (sqlcDb.Track, error) {
 	tags, err := taglib.ReadTags(path)
 	properties, err2 := taglib.ReadProperties(path)
+
+	fmt.Printf("%v\n", properties.Length)
 	if err != nil || err2 != nil {
 		return sqlcDb.Track{}, fmt.Errorf("failed to get metadata %v", err)
 	}
+	fmt.Printf("%v\n", properties.Length.Seconds())
 
 	return sqlcDb.Track{
-		Title:        GetFirstOr(tags[taglib.Title], "no title"),
-		Album:        GetFirstOr(tags[taglib.Album], "no album"),
-		Genre:        sql.NullString{String: GetFirstOr(tags[taglib.Genre], "no genre")},
-		DurationInMs: sql.NullInt64{Int64: int64(properties.Length.Milliseconds())},
-		CreatedAt:    time.Now().Unix(),
-		ID:           uuid.NewString(),
-		Path:         path,
-		Artist:       GetFirstOr(tags[taglib.Artist], "no artist"),
-		Starred:      sql.NullInt64{},
-		QueueID:      sql.NullString{},
-		IsMissing:    sql.NullBool{Bool: false},
+		Title:           GetFirstOr(tags[taglib.Title], "no title"),
+		Album:           GetFirstOr(tags[taglib.Album], "no album"),
+		Genre:           sql.NullString{String: GetFirstOr(tags[taglib.Genre], "no genre")},
+		DurationSeconds: sql.NullInt64{Int64: int64(properties.Length.Seconds()), Valid: true},
+		CreatedAt:       time.Now().Unix(),
+		ID:              uuid.NewString(),
+		Path:            path,
+		Artist:          GetFirstOr(tags[taglib.Artist], "no artist"),
+		Starred:         sql.NullInt64{},
+		IsMissing:       sql.NullBool{Bool: false},
 	}, nil
 }
 
