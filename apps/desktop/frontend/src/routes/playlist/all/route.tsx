@@ -3,6 +3,13 @@ import FullScreenLoading from "@/components/full-screen-loading"
 import GridWrapper from "@/components/grid-wrapper"
 import PageTitleWrapper from "@/components/page-title-wrapper"
 import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from "@/components/ui/empty"
+import {
   GenericPlaylistListAction,
   genericPlaylistListAtom
 } from "@/src/api/atoms/playlist-list-atom"
@@ -14,6 +21,7 @@ import {
   useAtomSet,
   useAtomValue
 } from "@effect-atom/atom-react"
+import { IconList } from "@tabler/icons-react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Effect } from "effect"
 import { useEffect } from "react"
@@ -53,10 +61,18 @@ function RouteComponent() {
       {Result.builder(genericPlaylistListValue)
         .onInitialOrWaiting(() => <FullScreenLoading />)
         .onErrorTag("NotFound", () => (
-          <FullScreenError
-            type="warning"
-            errorMessage="You don't have any playlists yet"
-          />
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconList />
+              </EmptyMedia>
+              <EmptyTitle>No playlists yet</EmptyTitle>
+              <EmptyDescription>
+                You haven&apos;t created any playlists yet. Create one in the
+                sidebar.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ))
         .onError((err) => <FullScreenError errorDetail={err.message} />)
         .onSuccess((playlists) => (

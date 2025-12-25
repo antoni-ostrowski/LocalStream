@@ -3,6 +3,13 @@ import FullScreenLoading from "@/components/full-screen-loading"
 import GridWrapper from "@/components/grid-wrapper"
 import PageTitleWrapper from "@/components/page-title-wrapper"
 import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from "@/components/ui/empty"
+import {
   GenericPlaylistListAction,
   genericPlaylistListAtom
 } from "@/src/api/atoms/playlist-list-atom"
@@ -57,10 +64,17 @@ function RouteComponent() {
       {Result.builder(genericPlaylistListValue)
         .onInitialOrWaiting(() => <FullScreenLoading />)
         .onErrorTag("NotFound", () => (
-          <FullScreenError
-            type="warning"
-            errorMessage="You don't have any favourite playlists yet"
-          />
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconStar color="yellow" fill="yellow" />
+              </EmptyMedia>
+              <EmptyTitle>No favourite playlists yet</EmptyTitle>
+              <EmptyDescription>
+                You haven&apos;t added any playlists to favourites.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         ))
         .onError((err) => <FullScreenError errorDetail={err.message} />)
         .onSuccess((playlists) => (
