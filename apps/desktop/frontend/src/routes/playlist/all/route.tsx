@@ -2,8 +2,10 @@ import FullScreenError from "@/components/full-screen-error"
 import FullScreenLoading from "@/components/full-screen-loading"
 import GridWrapper from "@/components/grid-wrapper"
 import PageTitleWrapper from "@/components/page-title-wrapper"
+import { NewPlaylist } from "@/components/sidebar/sidebar-left/playlists/new-playlist"
 import {
   Empty,
+  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
@@ -72,6 +74,11 @@ function RouteComponent() {
                 sidebar.
               </EmptyDescription>
             </EmptyHeader>
+            <EmptyContent>
+              <div className="flex gap-2">
+                <NewPlaylist btnVariant="default" />
+              </div>
+            </EmptyContent>
           </Empty>
         ))
         .onError((err) => <FullScreenError errorDetail={err.message} />)

@@ -2,8 +2,10 @@ import FullScreenError from "@/components/full-screen-error"
 import FullScreenLoading from "@/components/full-screen-loading"
 import GridWrapper from "@/components/grid-wrapper"
 import PageTitleWrapper from "@/components/page-title-wrapper"
+import { NewPlaylist } from "@/components/sidebar/sidebar-left/playlists/new-playlist"
 import {
   Empty,
+  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
@@ -67,13 +69,19 @@ function RouteComponent() {
           <Empty>
             <EmptyHeader>
               <EmptyMedia variant="icon">
-                <IconStar color="yellow" fill="yellow" />
+                <IconStar fill="yellow" color="yellow" />
               </EmptyMedia>
               <EmptyTitle>No favourite playlists yet</EmptyTitle>
               <EmptyDescription>
-                You haven&apos;t added any playlists to favourites.
+                You haven&apos;t created any playlists yet. Create one in the
+                sidebar.
               </EmptyDescription>
             </EmptyHeader>
+            <EmptyContent>
+              <div className="flex gap-2">
+                <NewPlaylist btnVariant="default" />
+              </div>
+            </EmptyContent>
           </Empty>
         ))
         .onError((err) => <FullScreenError errorDetail={err.message} />)

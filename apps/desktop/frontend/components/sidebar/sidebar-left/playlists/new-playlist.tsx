@@ -56,7 +56,11 @@ const submitNewPlaylistAtom = atomRuntime.fn(
   })
 )
 
-export function NewPlaylist() {
+export function NewPlaylist({
+  btnVariant = "ghost"
+}: {
+  btnVariant?: "default" | "ghost"
+}) {
   const [state, submit] = useAtom(submitNewPlaylistAtom)
   const [isOpen, setIsOpen] = useState(false)
   const [coverPreviewString, setCoverPreviewString] = useState("")
@@ -86,7 +90,7 @@ export function NewPlaylist() {
             <Button
               {...props}
               className="flex w-full items-center justify-start"
-              variant={"ghost"}
+              variant={btnVariant}
             >
               <IconPlus size={sidebarIconSize} />
               New Playlist
