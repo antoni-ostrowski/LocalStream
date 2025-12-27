@@ -1,11 +1,9 @@
 import { getCurrentTimeEpoch } from "@/lib/utils"
 import { sql, sqlcDb } from "@/wailsjs/go/models"
-import { Atom, Registry } from "@effect-atom/atom-react"
+import { Registry } from "@effect-atom/atom-react"
 import { Duration, Effect } from "effect"
-import { GenericError } from "../errors"
 import { atomRuntime } from "../make-runtime"
 import { Mutations } from "../mutations"
-import { Queries } from "../queries"
 import {
   genericTrackListAtom,
   GenericTrackListAtomAction
@@ -63,16 +61,4 @@ export const starTrackAtom = atomRuntime.fn(
       })
     )
   })
-)
-
-export const artworkAtom = Atom.family((track: sqlcDb.Track | null) =>
-  atomRuntime.atom(
-    Effect.gen(function* () {
-      if (!track)
-        return yield* new GenericError({ message: "no track provided" })
-      const q = yield* Queries
-      const a = yield* q.getTrackArtwork(track)
-      return a
-    })
-  )
 )

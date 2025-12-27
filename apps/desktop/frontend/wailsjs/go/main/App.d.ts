@@ -4,6 +4,8 @@ import {sqlcDb} from '../models';
 import {config} from '../models';
 import {playback} from '../models';
 
+export function AddTrackToPlaylist(arg1:string,arg2:string):Promise<void>;
+
 export function AppendToQueue(arg1:sqlcDb.Track):Promise<void>;
 
 export function ChangeVolume(arg1:number):Promise<void>;
@@ -15,6 +17,8 @@ export function CreateSourceDir():Promise<void>;
 export function DeleteFromQueue(arg1:number):Promise<void>;
 
 export function DeletePlaylist(arg1:string):Promise<void>;
+
+export function DeleteTrackFromPlaylist(arg1:string,arg2:string):Promise<void>;
 
 export function GetCurrentTrack():Promise<sqlcDb.Track>;
 
@@ -37,6 +41,8 @@ export function ListAllTracks():Promise<Array<sqlcDb.Track>>;
 export function ListFavPlaylists():Promise<Array<sqlcDb.Playlist>>;
 
 export function ListFavTracks():Promise<Array<sqlcDb.Track>>;
+
+export function ListPlaylistsForTrack(arg1:string):Promise<Array<sqlcDb.ListPlaylistsForTrackRow>>;
 
 export function ListQueue():Promise<Array<sqlcDb.Track>>;
 

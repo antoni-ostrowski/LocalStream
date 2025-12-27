@@ -151,3 +151,27 @@ func (a *App) DeletePlaylist(playlistId string) error {
 	}
 	return nil
 }
+
+func (a *App) AddTrackToPlaylist(trackId string, playlistId string) error {
+	err := a.db.Queries.AddTrackToPlaylist(a.ctx, sqlcDb.AddTrackToPlaylistParams{
+		ID:         uuid.NewString(),
+		CreatedAt:  time.Now().Unix(),
+		TrackID:    trackId,
+		PlaylistID: playlistId,
+	})
+	if err != nil {
+		return fmt.Errorf("Failed to add to playlist %v", err)
+	}
+	return nil
+}
+
+func (a *App) DeleteTrackFromPlaylist(trackId string, playlistId string) error {
+	err := a.db.Queries.RemoveTrackFromPlaylist(a.ctx, sqlcDb.RemoveTrackFromPlaylistParams{
+		TrackID:    trackId,
+		PlaylistID: playlistId,
+	})
+	if err != nil {
+		return fmt.Errorf("Failed to remove from playlist %v", err)
+	}
+	return nil
+}

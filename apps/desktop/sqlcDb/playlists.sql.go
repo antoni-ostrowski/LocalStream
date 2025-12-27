@@ -10,6 +10,37 @@ import (
 	"database/sql"
 )
 
+const addTrackToPlaylist = `-- name: AddTrackToPlaylist :exec
+INSERT OR IGNORE INTO tracks_to_playlists (
+    id, 
+    created_at, 
+    track_id, 
+    playlist_id
+) VALUES (
+    ?1, 
+    ?2, 
+    ?3, 
+    ?4
+)
+`
+
+type AddTrackToPlaylistParams struct {
+	ID         string `json:"id"`
+	CreatedAt  int64  `json:"created_at"`
+	TrackID    string `json:"track_id"`
+	PlaylistID string `json:"playlist_id"`
+}
+
+func (q *Queries) AddTrackToPlaylist(ctx context.Context, arg AddTrackToPlaylistParams) error {
+	_, err := q.db.ExecContext(ctx, addTrackToPlaylist,
+		arg.ID,
+		arg.CreatedAt,
+		arg.TrackID,
+		arg.PlaylistID,
+	)
+	return err
+}
+
 const createPlaylist = `-- name: CreatePlaylist :one
 INSERT INTO playlists (
   id,
@@ -178,4 +209,74 @@ func (q *Queries) ListPlaylists(ctx context.Context) ([]Playlist, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const listPlaylistsForTrack = `-- name: ListPlaylistsForTrack :many
+SELECT 
+    p.id, 
+    p.name, 
+    p.created_at,
+    p.cover_path,
+    p.starred,
+    -- Returns 1 if the track is in the playlist, 0 otherwise
+    CASE WHEN ttp.track_id IS NOT NULL THEN 1 ELSE 0 END AS is_in_playlist
+FROM playlists p
+LEFT JOIN tracks_to_playlists ttp 
+    ON p.id = ttp.playlist_id 
+    AND ttp.track_id = ?1
+`
+
+type ListPlaylistsForTrackRow struct {
+	ID           string         `json:"id"`
+	Name         string         `json:"name"`
+	CreatedAt    int64          `json:"created_at"`
+	CoverPath    sql.NullString `json:"cover_path"`
+	Starred      sql.NullInt64  `json:"starred"`
+	IsInPlaylist int64          `json:"is_in_playlist"`
+}
+
+func (q *Queries) ListPlaylistsForTrack(ctx context.Context, trackID string) ([]ListPlaylistsForTrackRow, error) {
+	rows, err := q.db.QueryContext(ctx, listPlaylistsForTrack, trackID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListPlaylistsForTrackRow
+	for rows.Next() {
+		var i ListPlaylistsForTrackRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.CoverPath,
+			&i.Starred,
+			&i.IsInPlaylist,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const removeTrackFromPlaylist = `-- name: RemoveTrackFromPlaylist :exec
+DELETE FROM tracks_to_playlists
+WHERE track_id = ?1 
+AND playlist_id = ?2
+`
+
+type RemoveTrackFromPlaylistParams struct {
+	TrackID    string `json:"track_id"`
+	PlaylistID string `json:"playlist_id"`
+}
+
+func (q *Queries) RemoveTrackFromPlaylist(ctx context.Context, arg RemoveTrackFromPlaylistParams) error {
+	_, err := q.db.ExecContext(ctx, removeTrackFromPlaylist, arg.TrackID, arg.PlaylistID)
+	return err
 }

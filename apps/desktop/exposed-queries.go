@@ -90,3 +90,16 @@ func (a *App) ListFavPlaylists() ([]sqlcDb.Playlist, error) {
 	}
 	return playlists, nil
 }
+
+func (a *App) ListPlaylistsForTrack(trackId string) ([]sqlcDb.ListPlaylistsForTrackRow, error) {
+	runtime.LogInfo(a.ctx, "trying to get playlists for track")
+	playlistList, err := a.db.Queries.ListPlaylistsForTrack(a.ctx, trackId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			runtime.LogErrorf(a.ctx, "no playlists for track found")
+			return []sqlcDb.ListPlaylistsForTrackRow{}, nil
+		}
+		return []sqlcDb.ListPlaylistsForTrackRow{}, fmt.Errorf("Failed to list playlists for track %v", err)
+	}
+	return playlistList, nil
+}

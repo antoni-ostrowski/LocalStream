@@ -1,11 +1,13 @@
 import { CreatePlaylistFormData } from "@/components/sidebar/sidebar-left/playlists/new-playlist"
 import {
+  AddTrackToPlaylist,
   AppendToQueue,
   ChangeVolume,
   CreatePlaylist,
   CreateSourceDir,
   DeleteFromQueue,
   DeletePlaylist,
+  DeleteTrackFromPlaylist,
   PauseResume,
   PlayTrack,
   PrependToQueue,
@@ -63,6 +65,18 @@ export class Mutations extends Effect.Service<Mutations>()("Mutations", {
 
       deletePlaylist: Effect.fn((playlistId: string) =>
         wailsCall(() => DeletePlaylist(playlistId), GenericError)
+      ),
+
+      addTrackToPlaylist: Effect.fn((trackId: string, playlistId: string) =>
+        wailsCall(() => AddTrackToPlaylist(trackId, playlistId), GenericError)
+      ),
+
+      DeleteTrackFromPlaylist: Effect.fn(
+        (trackId: string, playlistId: string) =>
+          wailsCall(
+            () => DeleteTrackFromPlaylist(trackId, playlistId),
+            GenericError
+          )
       ),
 
       settings: {

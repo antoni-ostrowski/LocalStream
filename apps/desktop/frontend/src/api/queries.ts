@@ -8,6 +8,7 @@ import {
   ListAllTracks,
   ListFavPlaylists,
   ListFavTracks,
+  ListPlaylistsForTrack,
   ListQueue
 } from "@/wailsjs/go/main/App"
 import { Effect } from "effect"
@@ -34,7 +35,9 @@ export class Queries extends Effect.Service<Queries>()("Queries", {
         wailsCall(() => GetTrackById(trackId), GenericError)
       ),
       listAllPlaylists: listFetcher(ListAllPlaylists, GenericError),
-      listFavPlaylists: listFetcher(ListFavPlaylists, GenericError)
+      listFavPlaylists: listFetcher(ListFavPlaylists, GenericError),
+      listPlaylistsForTrack: (trackId: string) =>
+        listFetcher(() => ListPlaylistsForTrack(trackId), GenericError)
     }
   })
 }) {}
