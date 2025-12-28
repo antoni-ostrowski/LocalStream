@@ -58,6 +58,8 @@ export function Seek(arg1:number):Promise<void>;
 
 export function SelectPlaylistCoverFile():Promise<string>;
 
+export function SkipBackwards():Promise<void>;
+
 export function SkipTrack():Promise<void>;
 
 export function StarPlaylist(arg1:string):Promise<sqlcDb.Playlist>;

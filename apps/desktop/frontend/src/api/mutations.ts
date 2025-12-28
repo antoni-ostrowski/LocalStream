@@ -13,6 +13,7 @@ import {
   PrependToQueue,
   ReloadAppResources,
   SelectPlaylistCoverFile,
+  SkipBackwards,
   SkipTrack,
   StarPlaylist,
   StarTrack,
@@ -46,7 +47,8 @@ export class Mutations extends Effect.Service<Mutations>()("Mutations", {
         ),
         changeVolume: Effect.fn((newVolume: number) =>
           wailsCall(() => ChangeVolume(newVolume), GenericError)
-        )
+        ),
+        skipBackwards: wailsCall(() => SkipBackwards(), GenericError)
       },
 
       createPlaylist: Effect.fn((input: CreatePlaylistFormData) =>

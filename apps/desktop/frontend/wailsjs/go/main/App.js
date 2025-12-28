@@ -110,6 +110,10 @@ export function SelectPlaylistCoverFile() {
   return window['go']['main']['App']['SelectPlaylistCoverFile']();
 }
 
+export function SkipBackwards() {
+  return window['go']['main']['App']['SkipBackwards']();
+}
+
 export function SkipTrack() {
   return window['go']['main']['App']['SkipTrack']();
 }

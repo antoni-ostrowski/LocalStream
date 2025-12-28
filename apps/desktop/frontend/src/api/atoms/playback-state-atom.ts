@@ -113,3 +113,12 @@ export const changeVolumeAtom = atomRuntime.fn(
     yield* Effect.logDebug("Volume changed successfully!")
   })
 )
+
+export const skipBackwardsAtom = atomRuntime.fn(
+  Effect.fn(function* () {
+    const m = yield* Mutations
+
+    yield* m.playbackControls.skipBackwards
+    yield* Effect.logDebug("Skipped backwards successfully!")
+  })
+)

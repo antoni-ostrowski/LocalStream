@@ -102,14 +102,15 @@ func (p *LocalPlayer) handleCmd(ctx context.Context, cmd PlayerCommand) {
 	}
 
 	if cmd.CommandType == "SEEK" && cmd.SeekTo != 0 {
-		runtime.LogInfof(ctx, "trying to seek")
-		seekTime := time.Duration(cmd.SeekTo) * time.Second
-		runtime.LogInfof(ctx, "seek time - %v", seekTime)
-		samples := p.currentPlayable.format.SampleRate.N(seekTime)
-		p.currentStreamer.Seek(samples)
-		runtime.LogInfof(ctx, "after seek - %v", p.currentStreamer.Position())
-		toEmit := p.GetCurrentStreamerProgress()
-		runtime.EventsEmit(ctx, "progress", toEmit)
+		p.seekTo(ctx, cmd.SeekTo)
+		// runtime.LogInfof(ctx, "trying to seek")
+		// seekTime := time.Duration(cmd.SeekTo) * time.Second
+		// runtime.LogInfof(ctx, "seek time - %v", seekTime)
+		// samples := p.currentPlayable.format.SampleRate.N(seekTime)
+		// p.currentStreamer.Seek(samples)
+		// runtime.LogInfof(ctx, "after seek - %v", p.currentStreamer.Position())
+		// toEmit := p.GetCurrentStreamerProgress()
+		// runtime.EventsEmit(ctx, "progress", toEmit)
 		return
 	}
 
@@ -137,6 +138,10 @@ func (p *LocalPlayer) handleCmd(ctx context.Context, cmd PlayerCommand) {
 
 		runtime.LogInfof(ctx, "Slider: %v -> Internal Volume: %v", val, globalVolume.Volume)
 		return
+	}
+
+	if cmd.CommandType == "SKIP_BACKWARDS" {
+		p.seekTo(ctx, 0)
 	}
 
 }
@@ -186,4 +191,15 @@ func (p *LocalPlayer) StopAndCloseCurrent() {
 			fmt.Printf("Error closing file: %v\n", err)
 		}
 	}
+}
+
+func (p *LocalPlayer) seekTo(ctx context.Context, seekTo int) {
+	runtime.LogInfof(ctx, "trying to seek")
+	seekTime := time.Duration(seekTo) * time.Second
+	runtime.LogInfof(ctx, "seek time - %v", seekTime)
+	samples := p.currentPlayable.format.SampleRate.N(seekTime)
+	p.currentStreamer.Seek(samples)
+	runtime.LogInfof(ctx, "after seek - %v", p.currentStreamer.Position())
+	toEmit := p.GetCurrentStreamerProgress()
+	runtime.EventsEmit(ctx, "progress", toEmit)
 }

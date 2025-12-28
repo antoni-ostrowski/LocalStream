@@ -82,3 +82,8 @@ func (p *LocalPlayer) SkipTrack(ctx context.Context) {
 func (p *LocalPlayer) ChangeVolume(ctx context.Context, newVolume float64) {
 	p.cmdChan <- PlayerCommand{CommandType: "CHANGE_VOLUME", NewVolume: newVolume}
 }
+
+func (p *LocalPlayer) SkipBackwards(ctx context.Context) {
+	p.cmdChan <- PlayerCommand{CommandType: "SKIP_BACKWARDS"}
+
+}

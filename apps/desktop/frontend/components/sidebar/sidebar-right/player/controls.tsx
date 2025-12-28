@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import {
   pauseResumeAtom,
+  skipBackwardsAtom,
   skipTrackAtom
 } from "@/src/api/atoms/playback-state-atom"
 import { useAtom } from "@effect-atom/atom-react"
@@ -17,11 +18,16 @@ export default function Controls({
   remoteIsPlaying: boolean
 }) {
   const [, skipTrack] = useAtom(skipTrackAtom)
-  const [_, pauseResume] = useAtom(pauseResumeAtom)
+  const [, pauseResume] = useAtom(pauseResumeAtom)
+  const [, skipBackwards] = useAtom(skipBackwardsAtom)
 
   return (
     <div className="flex w-full flex-row items-center justify-center gap-4">
-      <Button variant={"ghost"} className="w-min cursor-pointer">
+      <Button
+        variant={"ghost"}
+        className="w-min cursor-pointer"
+        onClick={() => skipBackwards()}
+      >
         <IconPlayerSkipBack />
       </Button>
       <Button
