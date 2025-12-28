@@ -114,7 +114,9 @@ function Content({ playlist }: { playlist: main.PlaylistWithTracks }) {
                 </Button>
 
                 <FavPlaylist {...{ playlist: playlist.playlist }} />
-                <DeletePlaylist {...{ playlist: playlist.playlist }} />
+                <DeletePlaylist
+                  {...{ playlist: playlist.playlist, goBack: true }}
+                />
               </div>
             </div>
           </div>

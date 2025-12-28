@@ -12,13 +12,18 @@ export default function AllTracks() {
   return (
     <>
       <Collapsible defaultOpen className="group/collapsible">
-        <CollapsibleTrigger asChild>
-          <SidebarMenuButton className="flex w-full cursor-pointer items-center justify-start">
-            <IconList size={sidebarIconSize - 10} />
-            <SidebarItemText text="Playlists" />
-            <IconChevronDown className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
-          </SidebarMenuButton>
-        </CollapsibleTrigger>
+        <CollapsibleTrigger
+          render={(props) => (
+            <SidebarMenuButton
+              {...props}
+              className="flex w-full cursor-pointer items-center justify-start"
+            >
+              <IconList size={sidebarIconSize - 10} />
+              <SidebarItemText text="Playlists" />
+              <IconChevronDown className="h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+            </SidebarMenuButton>
+          )}
+        ></CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub>
             <Button

@@ -47,6 +47,7 @@ const submitNewPlaylistAtom = atomRuntime.fn(
   Effect.fn(function* (input: CreatePlaylistFormData) {
     const registry = yield* Registry.AtomRegistry
     const m = yield* Mutations
+    console.log({ input })
     const newPlaylist = yield* m.createPlaylist(input)
 
     registry.set(

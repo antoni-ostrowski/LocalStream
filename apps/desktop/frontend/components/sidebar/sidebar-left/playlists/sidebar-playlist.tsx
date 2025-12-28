@@ -5,7 +5,7 @@ import {
   CollapsibleTrigger
 } from "@/components/ui/collapsible"
 import { SidebarMenuButton, SidebarMenuSub } from "@/components/ui/sidebar"
-import { IconChevronDown, IconList, IconStar } from "@tabler/icons-react"
+import { IconChevronDown, IconList } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
 import { sidebarIconSize, SidebarItemText } from "../sidebar-left"
 import { NewPlaylist } from "./new-playlist"
@@ -29,16 +29,6 @@ export default function SidebarPlaylists() {
         <CollapsibleContent>
           <SidebarMenuSub className="gap-1">
             <NewPlaylist />
-
-            <Link to="/playlist/favourites">
-              <Button
-                className="flex w-full items-center justify-start"
-                variant={"ghost"}
-              >
-                <IconStar size={sidebarIconSize} fill="yellow" color="yellow" />
-                <SidebarItemText text="Favourite Playlists" />
-              </Button>
-            </Link>
             <Link to="/playlist/all">
               <Button
                 className="flex w-full items-center justify-start"

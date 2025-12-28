@@ -37,7 +37,7 @@ export default function FavPlaylist({
   console.log({ state })
   return (
     <>
-      <Button onClick={() => starPlaylist(playlist.id)} variant={"ghost"}>
+      <Button onClick={() => starPlaylist(playlist.id)} variant={"secondary"}>
         {playlist.starred?.Valid ? (
           <IconStar color="yellow" fill="yellow" />
         ) : (

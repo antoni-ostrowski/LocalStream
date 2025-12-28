@@ -11,23 +11,40 @@ export default function PlaylistGridItem({
   playlist: sqlcDb.Playlist
 }) {
   return (
-    <Card className="flex w-60 flex-col items-center justify-center gap-2 p-4">
-      <img
-        src={
-          playlist.cover_path.String !== ""
-            ? createFileLink(playlist.cover_path.String)
-            : "/placeholder.webp"
-        }
-      />
-      <div className={"flex w-full flex-row items-center justify-between"}>
-        <h1 className="font-bold">{playlist.name}</h1>
-      </div>
-      <FavPlaylist {...{ playlist }} />
-      <DeletePlaylist {...{ playlist }} />
+    <Link to="/playlist/$playlistId" params={{ playlistId: playlist.id }}>
+      <Card
+        key={playlist.id}
+        className="group flex cursor-pointer flex-col gap-2 border-0 p-0 ring-0"
+      >
+        <div className="relative aspect-square overflow-hidden rounded-md">
+          <img
+            src={
+              playlist.cover_path.Valid
+                ? createFileLink(playlist.cover_path.String)
+                : "/placeholder.webp"
+            }
+            alt={playlist.name}
+            className="h-full w-full object-cover"
+          />
+        </div>
 
-      <Link to={"/playlist/$playlistId"} params={{ playlistId: playlist.id }}>
-        <p>details</p>
-      </Link>
-    </Card>
+        <div className="flex items-center justify-between gap-0">
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate font-semibold text-balance">
+              {playlist.name}
+            </h3>
+          </div>
+          <div
+            onClick={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
+            }}
+          >
+            <FavPlaylist {...{ playlist }} />
+            <DeletePlaylist {...{ playlist }} />
+          </div>
+        </div>
+      </Card>
+    </Link>
   )
 }

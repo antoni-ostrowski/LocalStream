@@ -110,7 +110,7 @@ func (a *App) CreatePlaylist(name string, coverPath string) (sqlcDb.Playlist, er
 	createdPlaylist, err := a.db.Queries.CreatePlaylist(a.ctx, sqlcDb.CreatePlaylistParams{
 		CreatedAt: time.Now().Unix(),
 		Name:      name,
-		CoverPath: sql.NullString{String: coverPath},
+		CoverPath: sql.NullString{String: coverPath, Valid: len(coverPath) > 0},
 		ID:        uuid.NewString(),
 	})
 	if err != nil {

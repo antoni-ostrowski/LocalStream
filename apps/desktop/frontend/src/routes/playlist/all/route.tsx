@@ -1,7 +1,14 @@
 import FullScreenError from "@/components/full-screen-error"
 import FullScreenLoading from "@/components/full-screen-loading"
-import GridWrapper from "@/components/grid-wrapper"
 import PageTitleWrapper from "@/components/page-title-wrapper"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
 import {
   GenericPlaylistListAction,
   genericPlaylistListAtom
@@ -14,7 +21,7 @@ import {
   useAtomSet,
   useAtomValue
 } from "@effect-atom/atom-react"
-import { IconList } from "@tabler/icons-react"
+import { IconList, IconSearch } from "@tabler/icons-react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Effect } from "effect"
 import { useEffect } from "react"
@@ -63,19 +70,64 @@ function RouteComponent() {
         .onError((err) => <FullScreenError errorDetail={err.message} />)
         .onSuccess((playlists) => (
           <PageTitleWrapper title="Your Playlists">
-            <GridWrapper>
-              {playlists.map((playlist) => (
-                <PlaylistGridItem
-                  key={`playlist-grid-item-${playlist.id}`}
-                  {...{ playlist }}
-                />
-              ))}
-            </GridWrapper>
+            <div className="bg-background min-h-screen">
+              <div className="mx-auto max-w-7xl">
+                {/* Header */}
+
+                {/* Search, Filters, and Sorting */}
+                <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center">
+                  {/* Search */}
+                  <div className="relative flex-1">
+                    <IconSearch
+                      className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
+                      size={18}
+                    />
+                    <Input
+                      placeholder="Search playlists..."
+                      className="pl-10"
+                    />
+                  </div>
+
+                  {/* Filters */}
+                  <div className="flex gap-3">
+                    <Select defaultValue="all">
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Playlists</SelectItem>
+                        <SelectItem value="favorites">Favorites</SelectItem>
+                        <SelectItem value="recent">Recent</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    {/* Sort */}
+                    <Select defaultValue="name">
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="name">Name</SelectItem>
+                        <SelectItem value="recent">Recently Added</SelectItem>
+                        <SelectItem value="tracks">Track Count</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {playlists.map((playlist) => (
+                    <PlaylistGridItem
+                      key={`playlist-grid-item-${playlist.id}`}
+                      {...{ playlist }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
           </PageTitleWrapper>
         ))
-        .orElse(() => (
-          <p>else</p>
-        ))}
+        .orNull()}
     </>
   )
 }

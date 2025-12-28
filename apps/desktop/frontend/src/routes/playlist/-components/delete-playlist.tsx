@@ -8,6 +8,7 @@ import { Mutations } from "@/src/api/mutations"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { Registry, useAtom } from "@effect-atom/atom-react"
 import { IconTrash } from "@tabler/icons-react"
+import { useRouter } from "@tanstack/react-router"
 import { Effect } from "effect"
 
 const deletePlaylistAtom = atomRuntime.fn(
@@ -23,14 +24,25 @@ const deletePlaylistAtom = atomRuntime.fn(
 )
 
 export default function DeletePlaylist({
-  playlist
+  playlist,
+  goBack = false
 }: {
   playlist: sqlcDb.Playlist
+  goBack?: boolean
 }) {
   const [, deletePlaylist] = useAtom(deletePlaylistAtom)
+  const router = useRouter()
   return (
     <>
-      <Button variant={"destructive"} onClick={() => deletePlaylist(playlist)}>
+      <Button
+        variant={"destructive"}
+        onClick={() => {
+          deletePlaylist(playlist)
+          if (goBack) {
+            router.history.back()
+          }
+        }}
+      >
         <IconTrash />
       </Button>
     </>
