@@ -103,3 +103,24 @@ func (a *App) ListPlaylistsForTrack(trackId string) ([]sqlcDb.ListPlaylistsForTr
 	}
 	return playlistList, nil
 }
+
+type PlaylistWithTracks struct {
+	Tracks   []sqlcDb.Track  `json:"tracks"`
+	Playlist sqlcDb.Playlist `json:"playlist"`
+}
+
+func (a *App) GetPlaylist(playlistId string) (PlaylistWithTracks, error) {
+	playlist, err := a.db.Queries.GetPlaylist(a.ctx, playlistId)
+	if err != nil {
+		return PlaylistWithTracks{}, fmt.Errorf("Failed to get playlist %v", err)
+	}
+	tracks, err := a.db.Queries.ListTracksByPlaylist(a.ctx, playlistId)
+	if err != nil {
+		return PlaylistWithTracks{}, fmt.Errorf("Failed to get tracks for playlists %v", err)
+	}
+
+	return PlaylistWithTracks{
+		Tracks:   tracks,
+		Playlist: playlist,
+	}, nil
+}

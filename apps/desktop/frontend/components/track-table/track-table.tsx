@@ -29,7 +29,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
   const columns = [
     columnHelper.display({
       id: "artwork",
-      header: `(${tracks.length.toString()})`,
+      header: `(${tracks?.length?.toString()})`,
       maxSize: 0.01,
       cell: (props) => <RenderTableArtwork track={props.row.original} />
     }),

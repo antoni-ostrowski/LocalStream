@@ -43,14 +43,14 @@ function RouteComponent() {
 
   useEffect(() => {
     updateGenericTrackList()
-  }, [updateGenericTrackList])
+  }, [])
 
   return (
     <PageTitleWrapper title={`Favourite Tracks`}>
       <>
         {Result.builder(genericTrackListResult)
           .onInitialOrWaiting(() => <FullScreenLoading />)
-          .onSuccess((tracks) => <TrackTable tracks={tracks} />)
+          .onSuccess((tracks) => <TrackTable tracks={tracks ?? []} />)
           .orElse(() => (
             <p>no data found</p>
           ))}

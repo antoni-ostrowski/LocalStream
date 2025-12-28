@@ -9,6 +9,7 @@ import { sqlcDb } from "@/wailsjs/go/models"
 import { Registry, useAtom } from "@effect-atom/atom-react"
 import { IconStar } from "@tabler/icons-react"
 import { Effect } from "effect"
+import { getPlaylistAtom } from "../$playlistId/route"
 
 const starPlaylistAtom = atomRuntime.fn(
   Effect.fn(function* (playlistId: string) {
@@ -22,6 +23,7 @@ const starPlaylistAtom = atomRuntime.fn(
         updatedPlaylist: newPlaylistState
       })
     )
+    registry.refresh(getPlaylistAtom(playlistId))
   })
 )
 
@@ -35,7 +37,7 @@ export default function FavPlaylist({
   console.log({ state })
   return (
     <>
-      <Button onClick={() => starPlaylist(playlist.id)}>
+      <Button onClick={() => starPlaylist(playlist.id)} variant={"ghost"}>
         {playlist.starred?.Valid ? (
           <IconStar color="yellow" fill="yellow" />
         ) : (

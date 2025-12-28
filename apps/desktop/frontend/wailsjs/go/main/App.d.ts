@@ -3,6 +3,7 @@
 import {sqlcDb} from '../models';
 import {config} from '../models';
 import {playback} from '../models';
+import {main} from '../models';
 
 export function AddTrackToPlaylist(arg1:string,arg2:string):Promise<void>;
 
@@ -29,6 +30,8 @@ export function GetImageFromPath(arg1:string):Promise<string>;
 export function GetIsAppReady():Promise<boolean>;
 
 export function GetPlaybackState():Promise<playback.PlaybackState>;
+
+export function GetPlaylist(arg1:string):Promise<main.PlaylistWithTracks>;
 
 export function GetPreferences():Promise<config.Preferences>;
 

@@ -54,6 +54,10 @@ export function GetPlaybackState() {
   return window['go']['main']['App']['GetPlaybackState']();
 }
 
+export function GetPlaylist(arg1) {
+  return window['go']['main']['App']['GetPlaylist'](arg1);
+}
+
 export function GetPreferences() {
   return window['go']['main']['App']['GetPreferences']();
 }

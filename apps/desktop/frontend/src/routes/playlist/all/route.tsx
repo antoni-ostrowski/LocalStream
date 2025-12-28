@@ -2,15 +2,6 @@ import FullScreenError from "@/components/full-screen-error"
 import FullScreenLoading from "@/components/full-screen-loading"
 import GridWrapper from "@/components/grid-wrapper"
 import PageTitleWrapper from "@/components/page-title-wrapper"
-import { NewPlaylist } from "@/components/sidebar/sidebar-left/playlists/new-playlist"
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle
-} from "@/components/ui/empty"
 import {
   GenericPlaylistListAction,
   genericPlaylistListAtom
@@ -27,6 +18,7 @@ import { IconList } from "@tabler/icons-react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Effect } from "effect"
 import { useEffect } from "react"
+import EmptyPlaylists from "../-components/empty-playlists"
 import PlaylistGridItem from "../-components/playlist-grid-item"
 
 export const Route = createFileRoute("/playlist/all")({
@@ -63,23 +55,10 @@ function RouteComponent() {
       {Result.builder(genericPlaylistListValue)
         .onInitialOrWaiting(() => <FullScreenLoading />)
         .onErrorTag("NotFound", () => (
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <IconList />
-              </EmptyMedia>
-              <EmptyTitle>No playlists yet</EmptyTitle>
-              <EmptyDescription>
-                You haven&apos;t created any playlists yet. Create one in the
-                sidebar.
-              </EmptyDescription>
-            </EmptyHeader>
-            <EmptyContent>
-              <div className="flex gap-2">
-                <NewPlaylist btnVariant="default" />
-              </div>
-            </EmptyContent>
-          </Empty>
+          <EmptyPlaylists
+            description="You haven't created any playlists yet. Create one in the sidebar."
+            icon={<IconList />}
+          />
         ))
         .onError((err) => <FullScreenError errorDetail={err.message} />)
         .onSuccess((playlists) => (

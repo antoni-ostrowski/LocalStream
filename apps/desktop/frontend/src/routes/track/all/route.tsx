@@ -48,14 +48,14 @@ function RouteComponent() {
   useEffect(() => {
     console.log("track all use effect")
     updateGenericTrackList()
-  }, [updateGenericTrackList])
+  }, [])
 
   return (
     <PageTitleWrapper title={`All Tracks`}>
       <>
         {Result.builder(genericTrackListResult)
           .onInitialOrWaiting(() => <FullScreenLoading />)
-          .onSuccess((tracks) => <TrackTable tracks={tracks} />)
+          .onSuccess((tracks) => <TrackTable tracks={tracks ?? []} />)
           .orNull()}
       </>
     </PageTitleWrapper>

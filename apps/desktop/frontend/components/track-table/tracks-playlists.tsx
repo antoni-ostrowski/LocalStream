@@ -2,6 +2,7 @@ import { createFileLink } from "@/lib/utils"
 import { atomRuntime } from "@/src/api/make-runtime"
 import { Mutations } from "@/src/api/mutations"
 import { Queries } from "@/src/api/queries"
+import { getPlaylistAtom } from "@/src/routes/playlist/$playlistId/route"
 import { sqlcDb } from "@/wailsjs/go/models"
 import {
   Atom,
@@ -75,6 +76,7 @@ const addTrackToPlaylist = atomRuntime.fn(
     const m = yield* Mutations
     yield* m.addTrackToPlaylist(trackId, playlistId)
     registry.refresh(getPlaylistForTrackAtom(trackId))
+    registry.refresh(getPlaylistAtom(playlistId))
   })
 )
 
@@ -90,6 +92,7 @@ const deleteTrackFromPlaylist = atomRuntime.fn(
     const m = yield* Mutations
     yield* m.DeleteTrackFromPlaylist(trackId, playlistId)
     registry.refresh(getPlaylistForTrackAtom(trackId))
+    registry.refresh(getPlaylistAtom(playlistId))
   })
 )
 
