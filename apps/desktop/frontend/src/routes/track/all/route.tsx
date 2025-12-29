@@ -7,6 +7,7 @@ import {
 } from "@/src/api/atoms/generic-track-list-atom"
 import { atomRuntime } from "@/src/api/make-runtime"
 import { Queries } from "@/src/api/queries"
+import { sqlcDb } from "@/wailsjs/go/models"
 import {
   Registry,
   Result,
@@ -51,13 +52,15 @@ function RouteComponent() {
   }, [])
 
   return (
-    <PageTitleWrapper title={`All Tracks`}>
-      <>
-        {Result.builder(genericTrackListResult)
-          .onInitialOrWaiting(() => <FullScreenLoading />)
-          .onSuccess((tracks) => <TrackTable tracks={tracks ?? []} />)
-          .orNull()}
-      </>
+    <PageTitleWrapper title={`Tracks`}>
+      {Result.builder(genericTrackListResult)
+        .onInitialOrWaiting(() => <FullScreenLoading />)
+        .onSuccess((tracks) => <TracksPageContents tracks={tracks} />)
+        .orNull()}
     </PageTitleWrapper>
   )
+}
+
+function TracksPageContents({ tracks }: { tracks: sqlcDb.Track[] }) {
+  return <TrackTable tracks={tracks ?? []} />
 }

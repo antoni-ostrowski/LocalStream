@@ -4,6 +4,7 @@ import { Data, Effect } from "effect"
 import { atomRuntime } from "../make-runtime"
 import { Mutations } from "../mutations"
 import { Queries } from "../queries"
+import { genericTrackListAtom } from "./generic-track-list-atom"
 
 const remoteSettingsAtom = atomRuntime.atom(
   Effect.fn(function* () {
@@ -41,6 +42,7 @@ export const createSourceDirAtom = atomRuntime.fn(
     yield* m.settings.createSourceDir
 
     registry.refresh(remoteSettingsAtom)
+    registry.refresh(genericTrackListAtom.remote)
   })
 )
 
@@ -51,6 +53,7 @@ export const updatePrefsAtom = atomRuntime.fn(
     yield* m.settings.updatePreferences(newPrefs)
 
     registry.refresh(remoteSettingsAtom)
+    registry.refresh(genericTrackListAtom.remote)
   })
 )
 
@@ -61,6 +64,7 @@ export const triggerTrackSyncAtom = atomRuntime.fn(
     yield* m.settings.reloadAppResources
 
     registry.refresh(remoteSettingsAtom)
+    registry.refresh(genericTrackListAtom.remote)
   })
 )
 

@@ -6,8 +6,6 @@ import {
 } from "@/components/ui/sidebar"
 import { IconMinimize, IconSettings } from "@tabler/icons-react"
 import { Link } from "@tanstack/react-router"
-import SidebarAlbums from "./albums/sidebar-albums"
-import SidebarArtists from "./artists/sidebar-artists"
 import SidebarPlaylists from "./playlists/sidebar-playlist"
 import SidebarTracks from "./tracks/tracks"
 
@@ -35,8 +33,8 @@ export default function SidebarLeft() {
           </Link>
           <SidebarTracks />
           <SidebarPlaylists />
-          <SidebarArtists />
-          <SidebarAlbums />
+          {/* <SidebarArtists /> */}
+          {/* <SidebarAlbums /> */}
         </SidebarMenu>
       </SidebarContent>
     </Sidebar>

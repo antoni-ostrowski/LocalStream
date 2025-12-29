@@ -18,9 +18,13 @@ export default function TrackInteractions({
 }) {
   return (
     <div className="flex flex-row items-center justify-start gap-1">
-      {showPlayNow && <PlayNowBtn {...{ track }} />}
+      {track.is_missing.Valid && !track.is_missing.Bool && (
+        <>{showPlayNow && <PlayNowBtn {...{ track }} />}</>
+      )}
       <StarTrack {...{ track }} />
-      <TrackContextMenu {...{ track }} />
+      {track.is_missing.Valid && !track.is_missing.Bool && (
+        <TrackContextMenu {...{ track }} />
+      )}
     </div>
   )
 }
@@ -42,6 +46,9 @@ function PlayNowBtn({ track }: { track: sqlcDb.Track }) {
       <Button
         variant="ghost"
         onClick={() => {
+          if (track.is_missing.Bool && track.is_missing.Valid) {
+            return
+          }
           playNow(track)
         }}
       >
