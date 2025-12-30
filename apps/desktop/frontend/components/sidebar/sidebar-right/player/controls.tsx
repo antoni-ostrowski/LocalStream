@@ -24,23 +24,26 @@ export default function Controls({
   return (
     <div className="flex w-full flex-row items-center justify-center gap-4">
       <Button
-        variant={"ghost"}
+        variant={"outline"}
         className="w-min cursor-pointer"
         onClick={() => skipBackwards()}
+        size={"lg"}
       >
         <IconPlayerSkipBack />
       </Button>
       <Button
-        variant={"ghost"}
+        variant={"outline"}
         className="w-min cursor-pointer"
         onClick={() => pauseResume({})}
+        size={"lg"}
       >
         {remoteIsPlaying ? <IconPlayerPlay /> : <IconPlayerPause />}
       </Button>
       <Button
-        variant={"ghost"}
+        variant={"outline"}
         className="w-min cursor-pointer"
         onClick={() => skipTrack()}
+        size={"lg"}
       >
         <IconPlayerSkipForward />
       </Button>

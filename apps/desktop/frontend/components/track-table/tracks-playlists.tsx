@@ -48,7 +48,9 @@ export default function TracksPlaylists({ track }: { track: sqlcDb.Track }) {
         .onSuccess((playlists) => (
           <>
             {playlists.map((playlist) => {
-              if (!playlist.name.includes(input) && input !== "") return null
+              const query = input.toLowerCase()
+              if (!playlist.name.toLowerCase().includes(query) && query !== "")
+                return null
               return (
                 <PlaylistItem
                   {...{ playlist, track }}

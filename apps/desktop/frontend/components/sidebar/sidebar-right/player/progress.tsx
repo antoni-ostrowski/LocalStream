@@ -36,7 +36,7 @@ export default function ProgressBar({
   return (
     <div className="flex w-full flex-col items-center justify-center gap-2">
       <input
-        className="w-full bg-gray-300"
+        className="accent-primary w-full cursor-pointer border-0"
         ref={progressBarInputRef}
         type="range"
         step={0.001}

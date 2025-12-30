@@ -1,7 +1,7 @@
 import { deleteFromQueueAtom, queueAtom } from "@/src/api/atoms/queue-atom"
 import { sqlcDb } from "@/wailsjs/go/models"
 import { Result, useAtom, useAtomValue } from "@effect-atom/atom-react"
-import { IconDog, IconTrash } from "@tabler/icons-react"
+import { IconTrash } from "@tabler/icons-react"
 import {
   ColumnFiltersState,
   createColumnHelper,
@@ -61,13 +61,13 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
           original: { title, artist, album }
         }
       }) => (
-        <div className="flex flex-col">
+        <div className="text-muted-foreground flex flex-col">
           <div className="flex w-full flex-col items-start justify-start">
-            <h1 className="text-md">{title}</h1>
-            <div className="flex flex-row items-center justify-center gap-0">
-              <h2 className="text-muted-foreground">{artist}</h2>
-              <IconDog className="text-muted-foreground" />
-              <h2 className="text-muted-foreground">{album}</h2>
+            <h1 className="text-md text-foreground">{title}</h1>
+            <div className="flex flex-row items-center justify-center gap-1">
+              <h2>{artist}</h2>
+              <p>-</p>
+              <h2>{album}</h2>
             </div>
           </div>
         </div>
@@ -81,16 +81,16 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
       size: 20,
       cell: (props) => (
         <div
-          className="flex flex-row items-center justify-end"
+          className="flex flex-row items-center justify-end gap-0.5"
           onClick={() => console.log("div")}
         >
+          <Deletor trackQueueIndex={props.row.index} />
           <TrackInteractions
             {...{
               track: props.row.original,
               showPlayNow: false
             }}
           />
-          <Deletor trackQueueIndex={props.row.index} />
         </div>
       )
     })
@@ -173,7 +173,10 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
 function Deletor({ trackQueueIndex }: { trackQueueIndex: number }) {
   const [_, deleteFromQueue] = useAtom(deleteFromQueueAtom)
   return (
-    <Button onClick={() => deleteFromQueue(trackQueueIndex)}>
+    <Button
+      onClick={() => deleteFromQueue(trackQueueIndex)}
+      variant={"destructive"}
+    >
       <IconTrash />
     </Button>
   )

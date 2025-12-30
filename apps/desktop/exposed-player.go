@@ -111,6 +111,5 @@ func (a *App) ChangeVolume(volume float64) {
 }
 
 func (a *App) SkipBackwards() {
-	runtime.LogInfo(a.ctx, "trying to skip backwards")
 	a.localPlayer.SkipBackwards(a.ctx)
 }

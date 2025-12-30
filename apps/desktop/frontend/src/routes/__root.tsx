@@ -1,5 +1,10 @@
 import SidebarLeft from "@/components/sidebar/sidebar-left/sidebar-left"
 import SidebarRight from "@/components/sidebar/sidebar-right/sidebar-right"
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup
+} from "@/components/ui/resizable"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/sonner"
 import { RegistryProvider } from "@effect-atom/atom-react"
@@ -50,13 +55,25 @@ function RootComponent() {
           <div className={`flex items-center gap-2 border-b`}>
             <div className={`flex-1`}>
               <SidebarProvider>
-                <SidebarLeft />
-                <SidebarInset>
-                  <Outlet />
-                </SidebarInset>
-                <SidebarRight />
-                <Toaster />
+                <ResizablePanelGroup>
+                  <ResizablePanel minSize={"2"} defaultSize={"20"}>
+                    <div className="w-full">
+                      <SidebarLeft />
+                    </div>
+                  </ResizablePanel>
+                  <ResizableHandle />
+                  <ResizablePanel>
+                    <SidebarInset>
+                      <Outlet />
+                    </SidebarInset>
+                  </ResizablePanel>
+                  <ResizableHandle />
+                  <ResizablePanel minSize={"2"} maxSize={"35"}>
+                    <SidebarRight />
+                  </ResizablePanel>
+                </ResizablePanelGroup>
               </SidebarProvider>
+              <Toaster />
             </div>
           </div>
         </div>

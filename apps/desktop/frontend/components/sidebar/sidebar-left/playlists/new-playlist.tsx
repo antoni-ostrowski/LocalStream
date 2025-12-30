@@ -12,7 +12,6 @@ import {
   FieldLabel,
   FieldSet
 } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
 import { useAppForm } from "@/lib/app-form/app-form"
 import {
   GenericPlaylistListAction,
@@ -23,7 +22,12 @@ import { atomRuntime } from "@/src/api/make-runtime"
 import { Mutations } from "@/src/api/mutations"
 import { GetImageFromPath } from "@/wailsjs/go/main/App"
 import { Registry, Result, useAtom } from "@effect-atom/atom-react"
-import { IconPlus } from "@tabler/icons-react"
+import {
+  IconFile,
+  IconPencilPlus,
+  IconPlaylist,
+  IconPlus
+} from "@tabler/icons-react"
 import { Effect, Schema } from "effect"
 import { useEffect, useState } from "react"
 import { sidebarIconSize } from "../sidebar-left"
@@ -54,6 +58,7 @@ const submitNewPlaylistAtom = atomRuntime.fn(
       genericPlaylistListAtom,
       GenericPlaylistListAction.AddNewPlaylist({ newPlaylist })
     )
+    registry.refresh(genericPlaylistListAtom.remote)
   })
 )
 
@@ -100,7 +105,10 @@ export function NewPlaylist({
         ></DialogTrigger>
         <DialogContent>
           <DialogHeader className="flex flex-col gap-4">
-            <DialogTitle>Create new playlist</DialogTitle>
+            <DialogTitle className={"flex flex-row gap-2"}>
+              <IconPlaylist />
+              Create new playlist
+            </DialogTitle>
           </DialogHeader>
           <form
             onSubmit={async (e) => {
@@ -119,11 +127,6 @@ export function NewPlaylist({
                         Optional playlist cover image.
                       </FieldDescription>
                       <div className="flex flex-row justify-between gap-2">
-                        <Input
-                          className="w-3/4"
-                          value={field.state.value}
-                          onChange={() => null}
-                        />
                         <SelectPlaylistCoverBtn
                           {...{
                             updater: (newPath, previewString) => {
@@ -143,6 +146,7 @@ export function NewPlaylist({
                 {(field) => <field.InputField label="Playlist name" />}
               </form.AppField>
               <Button variant={"outline"} type="submit" className="w-full">
+                <IconPencilPlus />
                 {form.state.isSubmitting ? "Creating..." : "Create Playlist"}
               </Button>
             </FieldSet>
@@ -180,13 +184,8 @@ function SelectPlaylistCoverBtn({
   }, [state, updater])
 
   return (
-    <Button
-      className="w-1/4"
-      variant={"outline"}
-      onClick={() => {
-        select()
-      }}
-    >
+    <Button className="w-1/4 p-4" variant={"outline"} onClick={() => select()}>
+      <IconFile />
       Select file
     </Button>
   )

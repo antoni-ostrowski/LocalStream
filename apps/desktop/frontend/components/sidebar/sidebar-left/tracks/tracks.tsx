@@ -26,7 +26,7 @@ export default function SidebarTracks() {
         ></CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub className="gap-1">
-            <Link to="/track/all">
+            <Link to="/tracks/all">
               <SidebarMenuButton>
                 <IconList size={sidebarIconSize} />
                 <SidebarItemText text="All Tracks" />

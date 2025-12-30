@@ -30,7 +30,7 @@ export default function TrackTable({
   filters
 }: {
   tracks: sqlcDb.Track[]
-  filters: ReactNode
+  filters?: ReactNode
 }) {
   const columns = [
     columnHelper.display({
