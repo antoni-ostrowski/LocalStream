@@ -1,4 +1,4 @@
-import { createArtworkLink, formatSongLength } from "@/lib/utils"
+import { cn, createArtworkLink, formatSongLength } from "@/lib/utils"
 import { sqlcDb } from "@/wailsjs/go/models"
 import {
   createColumnHelper,
@@ -10,7 +10,7 @@ import {
   type ColumnFiltersState
 } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
-import { useEffect, useRef, useState } from "react"
+import { ReactNode, useEffect, useRef, useState } from "react"
 import DebouncedInput from "../debounced-input"
 import {
   Table,
@@ -25,7 +25,13 @@ import TrackInteractions from "./track-interactions"
 
 const columnHelper = createColumnHelper<sqlcDb.Track>()
 
-export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
+export default function TrackTable({
+  tracks,
+  filters
+}: {
+  tracks: sqlcDb.Track[]
+  filters: ReactNode
+}) {
   const columns = [
     columnHelper.display({
       id: "artwork",
@@ -64,16 +70,6 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
       cell: (info) => (
         <p className="text-muted-foreground truncate">
           {formatSongLength(info.getValue().Int64)}
-        </p>
-      )
-    }),
-
-    columnHelper.accessor("is_missing", {
-      header: "Available",
-      size: 20,
-      cell: (info) => (
-        <p className="text-muted-foreground truncate">
-          {info.getValue().Bool && "N/A"}
         </p>
       )
     }),
@@ -129,7 +125,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
 
   return (
     <div ref={parentRef} className="">
-      <div>
+      <div className="flex flex-row gap-2">
         <DebouncedInput
           value={globalFilter}
           onChange={(value) => {
@@ -137,6 +133,7 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
           }}
           placeholder="Search ..."
         />
+        {filters}
       </div>
       <Table style={{ tableLayout: "fixed", width: "100%" }}>
         <TableHeader>
@@ -176,6 +173,11 @@ export default function TrackTable({ tracks }: { tracks: sqlcDb.Track[] }) {
                     }}
                     key={row.original.id}
                     data-state={row.getIsSelected() && "selected"}
+                    className={cn(
+                      row.original.is_missing.Valid &&
+                        row.original.is_missing.Bool &&
+                        "opacity-50"
+                    )}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
