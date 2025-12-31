@@ -30,7 +30,7 @@ If you'd like to try it now, you can build it from source using the [Wails CLI](
 
 > Keep in mind I want to keep this app simple and nice to use for me. My use case is probably vastly different from yours and thats okay, but this means I will not rush about adding stuff that I will not even use. Stuff listed here is what I focus on and anything other than that is not my focus for now.
 
-# For devs
+# Details
 
 The app looks for a configuration file in the following locations:
 
@@ -38,8 +38,6 @@ The app looks for a configuration file in the following locations:
 - Windows: %AppData%\localStream\config.json
 
 On the first launch, LocalStream automatically generates this directory, a default config.json and db file for you.
-
-<br/>
 
 Why a Config File?
 
@@ -49,7 +47,6 @@ The entire application behavior is driven by this JSON configuration. Specifical
 - iCloud / Cloud sync ready: By pointing the databasePath to a synced folder (like iCloud Drive), you can maintain a single source of truth across multiple devices.
 - future-proofing: This architecture paves the way for the LocalStream ios app I plan to build, allowing both versions of the app to share the exact same database file and user data.
 
-<br/>
 
 App is built with wails:
 
