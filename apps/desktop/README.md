@@ -1,19 +1,41 @@
-# README
+# LocalStream (WIP)
 
-## About
+Lightweight, minimalistic, local desktop music player focused on simplicity.
 
-This is the official Wails React-TS template.
+> **Note** It's a really early alpha version of the app. I want to take a break from it, but I plan to come back to it and actively maintain it/add new features.
 
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
+# Getting started
 
-## Live Development
+Start by downloading a zip from latest release. It will contain just a compiled app, it's about few MB's.
 
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite development
-server that will provide very fast hot reload of your frontend changes. If you want to develop in a browser
-and have access to your Go methods, there is also a dev server that runs on http://localhost:34115. Connect
-to this in your browser, and you can call your Go code from devtools.
+# General Tips
 
-## Building
+- You can create playlists and add tracks to them by clicking 3 dots on the track. You can also have favourite playlists.
+- Queue: you can easly add track to the start or the end of the queue.
+- You can configure every app behaviour from settings. To **add your music** you need to add a music source directory, you can add multiple directories LocalStream will read your music from. Music sources are the basic settings everybody needs to touch, all of the others are pretty much useless for most people.
 
-To build a redistributable, production mode package, use `wails build`.
+# For devs
+
+The app looks for a configuration file in the following locations:
+
+- macOS / Linux: ~/.config/localStream/config.json
+- Windows: %AppData%\localStream\config.json
+
+On the first launch, LocalStream automatically generates this directory, a default config.json and db file for you.
+
+<br/>
+
+Why a Config File?
+
+The entire application behavior is driven by this JSON configuration. Specifically, the databasePath property tells the app exactly where to look for your SQLite database. I designed it this way to support:
+
+- Easy database swapping: Switch between different music libraries just by updating a file path.
+- iCloud / Cloud sync ready: By pointing the databasePath to a synced folder (like iCloud Drive), you can maintain a single source of truth across multiple devices.
+- future-proofing: This architecture paves the way for the LocalStream ios app I plan to build, allowing both versions of the app to share the exact same database file and user data.
+
+<br/>
+
+App is built with wails:
+
+- I tried to put as much stuff as I can in Go part of the app (I use beep lib for playback, taglib for track metadata)
+- Frontend is built with react, tanstack router and heavly depends on effect and effect-atom for state managment
