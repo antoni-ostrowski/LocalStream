@@ -37,6 +37,7 @@ export const updatePlayingTrack = atomRuntime.fn(
       })
     )
     registry.refresh(queueAtom.remote)
+    registry.refresh(playbackStateAtom.remote)
   })
 )
 

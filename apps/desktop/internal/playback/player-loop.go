@@ -103,14 +103,6 @@ func (p *LocalPlayer) handleCmd(ctx context.Context, cmd PlayerCommand) {
 
 	if cmd.CommandType == "SEEK" && cmd.SeekTo != 0 {
 		p.seekTo(ctx, cmd.SeekTo)
-		// runtime.LogInfof(ctx, "trying to seek")
-		// seekTime := time.Duration(cmd.SeekTo) * time.Second
-		// runtime.LogInfof(ctx, "seek time - %v", seekTime)
-		// samples := p.currentPlayable.format.SampleRate.N(seekTime)
-		// p.currentStreamer.Seek(samples)
-		// runtime.LogInfof(ctx, "after seek - %v", p.currentStreamer.Position())
-		// toEmit := p.GetCurrentStreamerProgress()
-		// runtime.EventsEmit(ctx, "progress", toEmit)
 		return
 	}
 
