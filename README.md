@@ -6,7 +6,9 @@ Lightweight, minimalistic, local desktop music player focused on simplicity.
 
 # Getting started
 
-Start by downloading a zip from latest release. It will contain just a compiled app, it's about few MB's.
+Start by downloading a zip from [latest release](https://github.com/antoni-ostrowski/localStream/releases/tag/v0.0.1-alpha). It will contain just a compiled app, it's about few MB's. You just have to unzip it and then you can run the app!
+> **Note for Windows and Linux users**: LocalStream is built using [Wails](https://wails.io/), which is a fully cross-platform framework. While the app is designed to work everywhere, I have only verified it on macOS so far. It should only require minor tweaks to get it running perfectly on Windows and Linux.
+If you'd like to try it now, you can build it from source using the [Wails CLI](https://wails.io/docs/reference/cli/), or you can wait for the official builds coming soon.
 
 # General Tips
 
@@ -28,7 +30,7 @@ Start by downloading a zip from latest release. It will contain just a compiled 
 
 > Keep in mind I want to keep this app simple and nice to use for me. My use case is probably vastly different from yours and thats okay, but this means I will not rush about adding stuff that I will not even use. Stuff listed here is what I focus on and anything other than that is not my focus for now.
 
-# For devs
+# Details
 
 The app looks for a configuration file in the following locations:
 
@@ -36,8 +38,6 @@ The app looks for a configuration file in the following locations:
 - Windows: %AppData%\localStream\config.json
 
 On the first launch, LocalStream automatically generates this directory, a default config.json and db file for you.
-
-<br/>
 
 Why a Config File?
 
@@ -47,13 +47,13 @@ The entire application behavior is driven by this JSON configuration. Specifical
 - iCloud / Cloud sync ready: By pointing the databasePath to a synced folder (like iCloud Drive), you can maintain a single source of truth across multiple devices.
 - future-proofing: This architecture paves the way for the LocalStream ios app I plan to build, allowing both versions of the app to share the exact same database file and user data.
 
-<br/>
 
 App is built with wails:
 
 - I tried to put as much stuff as I can in Go part of the app (I use beep lib for playback, taglib for track metadata)
 - Frontend is built with react, tanstack router and heavly depends on effect and effect-atom for state managment
 
-# notes
+# Contributing
 
-If you decide to try the app and find some problems, feel free to open an issue! I will try my best to fix everything that comes up. (also it's my first oss project so idk what im doing)
+Contributions are highly appreciated!
+If you decide to try the app and find some problems, feel free to open an issue! I will try my best to fix everything that comes up. This is my first open-source project, so I’m learning as I go, thanks for your patience and support! 😁🙏
