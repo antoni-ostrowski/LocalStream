@@ -14,7 +14,7 @@ export const sidebarIconSize = 40
 export default function SidebarLeft() {
   return (
     <Sidebar
-      className="sticky top-0 h-svh bg-transparent lg:flex"
+      className="bg-background sticky top-0 h-svh w-full lg:flex"
       collapsible="none"
     >
       <SidebarContent>

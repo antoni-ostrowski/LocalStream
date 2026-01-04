@@ -5,7 +5,7 @@ import Player from "./player/player"
 export default function SidebarRight() {
   return (
     <Sidebar
-      className="sticky top-0 h-svh w-full bg-transparent lg:flex"
+      className="bg-background sticky top-0 h-svh w-full lg:flex"
       collapsible="none"
     >
       <SidebarContent className="w-full">

@@ -39,6 +39,8 @@ func main() {
 		Windows: &windows.Options{
 			WindowIsTranslucent:  true,
 			WebviewIsTransparent: true,
+			BackdropType:         windows.Tabbed,
+			Theme:                windows.Dark,
 		},
 		Mac: &mac.Options{
 			WindowIsTranslucent:  true,
