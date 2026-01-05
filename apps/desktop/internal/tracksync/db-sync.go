@@ -60,7 +60,9 @@ func (s *TrackSyncMangaer) compareTracksAndGenerateActions(dbTracks []sqlcDb.Tra
 		dbTrack, existsInDB := dbTrackMap[localTrack.Path]
 
 		if !existsInDB {
-			toInsert = append(toInsert, localTrack)
+			data := localTrack
+			data.IsMissing = sql.NullBool{Valid: true, Bool: false}
+			toInsert = append(toInsert, data)
 		} else {
 			metadataChanged := dbTrack.Title != localTrack.Title
 			wasMissing := dbTrack.IsMissing.Valid && dbTrack.IsMissing.Bool == true
@@ -107,7 +109,7 @@ func (s *TrackSyncMangaer) handleUpdates(ctx context.Context, toUpdate []sqlcDb.
 			Album:           itemToUpdate.Album,
 			DurationSeconds: itemToUpdate.DurationSeconds,
 			Genre:           itemToUpdate.Genre,
-			IsMissing:       itemToUpdate.IsMissing,
+			IsMissing:       sql.NullBool{Bool: false, Valid: true},
 		})
 
 		if err != nil {
