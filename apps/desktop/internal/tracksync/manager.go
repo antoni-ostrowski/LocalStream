@@ -18,7 +18,7 @@ func (s *TrackSyncMangaer) StartSync(ctx context.Context) error {
 	start := time.Now()
 	runtime.LogInfo(ctx, "Starting track collection process")
 	tracksStart := time.Now()
-	tracks, err := s.collectTracks(ctx)
+	tracks, err := s.collectTracks(ctx, s.Db)
 	if err != nil {
 		runtime.LogErrorf(ctx, "Tracks collector failed %v", err)
 		return err

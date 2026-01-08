@@ -3,12 +3,13 @@ package tracksync
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"io/fs"
+	"localStream/internal/database"
 	"localStream/sqlcDb"
 	"os"
 	"path/filepath"
-	"runtime"
 	"sync"
 	"time"
 
@@ -17,9 +18,9 @@ import (
 	wailsRuntime "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-func (s *TrackSyncMangaer) collectTracks(ctx context.Context) ([]sqlcDb.Track, error) {
+func (s *TrackSyncMangaer) collectTracks(ctx context.Context, db *database.DBManager) ([]sqlcDb.Track, error) {
 
-	workersCount := runtime.GOMAXPROCS(0)
+	workersCount := 8
 
 	wailsRuntime.LogInfof(ctx, "Starting track sync with %v workers", workersCount)
 
@@ -40,10 +41,11 @@ func (s *TrackSyncMangaer) collectTracks(ctx context.Context) ([]sqlcDb.Track, e
 		// keeps reading the chn
 		for track := range tracksCh {
 			allNewTracks = append(allNewTracks, track)
+			wailsRuntime.EventsEmit(ctx, "tracksync", len(allNewTracks))
 		}
 	}()
 
-	s.startWorkers(ctx, workersCount, filePathCh, tracksCh, errorCh, &processWg)
+	s.startWorkers(ctx, workersCount, filePathCh, tracksCh, errorCh, &processWg, db)
 
 	s.startScanners(ctx, sourceDirs, filePathCh, errorCh, &processWg)
 
@@ -96,6 +98,7 @@ func (s *TrackSyncMangaer) startWorkers(
 	tracksCh chan<- sqlcDb.Track,
 	errorCh chan<- error,
 	processWg *sync.WaitGroup,
+	db *database.DBManager,
 ) {
 	for i := 0; i < workersCount; i++ {
 		processWg.Add(1)
@@ -111,10 +114,10 @@ func (s *TrackSyncMangaer) startWorkers(
 					// this starts the file processing
 				default:
 					start := time.Now()
-					track, err := s.processFile(filePath)
+					track, err := s.processFile(ctx, filePath, db)
 					if err != nil {
 						// if its a 'light' err we contrinue to next filePath
-						if os.IsNotExist(err) || err.Error() == "mock metadata read failed" {
+						if os.IsNotExist(err) {
 							continue
 						}
 						// if err is something fatal we stop whole pipeline
@@ -159,7 +162,7 @@ func (s *TrackSyncMangaer) startScanners(
 		for _, dir := range sourceDirs {
 			scanWg.Add(1)
 			go func(dirPath string) {
-				start := time.Now()
+				// start := time.Now()
 				defer scanWg.Done()
 				// 			// scans whole tree of files from the dirPath
 				if err := s.scanSourceDirForFiles(ctx, dirPath, filePathCh); err != nil {
@@ -167,8 +170,8 @@ func (s *TrackSyncMangaer) startScanners(
 					case errorCh <- fmt.Errorf("scanner error for %s: %w", dirPath, err):
 					default:
 					}
-					duration := time.Since(start)
-					fmt.Printf("\n Scanned dir %v for %v", dirPath, duration)
+					// duration := time.Since(start)
+					// fmt.Printf("\n Scanned dir %v for %v", dirPath, duration)
 				}
 			}(dir)
 			// passing explitly args to anon func ensuers
@@ -215,30 +218,39 @@ func (s *TrackSyncMangaer) scanSourceDirForFiles(ctx context.Context, root strin
 	return err
 }
 
-func (s *TrackSyncMangaer) processFile(path string) (sqlcDb.Track, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return sqlcDb.Track{}, fmt.Errorf("failed to get metadata %v", err)
-	}
-	defer f.Close()
+func (s *TrackSyncMangaer) processFile(ctx context.Context, path string, db *database.DBManager) (sqlcDb.Track, error) {
+	track, err := db.Queries.GetTrackFromPath(ctx, path)
+	if err == nil {
+		// return track early if it already exists in db
+		return track, nil
+	} else if errors.Is(err, sql.ErrNoRows) {
+		// Track doesn't exist, proceed with metadata reading
+		f, err := os.Open(path)
+		if err != nil {
+			return sqlcDb.Track{}, err
+		}
+		defer f.Close()
+		m, err := tag.ReadFrom(f)
+		if err != nil {
+			return sqlcDb.Track{}, err
+		}
 
-	m, err := tag.ReadFrom(f)
-	if err != nil {
-		return sqlcDb.Track{}, fmt.Errorf("failed to get metadata %v", err)
+		return sqlcDb.Track{
+			Title:           GetOr(m.Title(), "No title"),
+			Album:           GetOr(m.Album(), "No album"),
+			Genre:           sql.NullString{String: GetOr(m.Genre(), "No genre"), Valid: true},
+			DurationSeconds: sql.NullInt64{Int64: 0, Valid: true},
+			CreatedAt:       time.Now().Unix(),
+			ID:              uuid.NewString(),
+			Path:            path,
+			Artist:          GetOr(m.Artist(), "no artist"),
+			Starred:         sql.NullInt64{},
+			IsMissing:       sql.NullBool{Bool: false, Valid: true},
+		}, nil
+	} else {
+		return sqlcDb.Track{}, err
 	}
 
-	return sqlcDb.Track{
-		Title:           GetOr(m.Title(), "No title"),
-		Album:           GetOr(m.Album(), "No album"),
-		Genre:           sql.NullString{String: GetOr(m.Genre(), "No genre"), Valid: true},
-		DurationSeconds: sql.NullInt64{Int64: 0, Valid: true},
-		CreatedAt:       time.Now().Unix(),
-		ID:              uuid.NewString(),
-		Path:            path,
-		Artist:          GetOr(m.Artist(), "no artist"),
-		Starred:         sql.NullInt64{},
-		IsMissing:       sql.NullBool{Bool: false, Valid: true},
-	}, nil
 }
 
 func GetOr[T string](value T, defaultValue T) T {
