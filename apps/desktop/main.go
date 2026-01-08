@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"embed"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -127,7 +126,6 @@ func artworkHandler(w http.ResponseWriter, r *http.Request) {
 		servePlaceholder(w)
 		return
 	}
-	log.Printf("artwork type %v", m.Picture().MIMEType)
 
 	w.Header().Set("Content-type", m.Picture().MIMEType)
 	w.Header().Set("Cache-Control", "public, max-age=86400")

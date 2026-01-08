@@ -18,9 +18,11 @@ import (
 )
 
 func (s *TrackSyncMangaer) collectTracks(ctx context.Context) ([]sqlcDb.Track, error) {
-	wailsRuntime.LogInfo(ctx, "Starting track sync")
 
 	workersCount := runtime.GOMAXPROCS(0)
+
+	wailsRuntime.LogInfof(ctx, "Starting track sync with %v workers", workersCount)
+
 	sourceDirs := s.Config.Preferences.SourceDirs
 
 	filePathCh := make(chan string, 2000)
