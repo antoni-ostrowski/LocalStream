@@ -41,7 +41,7 @@ export const Route = createRootRouteWithContext<{
   notFoundComponent: () => {
     return (
       <div>
-        <p>This is the notFoundComponent configured on root route</p>
+        <p>not found</p>
       </div>
     )
   }
@@ -51,9 +51,9 @@ function RootComponent() {
   return (
     <>
       <RegistryProvider>
-        <div className={`flex min-h-screen flex-col`}>
-          <div className={`flex items-center gap-2 border-b`}>
-            <div className={`flex-1`}>
+        <div className={`flex min-h-screen flex-col overflow-hidden`}>
+          <div className={`flex items-center gap-2 overflow-hidden border-b`}>
+            <div className={`flex-1 overflow-hidden`}>
               <SidebarProvider>
                 <ResizablePanelGroup>
                   <ResizablePanel minSize={"2"} defaultSize={"20"}>
@@ -64,7 +64,9 @@ function RootComponent() {
                   <ResizableHandle />
                   <ResizablePanel>
                     <SidebarInset>
-                      <Outlet />
+                      <div className="h-screen overflow-auto">
+                        <Outlet />
+                      </div>
                     </SidebarInset>
                   </ResizablePanel>
                   <ResizableHandle />

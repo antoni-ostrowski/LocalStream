@@ -16,7 +16,7 @@ export default function VolumeControls() {
     <div className="flex w-full flex-row items-center justify-center gap-2">
       <IconVolumeOff size={15} />
       <input
-        className="accent-primary w-[90%] cursor-pointer bg-gray-300"
+        className="w-[90%] cursor-pointer accent-black"
         type="range"
         max={1}
         min={0}
