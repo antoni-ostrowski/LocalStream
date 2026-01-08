@@ -4,7 +4,7 @@ import GridWrapper from "@/components/grid-wrapper"
 import PageTitleWrapper from "@/components/page-title-wrapper"
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/album/all")({
+export const Route = createFileRoute("/albums/all")({
   component: RouteComponent,
   pendingComponent: () => <FullScreenLoading />,
   errorComponent: ({ error }) => <FullScreenError errorDetail={error.message} />

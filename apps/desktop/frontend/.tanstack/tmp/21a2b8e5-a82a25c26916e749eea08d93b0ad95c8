@@ -4,10 +4,10 @@ import GridWrapper from "@/components/grid-wrapper"
 import PageTitleWrapper from "@/components/page-title-wrapper"
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/artist/favourites")({
+export const Route = createFileRoute("/albums/favourites")({
   // loader: async ({ context: { queryClient, trpc } }) => {
   //   await queryClient.prefetchQuery(
-  //     trpc.metadata.listArtists.queryOptions({ favsOnly: true })
+  //     trpc.album.listAlbums.queryOptions({ favsOnly: true })
   //   )
   // },
   component: RouteComponent,
@@ -17,24 +17,24 @@ export const Route = createFileRoute("/artist/favourites")({
 
 function RouteComponent() {
   // const { data } = useSuspenseQuery(
-  //   trpc.metadata.listArtists.queryOptions({ favsOnly: true }),
+  //   trpc.album.listAlbums.queryOptions({ favsOnly: true }),
   // )
-  //
+  // console.log({ data })
   // if (data.length === 0)
   //   return (
   //     <FullScreenError
-  //       errorDetail="No favourite artists found."
+  //       errorDetail="No favourite albums found."
   //       type="warning"
   //     />
   //   )
 
   return (
-    <PageTitleWrapper title="Favourite Artists">
+    <PageTitleWrapper title="Favourite Albums">
       <GridWrapper>
         <>
-          fav artist list
+          album list fav
           {/* {data.map((item) => ( */}
-          {/*   <ArtistGridItem key={crypto.randomUUID()} item={item} /> */}
+          {/*   <GridAlbumCard key={crypto.randomUUID()} album={item} /> */}
           {/* ))} */}
         </>
       </GridWrapper>

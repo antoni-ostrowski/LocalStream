@@ -3,7 +3,7 @@ import FullScreenLoading from "@/components/full-screen-loading"
 import PageTitleWrapper from "@/components/page-title-wrapper"
 import { createFileRoute } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/album/$albumName")({
+export const Route = createFileRoute("/albums/$albumName")({
   // loader: async ({ context: { queryClient, trpc }, params: { albumName } }) => {
   //   await queryClient.prefetchQuery(
   //     trpc.album.getAlbum.queryOptions({ albumName })
