@@ -56,7 +56,7 @@ function RootComponent() {
             <div className={`flex-1 overflow-hidden`}>
               <SidebarProvider>
                 <ResizablePanelGroup>
-                  <ResizablePanel minSize={"2"} defaultSize={"20"}>
+                  <ResizablePanel minSize={"180px"} maxSize={"180px"}>
                     <div className="w-full">
                       <SidebarLeft />
                     </div>

@@ -2,9 +2,12 @@ package main
 
 import (
 	"bytes"
+	"crypto/md5"
 	"embed"
+	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -107,8 +110,29 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func artworkHandler(w http.ResponseWriter, r *http.Request) {
-	// 1. Get the audio path from the URL (stripping "/artwork/")
 	audioPath := r.URL.Path[9:]
+
+	hash := fmt.Sprintf("%x", md5.Sum([]byte(audioPath)))
+	cacheDir, cacheDirErr := os.UserCacheDir()
+
+	if cacheDirErr != nil {
+		servePlaceholder(w)
+		return
+	}
+
+	cachePath := filepath.Join(cacheDir, "localStream", "art", hash)
+
+	if info, err := os.Stat(cachePath); err == nil {
+		f, err := os.Open(cachePath)
+		if err != nil {
+			servePlaceholder(w)
+			return
+		}
+		defer f.Close()
+
+		http.ServeContent(w, r, "cover", info.ModTime(), f)
+		return
+	}
 
 	f, err := os.Open(audioPath)
 	if err != nil {
@@ -127,8 +151,10 @@ func artworkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	os.MkdirAll(filepath.Dir(cachePath), 0755)
+	os.WriteFile(cachePath, m.Picture().Data, 0644)
+
 	w.Header().Set("Content-type", m.Picture().MIMEType)
-	w.Header().Set("Cache-Control", "public, max-age=86400")
 	http.ServeContent(w, r, "", time.Now(), bytes.NewReader(imageBytes))
 }
 

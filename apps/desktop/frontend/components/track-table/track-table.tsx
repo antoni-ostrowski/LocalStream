@@ -1,4 +1,4 @@
-import { cn, createArtworkLink, formatSongLength } from "@/lib/utils"
+import { cn, createArtworkLink } from "@/lib/utils"
 import { sqlcDb } from "@/wailsjs/go/models"
 import {
   createColumnHelper,
@@ -36,7 +36,7 @@ export default function TrackTable({
     columnHelper.display({
       id: "artwork",
       header: `(${tracks?.length?.toString()})`,
-      maxSize: 0.01,
+      size: 0.01,
       cell: (props) => <RenderTableArtwork track={props.row.original} />
     }),
 
@@ -62,16 +62,6 @@ export default function TrackTable({
       header: "Album",
       size: 20,
       cell: (info) => <p className="truncate">{info.getValue()}</p>
-    }),
-
-    columnHelper.accessor("duration_seconds", {
-      header: "Duration",
-      size: 20,
-      cell: (info) => (
-        <p className="text-muted-foreground truncate">
-          {formatSongLength(info.getValue().Int64)}
-        </p>
-      )
     }),
 
     columnHelper.display({
@@ -124,7 +114,7 @@ export default function TrackTable({
   }, [table.getState().columnFilters[0]?.id, table])
 
   return (
-    <div ref={parentRef} className="">
+    <div className="">
       <div className="flex flex-row gap-2">
         <DebouncedInput
           value={globalFilter}
@@ -135,71 +125,77 @@ export default function TrackTable({
         />
         {filters}
       </div>
-      <Table style={{ tableLayout: "fixed", width: "100%" }}>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead
-                    key={header.id}
-                    style={{ width: header.getSize() }}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
+      <div ref={parentRef} className="container">
+        <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
+          <Table style={{ tableLayout: "fixed", width: "100%" }}>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        style={{ width: header.getSize() }}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    )
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.length ? (
+                <>
+                  {virtualizer.getVirtualItems().map((virtualRow, index) => {
+                    const row = table.getRowModel().rows[virtualRow.index]
+                    return (
+                      <TableRow
+                        style={{
+                          height: `${virtualRow.size}px`,
+                          transform: `translateY(${
+                            virtualRow.start - index * virtualRow.size
+                          }px)`
+                        }}
+                        key={row.id}
+                        data-state={row.getIsSelected() && "selected"}
+                        className={cn(
+                          row.original.is_missing.Valid &&
+                            row.original.is_missing.Bool &&
+                            "opacity-50"
                         )}
-                  </TableHead>
-                )
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.length ? (
-            <>
-              {virtualizer.getVirtualItems().map((virtualRow, index) => {
-                const row = table.getRowModel().rows[virtualRow.index]
-                if (!row) return null
-                return (
-                  <TableRow
-                    style={{
-                      height: `${virtualRow.size}px`,
-                      transform: `translateY(${
-                        virtualRow.start - index * virtualRow.size
-                      }px)`
-                    }}
-                    key={row.original.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className={cn(
-                      row.original.is_missing.Valid &&
-                        row.original.is_missing.Bool &&
-                        "opacity-50"
-                    )}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    )
+                  })}
+                </>
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
                   >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                )
-              })}
-            </>
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
     </div>
   )
 }
