@@ -8,22 +8,23 @@ import (
 	"localStream/sqlcDb"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sync"
 	"time"
 
+	"github.com/dhowden/tag"
 	"github.com/google/uuid"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
-	"go.senan.xyz/taglib"
+	wailsRuntime "github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 func (s *TrackSyncMangaer) collectTracks(ctx context.Context) ([]sqlcDb.Track, error) {
-	runtime.LogInfo(ctx, "Starting track sync")
+	wailsRuntime.LogInfo(ctx, "Starting track sync")
 
-	const workersCount = 8
+	workersCount := runtime.GOMAXPROCS(0)
 	sourceDirs := s.Config.Preferences.SourceDirs
 
-	filePathCh := make(chan string)
-	tracksCh := make(chan sqlcDb.Track)
+	filePathCh := make(chan string, 2000)
+	tracksCh := make(chan sqlcDb.Track, 2000)
 	errorCh := make(chan error, 1)
 
 	var processWg sync.WaitGroup
@@ -107,6 +108,7 @@ func (s *TrackSyncMangaer) startWorkers(
 					return
 					// this starts the file processing
 				default:
+					start := time.Now()
 					track, err := s.processFile(filePath)
 					if err != nil {
 						// if its a 'light' err we contrinue to next filePath
@@ -120,11 +122,14 @@ func (s *TrackSyncMangaer) startWorkers(
 						}
 						return
 					}
+					duration := time.Since(start)
+					fmt.Printf("\nProcessed file %v for %v,", track.Title[:min(len(track.Title), 10)], duration)
 					// if no errors processing the file, send the track obj to the channel
 					tracksCh <- track
 				}
 
 			}
+			fmt.Printf("\n worker %v is idle", id)
 
 		}(i)
 
@@ -152,6 +157,7 @@ func (s *TrackSyncMangaer) startScanners(
 		for _, dir := range sourceDirs {
 			scanWg.Add(1)
 			go func(dirPath string) {
+				start := time.Now()
 				defer scanWg.Done()
 				// 			// scans whole tree of files from the dirPath
 				if err := s.scanSourceDirForFiles(ctx, dirPath, filePathCh); err != nil {
@@ -159,6 +165,8 @@ func (s *TrackSyncMangaer) startScanners(
 					case errorCh <- fmt.Errorf("scanner error for %s: %w", dirPath, err):
 					default:
 					}
+					duration := time.Since(start)
+					fmt.Printf("\n Scanned dir %v for %v", dirPath, duration)
 				}
 			}(dir)
 			// passing explitly args to anon func ensuers
@@ -176,7 +184,7 @@ func (s *TrackSyncMangaer) scanSourceDirForFiles(ctx context.Context, root strin
 
 	// fmt.Printf("scan for  %s \n", root)
 	if _, err := os.Stat(root); os.IsNotExist(err) {
-		runtime.LogErrorf(ctx, "Root source dir doesnt exist %v", err)
+		wailsRuntime.LogErrorf(ctx, "Root source dir doesnt exist %v", err)
 		return fmt.Errorf("Root source dir doesnt exist")
 	}
 
@@ -184,7 +192,7 @@ func (s *TrackSyncMangaer) scanSourceDirForFiles(ctx context.Context, root strin
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
 		// fmt.Printf("walk over %s \n", path)
 		if err != nil {
-			runtime.LogErrorf(ctx, "Error accessing path %s: %v. Skipping \n", path, err)
+			wailsRuntime.LogErrorf(ctx, "Error accessing path %s: %v. Skipping \n", path, err)
 			return nil
 		}
 
@@ -206,33 +214,34 @@ func (s *TrackSyncMangaer) scanSourceDirForFiles(ctx context.Context, root strin
 }
 
 func (s *TrackSyncMangaer) processFile(path string) (sqlcDb.Track, error) {
-	tags, err := taglib.ReadTags(path)
-	properties, err2 := taglib.ReadProperties(path)
-
-	fmt.Printf("%v\n", properties.Length)
-	if err != nil || err2 != nil {
+	f, err := os.Open(path)
+	if err != nil {
 		return sqlcDb.Track{}, fmt.Errorf("failed to get metadata %v", err)
 	}
-	fmt.Printf("%v\n", properties.Length.Seconds())
+	defer f.Close()
+
+	m, err := tag.ReadFrom(f)
+	if err != nil {
+		return sqlcDb.Track{}, fmt.Errorf("failed to get metadata %v", err)
+	}
 
 	return sqlcDb.Track{
-		Title:           GetFirstOr(tags[taglib.Title], "no title"),
-		Album:           GetFirstOr(tags[taglib.Album], "no album"),
-		Genre:           sql.NullString{String: GetFirstOr(tags[taglib.Genre], "no genre")},
-		DurationSeconds: sql.NullInt64{Int64: int64(properties.Length.Seconds()), Valid: true},
+		Title:           GetOr(m.Title(), "No title"),
+		Album:           GetOr(m.Album(), "No album"),
+		Genre:           sql.NullString{String: GetOr(m.Genre(), "No genre"), Valid: true},
+		DurationSeconds: sql.NullInt64{Int64: 0, Valid: true},
 		CreatedAt:       time.Now().Unix(),
 		ID:              uuid.NewString(),
 		Path:            path,
-		Artist:          GetFirstOr(tags[taglib.Artist], "no artist"),
+		Artist:          GetOr(m.Artist(), "no artist"),
 		Starred:         sql.NullInt64{},
-		IsMissing:       sql.NullBool{Bool: false},
+		IsMissing:       sql.NullBool{Bool: false, Valid: true},
 	}, nil
 }
 
-// unwrap the first item from array or return fallback
-func GetFirstOr[T any](values []T, defaultValue T) T {
-	if len(values) > 0 {
-		return values[0]
+func GetOr[T string](value T, defaultValue T) T {
+	if len(value) > 0 {
+		return value
 	}
 	return defaultValue
 }

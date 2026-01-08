@@ -7,8 +7,9 @@ Lightweight, minimalistic, local desktop music player focused on simplicity.
 # Getting started
 
 Start by downloading a zip from [latest release](https://github.com/antoni-ostrowski/localStream/releases/tag/v0.0.1-alpha). It will contain just a compiled app, it's about few MB's. You just have to unzip it and then you can run the app!
+
 > **Note for Linux users**: LocalStream is built using [Wails](https://wails.io/), which is a fully cross-platform framework. While the app is designed to work everywhere, I have only verified it on macOS and Windows so far. It should only require minor tweaks to get it running perfectly and Linux too, I just don't have any machine with linux at hand.
-If you'd like to try it now, you can build it from source using the [Wails CLI](https://wails.io/docs/reference/cli/), or you can wait for the official builds coming soon.
+> If you'd like to try it now, you can build it from source using the [Wails CLI](https://wails.io/docs/reference/cli/), or you can wait for the official builds coming soon.
 
 # General Tips
 
@@ -47,10 +48,9 @@ The entire application behavior is driven by this JSON configuration. Specifical
 - iCloud / Cloud sync ready: By pointing the databasePath to a synced folder (like iCloud Drive), you can maintain a single source of truth across multiple devices.
 - future-proofing: This architecture paves the way for the LocalStream ios app I plan to build, allowing both versions of the app to share the exact same database file and user data.
 
-
 App is built with wails:
 
-- I tried to put as much stuff as I can in Go part of the app (I use beep lib for playback, taglib for track metadata)
+- I tried to put as much stuff as I can in Go part of the app (I use beep lib for playback)
 - Frontend is built with react, tanstack router and heavly depends on effect and effect-atom for state managment
 
 # Contributing

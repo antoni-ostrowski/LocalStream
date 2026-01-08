@@ -89,7 +89,7 @@ func (s *TrackSyncMangaer) compareTracksAndGenerateActions(dbTracks []sqlcDb.Tra
 
 func (s *TrackSyncMangaer) handleInserts(ctx context.Context, toInsert []sqlcDb.Track, qtx *sqlcDb.Queries) error {
 	for _, itemToInsert := range toInsert {
-		fmt.Printf("attemtping to insert %v", itemToInsert.Title)
+		fmt.Printf("attemtping to insert %v\n", itemToInsert.Title)
 		err := qtx.InsertTrack(ctx, sqlcDb.InsertTrackParams(itemToInsert))
 		if err != nil {
 			return fmt.Errorf("Failed to insert track - %s, %v", itemToInsert.Title, err)
@@ -100,7 +100,7 @@ func (s *TrackSyncMangaer) handleInserts(ctx context.Context, toInsert []sqlcDb.
 
 func (s *TrackSyncMangaer) handleUpdates(ctx context.Context, toUpdate []sqlcDb.Track, qtx *sqlcDb.Queries) error {
 	for _, itemToUpdate := range toUpdate {
-		fmt.Printf("attemtping to update %v", itemToUpdate.Title)
+		fmt.Printf("attemtping to update %v\n", itemToUpdate.Title)
 		err := qtx.UpdateTrack(ctx, sqlcDb.UpdateTrackParams{
 			ID:              itemToUpdate.ID,
 			Title:           itemToUpdate.Title,

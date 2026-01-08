@@ -3,18 +3,19 @@ package main
 import (
 	"bytes"
 	"embed"
+	"log"
 	"net/http"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/dhowden/tag"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 	"github.com/wailsapp/wails/v2/pkg/options/linux"
 	"github.com/wailsapp/wails/v2/pkg/options/mac"
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
-	"go.senan.xyz/taglib"
 )
 
 //go:embed all:frontend/dist
@@ -107,32 +108,40 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func artworkHandler(w http.ResponseWriter, r *http.Request) {
-	// 1. Get the MP3 path from the URL (stripping "/artwork/")
+	// 1. Get the audio path from the URL (stripping "/artwork/")
 	audioPath := r.URL.Path[9:]
 
-	// 1. Try to read the image
-	imageBytes, err := taglib.ReadImage(audioPath)
+	f, err := os.Open(audioPath)
+	if err != nil {
+		servePlaceholder(w)
+		return
+	}
+	defer f.Close()
+	m, err := tag.ReadFrom(f)
+	if err != nil || m == nil || m.Picture() == nil {
+		servePlaceholder(w)
+		return
+	}
+	imageBytes := m.Picture().Data
+	if len(imageBytes) == 0 {
+		servePlaceholder(w)
+		return
+	}
+	log.Printf("artwork type %v", m.Picture().MIMEType)
 
-	// 2. If error or no bytes, redirect or serve the placeholder
-	if err != nil || imageBytes == nil {
-		// 1. Manually load the placeholder from your embedded assets
-		// Make sure the path matches your embed structure exactly
-		placeholder, err := assets.ReadFile("frontend/dist/placeholder.webp")
-		if err != nil {
-			http.Error(w, "Placeholder missing", 404)
-			return
-		}
+	w.Header().Set("Content-type", m.Picture().MIMEType)
+	w.Header().Set("Cache-Control", "public, max-age=86400")
+	http.ServeContent(w, r, "", time.Now(), bytes.NewReader(imageBytes))
+}
 
-		// 2. Set the correct headers so WebKit knows it's an image
-		w.Header().Set("Content-Type", "image/webp")
-		w.Header().Set("Cache-Control", "public, max-age=3600")
-		w.Write(placeholder)
+func servePlaceholder(w http.ResponseWriter) {
+	placeholder, err := assets.ReadFile("frontend/dist/placeholder.webp")
+	if err != nil {
+		http.Error(w, "Placeholder missing", 404)
 		return
 	}
 
-	// 3. Serve the content
-	// We use time.Now() for ModTime because the artwork is dynamic/embedded.
-	// http.ServeContent automatically detects the mime-type (image/jpeg, etc)
-	// from the byte signature.
-	http.ServeContent(w, r, "artwork.jpg", time.Now(), bytes.NewReader(imageBytes))
+	w.Header().Set("Content-Type", "image/webp")
+	w.Header().Set("Cache-Control", "public, max-age=3600")
+	w.Write(placeholder)
 }
