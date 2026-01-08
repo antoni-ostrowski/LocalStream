@@ -47,27 +47,25 @@ export default function QueueTrackTable() {
 function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
   const columns = [
     columnHelper.display({
-      id: "artwork",
-      header: `(${queueTracks.length.toString()})`,
-      maxSize: 0.01,
-      cell: (props) => <RenderTableArtwork track={props.row.original} />
+      id: "deletor",
+      maxSize: 10,
+      cell: (props) => <Deletor trackQueueIndex={props.row.index} />
     }),
 
     columnHelper.accessor("title", {
-      header: "Title",
-      size: 30,
-      cell: ({
-        row: {
-          original: { title, artist, album }
-        }
-      }) => (
-        <div className="text-muted-foreground flex flex-col">
-          <div className="flex w-full flex-col items-start justify-start">
-            <h1 className="text-md text-foreground">{title}</h1>
+      header: () => null,
+      size: 170,
+      cell: ({ row: { original } }) => (
+        <div className="text-muted-foreground flex flex-row gap-2">
+          <RenderTableArtwork track={original} />
+          <div className="flex w-full flex-col items-start justify-start overflow-hidden">
+            <p className="text-md text-foreground w-3/4 truncate">
+              {original.title}
+            </p>
             <div className="flex flex-row items-center justify-center gap-1">
-              <h2>{artist}</h2>
+              <h2>{original.artist}</h2>
               <p>-</p>
-              <h2>{album}</h2>
+              <h2>{original.album}</h2>
             </div>
           </div>
         </div>
@@ -80,11 +78,7 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
       id: "btns",
       size: 20,
       cell: (props) => (
-        <div
-          className="flex flex-row items-center justify-end gap-0.5"
-          onClick={() => console.log("div")}
-        >
-          <Deletor trackQueueIndex={props.row.index} />
+        <div className="flex flex-row items-center justify-end gap-0.5">
           <TrackInteractions
             {...{
               track: props.row.original,
@@ -147,7 +141,7 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="p-1">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

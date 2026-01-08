@@ -7,15 +7,13 @@ import StarTrack from "./star-track"
 import TrackContextMenu from "./track-context-menu"
 
 export default function TrackInteractions({
-  track,
-  showPlayNow = true
+  track
 }: {
   track: sqlcDb.Track
   showPlayNow?: boolean
 }) {
   return (
     <div className="flex flex-row items-center justify-start gap-0.5">
-      <>{showPlayNow && <PlayNowBtn {...{ track }} />}</>
       <StarTrack {...{ track }} />
       {track.is_missing.Valid && !track.is_missing.Bool && (
         <TrackContextMenu {...{ track }} />
@@ -24,7 +22,7 @@ export default function TrackInteractions({
   )
 }
 
-function PlayNowBtn({ track }: { track: sqlcDb.Track }) {
+export function PlayNowBtn({ track }: { track: sqlcDb.Track }) {
   const [, playNow] = useAtom(playNowAtom)
   return (
     <>

@@ -19,7 +19,7 @@ export default function Metadata({
             <h2 className="text-muted-foreground">{currentTrack.album}</h2>
           </div>
         </div>
-        <TrackInteractions {...{ track: currentTrack, showPlayNow: false }} />
+        <TrackInteractions {...{ track: currentTrack }} />
       </div>
     </div>
   )

@@ -21,7 +21,7 @@ import {
   TableRow
 } from "../ui/table"
 import { fuzzyFilter, fuzzySort } from "./table-utils"
-import TrackInteractions from "./track-interactions"
+import TrackInteractions, { PlayNowBtn } from "./track-interactions"
 
 const columnHelper = createColumnHelper<sqlcDb.Track>()
 
@@ -36,15 +36,28 @@ export default function TrackTable({
     columnHelper.display({
       id: "artwork",
       header: `(${tracks?.length?.toString()})`,
-      size: 0.01,
-      cell: (props) => <RenderTableArtwork track={props.row.original} />
+      size: 30,
+      cell: (info) => (
+        <>
+          <div className="relative flex items-center justify-center">
+            <p className="text-muted-foreground transition-opacity duration-200 hover:opacity-0">
+              {info.row.index + 1}
+            </p>
+
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-100 hover:opacity-100">
+              <PlayNowBtn {...{ track: info.row.original }} />
+            </div>
+          </div>
+        </>
+      )
     }),
 
     columnHelper.accessor("title", {
       header: "Title",
-      size: 30,
+      size: 350,
       cell: (info) => (
-        <div className="flex flex-col">
+        <div className="flex flex-row items-center justify-start gap-4">
+          <RenderTableArtwork track={info.row.original} />
           <p className="truncate">{info.getValue()}</p>
         </div>
       ),
@@ -54,19 +67,19 @@ export default function TrackTable({
 
     columnHelper.accessor("artist", {
       header: "Artist",
-      size: 20,
+      size: 150,
       cell: (info) => <p className="truncate">{info.getValue()}</p>
     }),
 
     columnHelper.accessor("album", {
       header: "Album",
-      size: 20,
+      size: 150,
       cell: (info) => <p className="truncate">{info.getValue()}</p>
     }),
 
     columnHelper.display({
       id: "btns",
-      size: 20,
+      size: 100,
       cell: (props) => (
         <div className="flex flex-row items-center justify-end">
           <TrackInteractions {...{ track: props.row.original }} />
@@ -165,13 +178,14 @@ export default function TrackTable({
                         key={row.id}
                         data-state={row.getIsSelected() && "selected"}
                         className={cn(
+                          "hover:bg-secondary",
                           row.original.is_missing.Valid &&
                             row.original.is_missing.Bool &&
                             "opacity-50"
                         )}
                       >
                         {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
+                          <TableCell key={cell.id} className="p-0">
                             {flexRender(
                               cell.column.columnDef.cell,
                               cell.getContext()
@@ -201,5 +215,5 @@ export default function TrackTable({
 }
 
 export function RenderTableArtwork({ track }: { track: sqlcDb.Track }) {
-  return <img src={createArtworkLink(track.path)} className="w-10" />
+  return <img src={createArtworkLink(track.path)} className="w-10 bg-red-500" />
 }
