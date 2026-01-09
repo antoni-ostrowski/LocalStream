@@ -13,26 +13,26 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dhowden/tag"
 	"github.com/google/uuid"
 	wailsRuntime "github.com/wailsapp/wails/v2/pkg/runtime"
+	"go.senan.xyz/taglib"
 )
 
-func (s *TrackSyncMangaer) collectTracks(ctx context.Context, db *database.DBManager) ([]sqlcDb.Track, error) {
+func (s *TrackSyncMangaer) collectTracks(ctx context.Context, db *database.DBManager) ([]*sqlcDb.Track, error) {
 
-	workersCount := 8
+	workersCount := 10
 
 	wailsRuntime.LogInfof(ctx, "Starting track sync with %v workers", workersCount)
 
 	sourceDirs := s.Config.Preferences.SourceDirs
 
-	filePathCh := make(chan string, 2000)
-	tracksCh := make(chan sqlcDb.Track, 2000)
+	filePathCh := make(chan string)
+	tracksCh := make(chan *sqlcDb.Track)
 	errorCh := make(chan error, 1)
 
 	var processWg sync.WaitGroup
 	var collectWg sync.WaitGroup
-	var allNewTracks []sqlcDb.Track
+	var allNewTracks []*sqlcDb.Track
 
 	// consumer of incoming tracks from trackChn
 	collectWg.Add(1)
@@ -95,7 +95,7 @@ func (s *TrackSyncMangaer) startWorkers(
 	ctx context.Context,
 	workersCount int,
 	filePathCh <-chan string,
-	tracksCh chan<- sqlcDb.Track,
+	tracksCh chan<- *sqlcDb.Track,
 	errorCh chan<- error,
 	processWg *sync.WaitGroup,
 	db *database.DBManager,
@@ -113,7 +113,6 @@ func (s *TrackSyncMangaer) startWorkers(
 					return
 					// this starts the file processing
 				default:
-					start := time.Now()
 					track, err := s.processFile(ctx, filePath, db)
 					if err != nil {
 						// if its a 'light' err we contrinue to next filePath
@@ -127,10 +126,9 @@ func (s *TrackSyncMangaer) startWorkers(
 						}
 						return
 					}
-					duration := time.Since(start)
-					fmt.Printf("\nProcessed file %v for %v,", track.Title[:min(len(track.Title), 10)], duration)
 					// if no errors processing the file, send the track obj to the channel
 					tracksCh <- track
+
 				}
 
 			}
@@ -218,44 +216,43 @@ func (s *TrackSyncMangaer) scanSourceDirForFiles(ctx context.Context, root strin
 	return err
 }
 
-func (s *TrackSyncMangaer) processFile(ctx context.Context, path string, db *database.DBManager) (sqlcDb.Track, error) {
+func (s *TrackSyncMangaer) processFile(ctx context.Context, path string, db *database.DBManager) (*sqlcDb.Track, error) {
 	track, err := db.Queries.GetTrackFromPath(ctx, path)
+
 	if err == nil {
 		// return track early if it already exists in db
-		return track, nil
+		return &track, nil
 	} else if errors.Is(err, sql.ErrNoRows) {
-		// Track doesn't exist, proceed with metadata reading
-		f, err := os.Open(path)
-		if err != nil {
-			return sqlcDb.Track{}, err
-		}
-		defer f.Close()
-		m, err := tag.ReadFrom(f)
-		if err != nil {
-			return sqlcDb.Track{}, err
+		tags, err := taglib.ReadTags(path)
+		properties, err2 := taglib.ReadProperties(path)
+
+		if err != nil || err2 != nil {
+			return &sqlcDb.Track{}, fmt.Errorf("failed to get metadata %v", err)
 		}
 
-		return sqlcDb.Track{
-			Title:           GetOr(m.Title(), "No title"),
-			Album:           GetOr(m.Album(), "No album"),
-			Genre:           sql.NullString{String: GetOr(m.Genre(), "No genre"), Valid: true},
-			DurationSeconds: sql.NullInt64{Int64: 0, Valid: true},
+		return &sqlcDb.Track{
+			Title:           GetFirstOr(tags[taglib.Title], "no title"),
+			Album:           GetFirstOr(tags[taglib.Album], "no album"),
+			Genre:           sql.NullString{String: GetFirstOr(tags[taglib.Genre], "no genre"), Valid: true},
+			DurationSeconds: sql.NullInt64{Int64: int64(properties.Length.Seconds()), Valid: true},
 			CreatedAt:       time.Now().Unix(),
 			ID:              uuid.NewString(),
 			Path:            path,
-			Artist:          GetOr(m.Artist(), "no artist"),
+			Artist:          GetFirstOr(tags[taglib.Artist], "no artist"),
 			Starred:         sql.NullInt64{},
 			IsMissing:       sql.NullBool{Bool: false, Valid: true},
 		}, nil
+
 	} else {
-		return sqlcDb.Track{}, err
+		return &sqlcDb.Track{}, err
 	}
 
 }
 
-func GetOr[T string](value T, defaultValue T) T {
-	if len(value) > 0 {
-		return value
+// unwrap the first item from array or return fallback
+func GetFirstOr[T any](values []T, defaultValue T) T {
+	if len(values) > 0 {
+		return values[0]
 	}
 	return defaultValue
 }

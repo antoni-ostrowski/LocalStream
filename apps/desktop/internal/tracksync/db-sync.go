@@ -7,7 +7,7 @@ import (
 	"localStream/sqlcDb"
 )
 
-func (s *TrackSyncMangaer) SyncTracksWithDb(ctx context.Context, tracks []sqlcDb.Track) error {
+func (s *TrackSyncMangaer) SyncTracksWithDb(ctx context.Context, tracks []*sqlcDb.Track) error {
 	allDbTracks, err := s.Db.Queries.ListAllTracks(ctx)
 	if err != nil {
 		return fmt.Errorf("Failed to query %v", err)
@@ -46,7 +46,7 @@ func (s *TrackSyncMangaer) SyncTracksWithDb(ctx context.Context, tracks []sqlcDb
 	return nil
 }
 
-func (s *TrackSyncMangaer) compareTracksAndGenerateActions(dbTracks []sqlcDb.Track, localTracks []sqlcDb.Track) (toInsert, toUpdate, toMarkMissing []sqlcDb.Track) {
+func (s *TrackSyncMangaer) compareTracksAndGenerateActions(dbTracks []sqlcDb.Track, localTracks []*sqlcDb.Track) (toInsert, toUpdate, toMarkMissing []*sqlcDb.Track) {
 
 	dbTrackMap := make(map[string]sqlcDb.Track, len(dbTracks))
 	for _, track := range dbTracks {
@@ -80,17 +80,17 @@ func (s *TrackSyncMangaer) compareTracksAndGenerateActions(dbTracks []sqlcDb.Tra
 	}
 	for _, missingTrack := range dbTrackMap {
 		if !missingTrack.IsMissing.Valid || !missingTrack.IsMissing.Bool {
-			toMarkMissing = append(toMarkMissing, missingTrack)
+			toMarkMissing = append(toMarkMissing, &missingTrack)
 		}
 	}
 
 	return toInsert, toUpdate, toMarkMissing
 }
 
-func (s *TrackSyncMangaer) handleInserts(ctx context.Context, toInsert []sqlcDb.Track, qtx *sqlcDb.Queries) error {
+func (s *TrackSyncMangaer) handleInserts(ctx context.Context, toInsert []*sqlcDb.Track, qtx *sqlcDb.Queries) error {
 	for _, itemToInsert := range toInsert {
 		fmt.Printf("attemtping to insert %v\n", itemToInsert.Title)
-		err := qtx.InsertTrack(ctx, sqlcDb.InsertTrackParams(itemToInsert))
+		err := qtx.InsertTrack(ctx, sqlcDb.InsertTrackParams(*itemToInsert))
 		if err != nil {
 			return fmt.Errorf("Failed to insert track - %s, %v", itemToInsert.Title, err)
 		}
@@ -98,7 +98,7 @@ func (s *TrackSyncMangaer) handleInserts(ctx context.Context, toInsert []sqlcDb.
 	return nil
 }
 
-func (s *TrackSyncMangaer) handleUpdates(ctx context.Context, toUpdate []sqlcDb.Track, qtx *sqlcDb.Queries) error {
+func (s *TrackSyncMangaer) handleUpdates(ctx context.Context, toUpdate []*sqlcDb.Track, qtx *sqlcDb.Queries) error {
 	for _, itemToUpdate := range toUpdate {
 		fmt.Printf("attemtping to update %v\n", itemToUpdate.Title)
 		err := qtx.UpdateTrack(ctx, sqlcDb.UpdateTrackParams{
@@ -119,7 +119,7 @@ func (s *TrackSyncMangaer) handleUpdates(ctx context.Context, toUpdate []sqlcDb.
 	return nil
 }
 
-func (s *TrackSyncMangaer) handleMarkingMisses(ctx context.Context, toMark []sqlcDb.Track, qtx *sqlcDb.Queries) error {
+func (s *TrackSyncMangaer) handleMarkingMisses(ctx context.Context, toMark []*sqlcDb.Track, qtx *sqlcDb.Queries) error {
 
 	for _, itemToMark := range toMark {
 		err := qtx.UpdateTrack(ctx, sqlcDb.UpdateTrackParams{

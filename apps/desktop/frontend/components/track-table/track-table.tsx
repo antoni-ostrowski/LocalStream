@@ -1,4 +1,4 @@
-import { cn, createArtworkLink } from "@/lib/utils"
+import { cn, createArtworkLink, formatSongLength } from "@/lib/utils"
 import { sqlcDb } from "@/wailsjs/go/models"
 import {
   createColumnHelper,
@@ -75,6 +75,16 @@ export default function TrackTable({
       header: "Album",
       size: 150,
       cell: (info) => <p className="truncate">{info.getValue()}</p>
+    }),
+
+    columnHelper.accessor("duration_seconds", {
+      header: "Duration",
+      size: 50,
+      cell: (info) => (
+        <p className="text-muted-foreground truncate">
+          {formatSongLength(info.getValue().Int64)}
+        </p>
+      )
     }),
 
     columnHelper.display({
