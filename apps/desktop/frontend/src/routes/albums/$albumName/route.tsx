@@ -1,41 +1,110 @@
 import FullScreenError from "@/components/full-screen-error"
 import FullScreenLoading from "@/components/full-screen-loading"
-import PageTitleWrapper from "@/components/page-title-wrapper"
+import TrackTable from "@/components/track-table/track-table"
+import {
+  genericTrackListAtom,
+  GenericTrackListAtomAction
+} from "@/src/api/atoms/generic-track-list-atom"
+import { atomRuntime } from "@/src/api/make-runtime"
+import { Queries } from "@/src/api/queries"
+import { sqlcDb } from "@/wailsjs/go/models"
+import {
+  Atom,
+  Registry,
+  Result,
+  useAtom,
+  useAtomValue
+} from "@effect-atom/atom-react"
 import { createFileRoute } from "@tanstack/react-router"
+import { Effect } from "effect"
+import { useEffect } from "react"
 
 export const Route = createFileRoute("/albums/$albumName")({
-  // loader: async ({ context: { queryClient, trpc }, params: { albumName } }) => {
-  //   await queryClient.prefetchQuery(
-  //     trpc.album.getAlbum.queryOptions({ albumName })
-  //   )
-  // },
   component: RouteComponent,
   pendingComponent: () => <FullScreenLoading />,
   errorComponent: ({ error }) => <FullScreenError errorDetail={error.message} />
 })
 
+export const getAlbumTracks = Atom.family((album: string) =>
+  atomRuntime.atom(
+    Effect.gen(function* () {
+      const q = yield* Queries
+      const info = yield* q.getAlbumsTracks(album)
+
+      return info
+    })
+  )
+)
+
 function RouteComponent() {
-  // const { albumName } = Route.useParams()
-  // const { data: album } = useSuspenseQuery(
-  //   trpc.album.getAlbum.queryOptions({ albumName })
-  // )
+  const { albumName } = Route.useParams()
+
+  const getAlbumTracksResult = useAtomValue(getAlbumTracks(albumName))
 
   return (
-    <PageTitleWrapper>
-      <div className="flex flex-col gap-10">
-        <div className="flex flex-row items-center justify-start gap-8">
-          {/* <img */}
-          {/*   className="aspect-square w-50 object-fill" */}
-          {/*   src={makeArtworkUrl(album.albumCoverPath ?? '/dfjf/f/f')} */}
-          {/* /> */}
-          <div className="flex flex-col items-start justify-start gap-2">
-            <h1 className="text-3xl font-bold">album name</h1>
-            <div className="flex flex-row gap-2"></div>
+    <>
+      {Result.builder(getAlbumTracksResult)
+        .onError((err) => <FullScreenError errorDetail={err.message} />)
+        .onSuccess((tracks) => <Content tracks={tracks} album={albumName} />)
+        .orNull()}
+    </>
+  )
+}
+
+const setAlbumsTracksToGenericsTracks = atomRuntime.fn(
+  Effect.fn(function* (playlistTrack: sqlcDb.Track[]) {
+    const registry = yield* Registry.AtomRegistry
+
+    registry.set(
+      genericTrackListAtom,
+      GenericTrackListAtomAction.UpdateTrackList({
+        newTrackList: playlistTrack
+      })
+    )
+  })
+)
+
+function Content(props: { tracks: sqlcDb.Track[]; album: string }) {
+  const tracksResult = useAtomValue(genericTrackListAtom)
+  const [, setPlaylistsTracksAsGeneric] = useAtom(
+    setAlbumsTracksToGenericsTracks
+  )
+
+  useEffect(() => {
+    setPlaylistsTracksAsGeneric(props.tracks)
+  }, [props.tracks, setPlaylistsTracksAsGeneric])
+
+  return (
+    <>
+      <div className="bg-background min-h-screen p-6 md:p-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end">
+            <div className="shrink-0">
+              <img
+                src={"/placeholder.webp"}
+                className="h-48 w-48 rounded-lg object-cover shadow-lg md:h-60 md:w-60"
+              />
+            </div>
+
+            <div className="flex flex-1 flex-col gap-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <p className="text-muted-foreground text-sm font-medium">
+                    Playlist
+                  </p>
+                  <h1 className="mt-2 text-4xl font-bold text-balance md:text-5xl">
+                    {props.album}
+                  </h1>
+                </div>
+              </div>
+            </div>
           </div>
+
+          {Result.builder(tracksResult)
+            .onSuccess((tracks) => <TrackTable tracks={tracks ?? []} />)
+            .orNull()}
         </div>
-        {/* <FavAlbum album={album} /> */}
-        {/* <TrackTable tracks={album.tracks} /> */}
       </div>
-    </PageTitleWrapper>
+    </>
   )
 }

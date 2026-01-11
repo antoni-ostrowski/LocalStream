@@ -9,6 +9,8 @@ INSERT INTO favouriteAlbums (id, created_at, starred, album_name)
 VALUES (sqlc.arg(id), sqlc.arg(created_at), sqlc.arg(starred), sqlc.arg(album_name));
 
 -- name: UpdateFavAlbum :exec
-UPDATE favouriteAlbums SET starred = sqlc.arg(starred) WHERE album_name = sqlc.arg(album_name)
+UPDATE favouriteAlbums SET starred = sqlc.arg(starred) WHERE album_name = sqlc.arg(album_name);
 
+-- name: GetAlbumsTracks :many
+SELECT * FROM tracks WHERE album = sqlc.arg(album);
 

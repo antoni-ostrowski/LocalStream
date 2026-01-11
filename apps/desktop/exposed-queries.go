@@ -124,3 +124,31 @@ func (a *App) GetPlaylist(playlistId string) (PlaylistWithTracks, error) {
 		Playlist: playlist,
 	}, nil
 }
+
+func (a *App) ListAlbums() ([]string, error) {
+	albums, err := a.db.Queries.ListDistinctAlbums(a.ctx)
+	if err != nil {
+		return []string{}, fmt.Errorf("failed to query albums %v", err)
+	}
+	return albums, nil
+
+}
+
+func (a *App) GetAlbumsTracks(album string) ([]sqlcDb.Track, error) {
+	tracks, err := a.db.Queries.GetAlbumsTracks(a.ctx, album)
+
+	if err != nil {
+
+		if err == sql.ErrNoRows {
+			runtime.LogErrorf(a.ctx, "no fav playlists found ")
+			return []sqlcDb.Track{}, nil
+		}
+
+		runtime.LogErrorf(a.ctx, "failed to get tracks for album")
+
+		return []sqlcDb.Track{}, fmt.Errorf("failed to query albums %v", err)
+	}
+
+	return tracks, nil
+
+}

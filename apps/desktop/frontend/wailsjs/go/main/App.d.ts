@@ -21,6 +21,8 @@ export function DeletePlaylist(arg1:string):Promise<void>;
 
 export function DeleteTrackFromPlaylist(arg1:string,arg2:string):Promise<void>;
 
+export function GetAlbumsTracks(arg1:string):Promise<Array<sqlcDb.Track>>;
+
 export function GetCurrentTrack():Promise<sqlcDb.Track>;
 
 export function GetDefaultPreferences():Promise<config.Preferences>;
@@ -36,6 +38,8 @@ export function GetPlaylist(arg1:string):Promise<main.PlaylistWithTracks>;
 export function GetPreferences():Promise<config.Preferences>;
 
 export function GetTrackById(arg1:string):Promise<sqlcDb.Track>;
+
+export function ListAlbums():Promise<Array<string>>;
 
 export function ListAllPlaylists():Promise<Array<sqlcDb.Playlist>>;
 

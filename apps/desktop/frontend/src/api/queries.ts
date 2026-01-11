@@ -1,10 +1,12 @@
 import {
+  GetAlbumsTracks,
   GetCurrentTrack,
   GetDefaultPreferences,
   GetPlaybackState,
   GetPlaylist,
   GetPreferences,
   GetTrackById,
+  ListAlbums,
   ListAllPlaylists,
   ListAllTracks,
   ListFavPlaylists,
@@ -41,7 +43,10 @@ export class Queries extends Effect.Service<Queries>()("Queries", {
         listFetcher(() => ListPlaylistsForTrack(trackId), GenericError),
       getPlaylist: Effect.fn((playlistId: string) =>
         wailsCall(() => GetPlaylist(playlistId), GenericError)
-      )
+      ),
+      listAlbums: wailsCall(() => ListAlbums(), GenericError),
+      getAlbumsTracks: (album: string) =>
+        listFetcher(() => GetAlbumsTracks(album), GenericError)
     }
   })
 }) {}

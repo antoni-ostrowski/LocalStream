@@ -32,6 +32,45 @@ func (q *Queries) CreateFavAlbum(ctx context.Context, arg CreateFavAlbumParams) 
 	return err
 }
 
+const getAlbumsTracks = `-- name: GetAlbumsTracks :many
+SELECT id, created_at, path, title, artist, album, genre, year, duration_seconds, starred, is_missing FROM tracks WHERE album = ?1
+`
+
+func (q *Queries) GetAlbumsTracks(ctx context.Context, album string) ([]Track, error) {
+	rows, err := q.db.QueryContext(ctx, getAlbumsTracks, album)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Track
+	for rows.Next() {
+		var i Track
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.Path,
+			&i.Title,
+			&i.Artist,
+			&i.Album,
+			&i.Genre,
+			&i.Year,
+			&i.DurationSeconds,
+			&i.Starred,
+			&i.IsMissing,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listDistinctAlbums = `-- name: ListDistinctAlbums :many
 SELECT DISTINCT album FROM tracks ORDER BY title
 `

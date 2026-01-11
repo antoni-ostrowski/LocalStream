@@ -34,6 +34,10 @@ export function DeleteTrackFromPlaylist(arg1, arg2) {
   return window['go']['main']['App']['DeleteTrackFromPlaylist'](arg1, arg2);
 }
 
+export function GetAlbumsTracks(arg1) {
+  return window['go']['main']['App']['GetAlbumsTracks'](arg1);
+}
+
 export function GetCurrentTrack() {
   return window['go']['main']['App']['GetCurrentTrack']();
 }
@@ -64,6 +68,10 @@ export function GetPreferences() {
 
 export function GetTrackById(arg1) {
   return window['go']['main']['App']['GetTrackById'](arg1);
+}
+
+export function ListAlbums() {
+  return window['go']['main']['App']['ListAlbums']();
 }
 
 export function ListAllPlaylists() {
