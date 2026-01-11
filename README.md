@@ -1,8 +1,8 @@
-# LocalStream (WIP)
+# LocalStream
 
 Lightweight, minimalistic, local desktop music player focused on simplicity.
 
-> **Warning** It's a really early alpha version of the app. I want to take a break from it, but I plan to come back to it and actively maintain it/add new features.
+> **Warning** It's a really early alpha version of the app.
 
 # Getting started
 
@@ -29,8 +29,6 @@ Start by downloading a zip from [latest release](https://github.com/antoni-ostro
 - reordering queue
 - playback crossfade
 
-> Keep in mind I want to keep this app simple and nice to use for me. My use case is probably vastly different from yours and thats okay, but this means I will not rush about adding stuff that I will not even use. Stuff listed here is what I focus on and anything other than that is not my focus for now.
-
 # Details
 
 The app looks for a configuration file in the following locations:
@@ -39,19 +37,6 @@ The app looks for a configuration file in the following locations:
 - Windows: %AppData%\localStream\config.json
 
 On the first launch, LocalStream automatically generates this directory, a default config.json and db file for you.
-
-Why a Config File?
-
-The entire application behavior is driven by this JSON configuration. Specifically, the databasePath property tells the app exactly where to look for your SQLite database. I designed it this way to support:
-
-- Easy database swapping: Switch between different music libraries just by updating a file path.
-- iCloud / Cloud sync ready: By pointing the databasePath to a synced folder (like iCloud Drive), you can maintain a single source of truth across multiple devices.
-- future-proofing: This architecture paves the way for the LocalStream ios app I plan to build, allowing both versions of the app to share the exact same database file and user data.
-
-App is built with wails:
-
-- I tried to put as much stuff as I can in Go part of the app (I use beep lib for playback)
-- Frontend is built with react, tanstack router and heavly depends on effect and effect-atom for state managment
 
 # Contributing
 
