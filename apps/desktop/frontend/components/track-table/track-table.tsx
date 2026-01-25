@@ -1,4 +1,4 @@
-import { cn, createArtworkLink, formatSongLength } from "@/lib/utils"
+import { createArtworkLink, formatSongLength } from "@/lib/utils"
 import { sqlcDb } from "@/wailsjs/go/models"
 import {
   createColumnHelper,
@@ -12,14 +12,6 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { ReactNode, useEffect, useRef, useState } from "react"
 import DebouncedInput from "../debounced-input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from "../ui/table"
 import { fuzzyFilter, fuzzySort } from "./table-utils"
 import TrackInteractions, { PlayNowBtn } from "./track-interactions"
 
@@ -120,9 +112,10 @@ export default function TrackTable({
   })
 
   const parentRef = useRef<HTMLDivElement>(null)
+  const { rows } = table.getRowModel()
 
   const virtualizer = useVirtualizer({
-    count: table.getRowModel().rows.length,
+    count: rows.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 40,
     overscan: 20
@@ -137,8 +130,8 @@ export default function TrackTable({
   }, [table.getState().columnFilters[0]?.id, table])
 
   return (
-    <div className="">
-      <div className="flex flex-row gap-2">
+    <div>
+      <div className="mb-4 flex flex-row gap-2">
         <DebouncedInput
           value={globalFilter}
           onChange={(value) => {
@@ -148,76 +141,72 @@ export default function TrackTable({
         />
         {filters}
       </div>
-      <div ref={parentRef} className="container">
+      <div ref={parentRef} className="container h-screen overflow-auto">
         <div style={{ height: `${virtualizer.getTotalSize()}px` }}>
-          <Table style={{ tableLayout: "fixed", width: "100%" }}>
-            <TableHeader>
+          <table className="w-full table-fixed">
+            <thead>
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
+                <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
-                      <TableHead
+                      <th
                         key={header.id}
+                        colSpan={header.colSpan}
                         style={{ width: header.getSize() }}
                       >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
+                        {header.isPlaceholder ? null : (
+                          <div
+                            {...{
+                              className: header.column.getCanSort()
+                                ? "cursor-pointer select-none"
+                                : "",
+                              onClick: header.column.getToggleSortingHandler()
+                            }}
+                          >
+                            {flexRender(
                               header.column.columnDef.header,
                               header.getContext()
                             )}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows.length ? (
-                <>
-                  {virtualizer.getVirtualItems().map((virtualRow, index) => {
-                    const row = table.getRowModel().rows[virtualRow.index]
-                    return (
-                      <TableRow
-                        style={{
-                          height: `${virtualRow.size}px`,
-                          transform: `translateY(${
-                            virtualRow.start - index * virtualRow.size
-                          }px)`
-                        }}
-                        key={row.id}
-                        data-state={row.getIsSelected() && "selected"}
-                        className={cn(
-                          "hover:bg-secondary",
-                          row.original.is_missing.Valid &&
-                            row.original.is_missing.Bool &&
-                            "opacity-50"
+                            {{
+                              asc: " 🔼",
+                              desc: " 🔽"
+                            }[header.column.getIsSorted() as string] ?? null}
+                          </div>
                         )}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id} className="p-0">
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
+                      </th>
                     )
                   })}
-                </>
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {virtualizer.getVirtualItems().map((virtualRow, index) => {
+                const row = rows[virtualRow.index]
+                return (
+                  <tr
+                    key={row.id}
+                    style={{
+                      height: `${virtualRow.size}px`,
+                      transform: `translateY(${
+                        virtualRow.start - index * virtualRow.size
+                      }px)`
+                    }}
                   >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <td key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
