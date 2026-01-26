@@ -23,7 +23,7 @@ export const SettingsAtomAction = Data.taggedEnum<Action>()
 export const settingsAtom = Object.assign(
   Atom.writable(
     (get: Atom.Context) => get(remoteSettingsAtom),
-    (ctx, action: Action) => {
+    (ctx, _action: Action) => {
       const currentState = ctx.get(settingsAtom)
       if (!Result.isSuccess(currentState)) return
 

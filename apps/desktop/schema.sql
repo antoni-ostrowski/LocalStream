@@ -15,6 +15,41 @@ CREATE UNIQUE INDEX IF NOT EXISTS tracks_path_unique ON tracks (path);
 
 --------------------------------------------------------------------------------
 
+CREATE VIRTUAL TABLE IF NOT EXISTS tracks_fts USING fts5(
+    id UNINDEXED, 
+    title,
+    artist,
+    album,
+    tokenize='unicode61'
+);
+
+DROP TRIGGER IF EXISTS tracks_ai;
+CREATE TRIGGER tracks_ai AFTER INSERT ON tracks 
+BEGIN
+  INSERT INTO tracks_fts(id, title, artist, album)
+  VALUES (new.id, new.title, new.artist, new.album);
+END;
+
+DROP TRIGGER IF EXISTS tracks_ad;
+CREATE TRIGGER tracks_ad AFTER DELETE ON tracks 
+BEGIN
+  INSERT INTO tracks_fts(tracks_fts, id, title, artist, album)
+  VALUES('delete', old.id, old.title, old.artist, old.album);
+END;
+
+DROP TRIGGER IF EXISTS tracks_au;
+CREATE TRIGGER tracks_au AFTER UPDATE ON tracks
+WHEN old.title != new.title OR old.artist != new.artist OR old.album != new.album
+BEGIN
+  INSERT INTO tracks_fts(tracks_fts, id, title, artist, album)
+  VALUES('delete', old.id, old.title, old.artist, old.album);
+  
+  INSERT INTO tracks_fts(id, title, artist, album)
+  VALUES (new.id, new.title, new.artist, new.album);
+END;
+
+--------------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS playlists (
     id TEXT PRIMARY KEY NOT NULL,
     created_at INTEGER NOT NULL,

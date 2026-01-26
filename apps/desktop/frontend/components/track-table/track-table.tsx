@@ -1,33 +1,38 @@
 import { createArtworkLink, formatSongLength } from "@/lib/utils"
+import { SearchTracksOpts } from "@/src/api/queries"
+import { SearchTracks } from "@/wailsjs/go/main/App"
 import { sqlcDb } from "@/wailsjs/go/models"
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
   getSortedRowModel,
-  useReactTable,
-  type ColumnFiltersState
+  useReactTable
 } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { ReactNode, useEffect, useRef, useState } from "react"
 import DebouncedInput from "../debounced-input"
-import { fuzzyFilter, fuzzySort } from "./table-utils"
 import TrackInteractions, { PlayNowBtn } from "./track-interactions"
 
 const columnHelper = createColumnHelper<sqlcDb.Track>()
 
-export default function TrackTable({
-  tracks,
-  filters
-}: {
+export default function TrackTable(props: {
   tracks: sqlcDb.Track[]
+  filter: SearchTracksOpts["filter"]
+  filterValue: SearchTracksOpts["filterValue"]
   filters?: ReactNode
 }) {
+  const [tableTracks, setTableTracks] = useState([...props.tracks])
+  const [searchInput, setSearchInput] = useState("")
+
+  useEffect(() => {
+    setTableTracks(props.tracks)
+  }, [props.tracks])
+
   const columns = [
     columnHelper.display({
       id: "artwork",
-      header: `(${tracks?.length?.toString()})`,
+      header: `(${tableTracks?.length?.toString() ?? 0})`,
       size: 30,
       cell: (info) => (
         <>
@@ -52,9 +57,7 @@ export default function TrackTable({
           <RenderTableArtwork track={info.row.original} />
           <p className="truncate">{info.getValue()}</p>
         </div>
-      ),
-      filterFn: "fuzzy",
-      sortingFn: fuzzySort
+      )
     }),
 
     columnHelper.accessor("artist", {
@@ -90,25 +93,12 @@ export default function TrackTable({
     })
   ]
 
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [globalFilter, setGlobalFilter] = useState("")
-
   const table = useReactTable({
     columns,
-    data: tracks,
+    data: tableTracks,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    filterFns: {
-      fuzzy: fuzzyFilter //define as a filter function that can be used in column definitions
-    },
-    state: {
-      columnFilters,
-      globalFilter
-    },
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "fuzzy" //apply fuzzy filter to the global filter (most common use case for fuzzy filter)
+    manualFiltering: true
   })
 
   const parentRef = useRef<HTMLDivElement>(null)
@@ -121,25 +111,24 @@ export default function TrackTable({
     overscan: 20
   })
 
-  useEffect(() => {
-    if (table.getState().columnFilters[0]?.id === "title") {
-      if (table.getState().sorting[0]?.id !== "title") {
-        table.setSorting([{ id: "title", desc: false }])
-      }
-    }
-  }, [table.getState().columnFilters[0]?.id, table])
-
   return (
     <div>
       <div className="mb-4 flex flex-row gap-2">
         <DebouncedInput
-          value={globalFilter}
-          onChange={(value) => {
-            setGlobalFilter(String(value))
+          value={searchInput}
+          onChange={async (value) => {
+            setSearchInput(value)
+            const tracks = await SearchTracks(
+              value,
+              props.filter,
+              props.filterValue
+            )
+            console.log({ tracks })
+            setTableTracks(tracks)
           }}
           placeholder="Search ..."
         />
-        {filters}
+        {props.filters}
       </div>
       <div ref={parentRef} className="container h-screen overflow-auto">
         <div style={{ height: `${virtualizer.getTotalSize()}px` }}>

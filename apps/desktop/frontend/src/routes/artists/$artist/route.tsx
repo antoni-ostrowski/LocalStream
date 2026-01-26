@@ -96,7 +96,11 @@ function Content(props: { tracks: sqlcDb.Track[]; artist: string }) {
                 </div>
               </div>
 
-              <TrackTable tracks={tracks ?? []} />
+              <TrackTable
+                tracks={tracks ?? []}
+                filter="artist"
+                filterValue={props.artist}
+              />
             </div>
           </div>
         ))

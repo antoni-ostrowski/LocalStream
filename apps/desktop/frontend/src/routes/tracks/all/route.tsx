@@ -87,6 +87,8 @@ function TracksPageContents({ tracks }: { tracks: sqlcDb.Track[] }) {
   return (
     <div className="flex flex-col gap-2">
       <TrackTable
+        filter=""
+        filterValue=""
         tracks={showedTracks}
         filters={
           <Select value={curFilter} onValueChange={handleNewFilter}>

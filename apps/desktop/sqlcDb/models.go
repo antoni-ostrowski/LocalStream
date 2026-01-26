@@ -44,6 +44,13 @@ type Track struct {
 	IsMissing       sql.NullBool   `json:"is_missing"`
 }
 
+type TracksFt struct {
+	ID     string `json:"id"`
+	Title  string `json:"title"`
+	Artist string `json:"artist"`
+	Album  string `json:"album"`
+}
+
 type TracksToPlaylist struct {
 	ID         string `json:"id"`
 	CreatedAt  int64  `json:"created_at"`

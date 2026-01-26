@@ -172,3 +172,31 @@ func (a *App) GetArtist(artist string) ([]sqlcDb.Track, error) {
 	return tracks, nil
 
 }
+
+func (a *App) SearchTracks(query string, filter string, filterValue string) ([]sqlcDb.Track, error) {
+
+	var tracks []sqlcDb.Track
+	var err error
+
+	switch filter {
+	case "album":
+		runtime.LogInfo(a.ctx, "searching with album filter")
+		tracks, err = a.db.Queries.SearchTracksWithinAlbum(a.ctx, sqlcDb.SearchTracksWithinAlbumParams{Album: filterValue, Searchquery: query})
+	case "artist":
+		runtime.LogInfo(a.ctx, "searching with artist filter")
+		tracks, err = a.db.Queries.SearchTracksWithinArtist(a.ctx, sqlcDb.SearchTracksWithinArtistParams{Artist: filterValue, Searchquery: query})
+	case "playlist":
+		runtime.LogInfo(a.ctx, "searching with playlist filter")
+		tracks, err = a.db.Queries.SearchTracksWithinPlaylist(a.ctx, sqlcDb.SearchTracksWithinPlaylistParams{Playlistid: filterValue, Searchquery: query})
+	default:
+		runtime.LogInfo(a.ctx, "searching with all tracks")
+		tracks, err = a.db.Queries.SearchTracks(a.ctx, query)
+	}
+
+	if err != nil {
+		runtime.LogErrorf(a.ctx, "failed to search tracks %v", err)
+		return []sqlcDb.Track{}, fmt.Errorf("failed to search tracks %v", err)
+	}
+
+	return tracks, nil
+}

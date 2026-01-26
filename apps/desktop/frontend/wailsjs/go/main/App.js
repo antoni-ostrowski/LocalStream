@@ -122,6 +122,10 @@ export function ReloadAppResources() {
   return window['go']['main']['App']['ReloadAppResources']();
 }
 
+export function SearchTracks(arg1, arg2, arg3) {
+  return window['go']['main']['App']['SearchTracks'](arg1, arg2, arg3);
+}
+
 export function Seek(arg1) {
   return window['go']['main']['App']['Seek'](arg1);
 }

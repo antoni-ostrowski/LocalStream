@@ -3,16 +3,11 @@ import { sqlcDb } from "@/wailsjs/go/models"
 import { Result, useAtom, useAtomValue } from "@effect-atom/atom-react"
 import { IconTrash } from "@tabler/icons-react"
 import {
-  ColumnFiltersState,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
   useReactTable
 } from "@tanstack/react-table"
-import { useState } from "react"
-import { fuzzyFilter, fuzzySort } from "../track-table/table-utils"
 import TrackInteractions from "../track-table/track-interactions"
 import { RenderTableArtwork } from "../track-table/track-table"
 import { Button } from "../ui/button"
@@ -69,9 +64,7 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
             </div>
           </div>
         </div>
-      ),
-      filterFn: "fuzzy",
-      sortingFn: fuzzySort
+      )
     }),
 
     columnHelper.display({
@@ -90,25 +83,10 @@ function QueueTable({ queueTracks }: { queueTracks: sqlcDb.Track[] }) {
     })
   ]
 
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [globalFilter, setGlobalFilter] = useState("")
-
   const table = useReactTable({
     columns,
     data: queueTracks,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    filterFns: {
-      fuzzy: fuzzyFilter
-    },
-    state: {
-      columnFilters,
-      globalFilter
-    },
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: "fuzzy"
+    getCoreRowModel: getCoreRowModel()
   })
 
   return (

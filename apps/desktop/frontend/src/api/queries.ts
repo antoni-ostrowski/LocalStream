@@ -56,3 +56,9 @@ export class Queries extends Effect.Service<Queries>()("Queries", {
     }
   })
 }) {}
+
+export type SearchTracksOpts = {
+  query: string
+  filter: "album" | "artist" | "playlist" | ""
+  filterValue: string
+}

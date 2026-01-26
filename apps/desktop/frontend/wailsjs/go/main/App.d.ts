@@ -65,6 +65,8 @@ export function PrependToQueue(arg1:sqlcDb.Track):Promise<void>;
 
 export function ReloadAppResources():Promise<void>;
 
+export function SearchTracks(arg1:string,arg2:string,arg3:string):Promise<Array<sqlcDb.Track>>;
+
 export function Seek(arg1:number):Promise<void>;
 
 export function SelectPlaylistCoverFile():Promise<string>;

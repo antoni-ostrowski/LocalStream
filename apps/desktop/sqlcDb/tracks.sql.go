@@ -332,6 +332,205 @@ func (q *Queries) ListTracksByPlaylist(ctx context.Context, playlistID string) (
 	return items, nil
 }
 
+const searchTracks = `-- name: SearchTracks :many
+SELECT id, created_at, path, title, artist, album, genre, year, duration_seconds, starred, is_missing
+FROM tracks
+WHERE (
+  ?1 = '' 
+  OR id IN (SELECT id FROM tracks_fts WHERE tracks_fts MATCH ?1 || '*')
+)
+ORDER BY title
+`
+
+func (q *Queries) SearchTracks(ctx context.Context, searchquery interface{}) ([]Track, error) {
+	rows, err := q.db.QueryContext(ctx, searchTracks, searchquery)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Track
+	for rows.Next() {
+		var i Track
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.Path,
+			&i.Title,
+			&i.Artist,
+			&i.Album,
+			&i.Genre,
+			&i.Year,
+			&i.DurationSeconds,
+			&i.Starred,
+			&i.IsMissing,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const searchTracksWithinAlbum = `-- name: SearchTracksWithinAlbum :many
+SELECT id, created_at, path, title, artist, album, genre, year, duration_seconds, starred, is_missing
+FROM tracks
+WHERE tracks.album = ?1
+  AND (
+    ?2 = '' 
+    OR id IN (SELECT id FROM tracks_fts WHERE tracks_fts MATCH ?2 || '*')
+  )
+ORDER BY title
+`
+
+type SearchTracksWithinAlbumParams struct {
+	Album       string      `json:"album"`
+	Searchquery interface{} `json:"searchquery"`
+}
+
+func (q *Queries) SearchTracksWithinAlbum(ctx context.Context, arg SearchTracksWithinAlbumParams) ([]Track, error) {
+	rows, err := q.db.QueryContext(ctx, searchTracksWithinAlbum, arg.Album, arg.Searchquery)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Track
+	for rows.Next() {
+		var i Track
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.Path,
+			&i.Title,
+			&i.Artist,
+			&i.Album,
+			&i.Genre,
+			&i.Year,
+			&i.DurationSeconds,
+			&i.Starred,
+			&i.IsMissing,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const searchTracksWithinArtist = `-- name: SearchTracksWithinArtist :many
+SELECT id, created_at, path, title, artist, album, genre, year, duration_seconds, starred, is_missing
+FROM tracks
+WHERE tracks.artist = ?1
+  AND (
+    ?2 = '' 
+    OR id IN (SELECT id FROM tracks_fts WHERE tracks_fts MATCH ?2 || '*')
+  )
+ORDER BY title
+`
+
+type SearchTracksWithinArtistParams struct {
+	Artist      string      `json:"artist"`
+	Searchquery interface{} `json:"searchquery"`
+}
+
+func (q *Queries) SearchTracksWithinArtist(ctx context.Context, arg SearchTracksWithinArtistParams) ([]Track, error) {
+	rows, err := q.db.QueryContext(ctx, searchTracksWithinArtist, arg.Artist, arg.Searchquery)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Track
+	for rows.Next() {
+		var i Track
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.Path,
+			&i.Title,
+			&i.Artist,
+			&i.Album,
+			&i.Genre,
+			&i.Year,
+			&i.DurationSeconds,
+			&i.Starred,
+			&i.IsMissing,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const searchTracksWithinPlaylist = `-- name: SearchTracksWithinPlaylist :many
+SELECT t.id, t.created_at, t.path, t.title, t.artist, t.album, t.genre, t.year, t.duration_seconds, t.starred, t.is_missing
+FROM tracks t
+JOIN tracks_to_playlists ttp ON t.id = ttp.track_id
+WHERE ttp.playlist_id = ?1
+  AND (
+    ?2 = '' 
+    OR t.id IN (SELECT id FROM tracks_fts WHERE tracks_fts MATCH ?2 || '*')
+  )
+ORDER BY ttp.created_at DESC
+`
+
+type SearchTracksWithinPlaylistParams struct {
+	Playlistid  string      `json:"playlistid"`
+	Searchquery interface{} `json:"searchquery"`
+}
+
+func (q *Queries) SearchTracksWithinPlaylist(ctx context.Context, arg SearchTracksWithinPlaylistParams) ([]Track, error) {
+	rows, err := q.db.QueryContext(ctx, searchTracksWithinPlaylist, arg.Playlistid, arg.Searchquery)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Track
+	for rows.Next() {
+		var i Track
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.Path,
+			&i.Title,
+			&i.Artist,
+			&i.Album,
+			&i.Genre,
+			&i.Year,
+			&i.DurationSeconds,
+			&i.Starred,
+			&i.IsMissing,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const starTrack = `-- name: StarTrack :exec
 UPDATE tracks SET starred = unixepoch() WHERE id = ?1
 `

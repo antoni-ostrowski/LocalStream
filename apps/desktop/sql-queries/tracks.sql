@@ -85,3 +85,44 @@ UPDATE tracks SET
     duration_seconds = sqlc.arg(duration_seconds),
     is_missing = sqlc.arg(is_missing)
 WHERE id = sqlc.arg(id);
+
+
+-- name: SearchTracks :many
+SELECT *
+FROM tracks
+WHERE (
+  sqlc.arg(searchQuery) = '' 
+  OR id IN (SELECT id FROM tracks_fts WHERE tracks_fts MATCH sqlc.arg(searchQuery) || '*')
+)
+ORDER BY title;
+
+-- name: SearchTracksWithinAlbum :many
+SELECT *
+FROM tracks
+WHERE tracks.album = sqlc.arg(album)
+  AND (
+    sqlc.arg(searchQuery) = '' 
+    OR id IN (SELECT id FROM tracks_fts WHERE tracks_fts MATCH sqlc.arg(searchQuery) || '*')
+  )
+ORDER BY title;
+
+-- name: SearchTracksWithinArtist :many
+SELECT *
+FROM tracks
+WHERE tracks.artist = sqlc.arg(artist)
+  AND (
+    sqlc.arg(searchQuery) = '' 
+    OR id IN (SELECT id FROM tracks_fts WHERE tracks_fts MATCH sqlc.arg(searchQuery) || '*')
+  )
+ORDER BY title;
+
+-- name: SearchTracksWithinPlaylist :many
+SELECT t.*
+FROM tracks t
+JOIN tracks_to_playlists ttp ON t.id = ttp.track_id
+WHERE ttp.playlist_id = sqlc.arg(playlistId)
+  AND (
+    sqlc.arg(searchQuery) = '' 
+    OR t.id IN (SELECT id FROM tracks_fts WHERE tracks_fts MATCH sqlc.arg(searchQuery) || '*')
+  )
+ORDER BY ttp.created_at DESC;

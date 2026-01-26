@@ -4,11 +4,11 @@ import { Input } from "./ui/input"
 export default function DebouncedInput({
   value: initialValue,
   onChange,
-  debounce = 500,
+  debounce = 250,
   ...props
 }: {
-  value: string | number
-  onChange: (value: string | number) => void
+  value: string
+  onChange: (value: string) => void
   debounce?: number
 } & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">) {
   const [value, setValue] = useState(initialValue)
@@ -29,6 +29,7 @@ export default function DebouncedInput({
     <Input
       {...props}
       value={value}
+      type="text"
       onChange={(e) => setValue(e.target.value)}
     />
   )

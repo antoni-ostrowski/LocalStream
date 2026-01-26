@@ -107,11 +107,6 @@ function Content({ playlist }: { playlist: main.PlaylistWithTracks }) {
               </div>
 
               <div className="flex items-center gap-3">
-                {/* <Button variant="outline" className="gap-2 bg-transparent"> */}
-                {/*   <IconPencil size={16} /> */}
-                {/*   Edit Playlist */}
-                {/* </Button> */}
-
                 <FavPlaylist {...{ playlist: playlist.playlist }} />
                 <DeletePlaylist
                   {...{ playlist: playlist.playlist, goBack: true }}
@@ -121,7 +116,13 @@ function Content({ playlist }: { playlist: main.PlaylistWithTracks }) {
           </div>
 
           {Result.builder(tracksResult)
-            .onSuccess((tracks) => <TrackTable tracks={tracks ?? []} />)
+            .onSuccess((tracks) => (
+              <TrackTable
+                tracks={tracks ?? []}
+                filter="playlist"
+                filterValue={playlist.playlist.id}
+              />
+            ))
             .orNull()}
         </div>
       </div>
