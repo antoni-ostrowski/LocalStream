@@ -1,6 +1,6 @@
 import FullScreenError from "@/components/full-screen-error"
+import PageTitleWrapper from "@/components/page-title-wrapper"
 import TrackTable from "@/components/track-table/track-table"
-import { Button } from "@/components/ui/button"
 import { createFileLink } from "@/lib/utils"
 import {
   genericTrackListAtom,
@@ -16,7 +16,6 @@ import {
   useAtom,
   useAtomValue
 } from "@effect-atom/atom-react"
-import { IconPencil } from "@tabler/icons-react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Effect } from "effect"
 import { useEffect } from "react"
@@ -76,9 +75,9 @@ function Content({ playlist }: { playlist: main.PlaylistWithTracks }) {
   }, [playlist, setPlaylistsTracksAsGeneric])
 
   return (
-    <>
-      <div className="bg-background min-h-screen p-6 md:p-8">
-        <div className="mx-auto max-w-7xl">
+    <PageTitleWrapper title="playlist">
+      <div className="bg-background min-h-screen">
+        <div className="mx-auto">
           <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end">
             <div className="shrink-0">
               <img
@@ -108,10 +107,10 @@ function Content({ playlist }: { playlist: main.PlaylistWithTracks }) {
               </div>
 
               <div className="flex items-center gap-3">
-                <Button variant="outline" className="gap-2 bg-transparent">
-                  <IconPencil size={16} />
-                  Edit Playlist
-                </Button>
+                {/* <Button variant="outline" className="gap-2 bg-transparent"> */}
+                {/*   <IconPencil size={16} /> */}
+                {/*   Edit Playlist */}
+                {/* </Button> */}
 
                 <FavPlaylist {...{ playlist: playlist.playlist }} />
                 <DeletePlaylist
@@ -126,6 +125,6 @@ function Content({ playlist }: { playlist: main.PlaylistWithTracks }) {
             .orNull()}
         </div>
       </div>
-    </>
+    </PageTitleWrapper>
   )
 }
