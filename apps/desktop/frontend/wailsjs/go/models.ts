@@ -144,6 +144,20 @@ export namespace sql {
 
 export namespace sqlcDb {
 	
+	export class ListArtistsRow {
+	    artist: string;
+	    track_count: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new ListArtistsRow(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.artist = source["artist"];
+	        this.track_count = source["track_count"];
+	    }
+	}
 	export class ListPlaylistsForTrackRow {
 	    id: string;
 	    name: string;

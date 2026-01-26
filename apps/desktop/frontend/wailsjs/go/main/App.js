@@ -38,6 +38,10 @@ export function GetAlbumsTracks(arg1) {
   return window['go']['main']['App']['GetAlbumsTracks'](arg1);
 }
 
+export function GetArtist(arg1) {
+  return window['go']['main']['App']['GetArtist'](arg1);
+}
+
 export function GetCurrentTrack() {
   return window['go']['main']['App']['GetCurrentTrack']();
 }
@@ -80,6 +84,10 @@ export function ListAllPlaylists() {
 
 export function ListAllTracks() {
   return window['go']['main']['App']['ListAllTracks']();
+}
+
+export function ListArtists() {
+  return window['go']['main']['App']['ListArtists']();
 }
 
 export function ListFavPlaylists() {

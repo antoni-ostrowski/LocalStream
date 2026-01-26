@@ -2,7 +2,6 @@ CREATE TABLE IF NOT EXISTS tracks (
     id TEXT PRIMARY KEY NOT NULL,
     created_at INTEGER NOT NULL,
     path TEXT NOT NULL,
-    -- sourceDir TEXT NOT NULL,
     title TEXT NOT NULL,
     artist TEXT NOT NULL,
     album TEXT NOT NULL,

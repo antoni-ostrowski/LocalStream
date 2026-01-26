@@ -76,7 +76,7 @@ function Content({ playlist }: { playlist: main.PlaylistWithTracks }) {
 
   return (
     <PageTitleWrapper title="playlist">
-      <div className="bg-background min-h-screen">
+      <div className="min-h-screen">
         <div className="mx-auto">
           <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end">
             <div className="shrink-0">

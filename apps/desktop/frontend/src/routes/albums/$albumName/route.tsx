@@ -40,7 +40,6 @@ export const getAlbumTracks = Atom.family((album: string) =>
 
 function RouteComponent() {
   const { albumName } = Route.useParams()
-
   const getAlbumTracksResult = useAtomValue(getAlbumTracks(albumName))
 
   return (
@@ -80,7 +79,7 @@ function Content(props: { tracks: sqlcDb.Track[]; album: string }) {
     <PageTitleWrapper title="album">
       {Result.builder(tracksResult)
         .onSuccess((tracks) => (
-          <div className="bg-background min-h-screen w-full">
+          <div className="min-h-screen w-full">
             <div className="mx-auto">
               <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end">
                 <div className="shrink-0">

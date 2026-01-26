@@ -152,3 +152,23 @@ func (a *App) GetAlbumsTracks(album string) ([]sqlcDb.Track, error) {
 	return tracks, nil
 
 }
+
+func (a *App) ListArtists() ([]sqlcDb.ListArtistsRow, error) {
+	artists, err := a.db.Queries.ListArtists(a.ctx)
+	if err != nil {
+		return []sqlcDb.ListArtistsRow{}, fmt.Errorf("failed to query list artists %v", err)
+	}
+
+	return artists, nil
+
+}
+
+func (a *App) GetArtist(artist string) ([]sqlcDb.Track, error) {
+	tracks, err := a.db.Queries.ListTracksByArtist(a.ctx, artist)
+	if err != nil {
+		return []sqlcDb.Track{}, fmt.Errorf("failed to query list artists %v", err)
+	}
+
+	return tracks, nil
+
+}

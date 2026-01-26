@@ -3,10 +3,10 @@ import { Data, Effect } from "effect"
 import { atomRuntime } from "../make-runtime"
 import { Queries } from "../queries"
 
-const remoteAlbums = atomRuntime.atom(
+const remoteArtists = atomRuntime.atom(
   Effect.fn(function* () {
     const q = yield* Queries
-    const arr = yield* q.listAlbums
+    const arr = yield* q.listArtists
     return yield* Effect.succeed(arr)
   })
 )
@@ -16,23 +16,21 @@ type Action = Data.TaggedEnum<{
   UpdatePlaylistList: { readonly newPlaylistList: string[] }
 }>
 
-export const AlbumsAction = Data.taggedEnum<Action>()
+export const ArtistAction = Data.taggedEnum<Action>()
 
-export const albumsAtom = Object.assign(
+export const artistsAtom = Object.assign(
   Atom.writable(
-    (get: Atom.Context) => get(remoteAlbums),
+    (get: Atom.Context) => get(remoteArtists),
     (ctx, _action: Action) => {
-      const currentState = ctx.get(albumsAtom)
+      const currentState = ctx.get(artistsAtom)
       if (!Result.isSuccess(currentState)) return
 
-      // const update = AlbumsAction.$match(action, {
+      // const update = ArtistAction.$match(action, {
       //   UpdatePlaylistList: ({ newPlaylistList }) => {
       //     return newPlaylistList
       //   }
       // })
-      //
-      // ctx.setSelf(Result.success(update))
     }
   ),
-  { remote: remoteAlbums }
+  { remote: remoteArtists }
 )

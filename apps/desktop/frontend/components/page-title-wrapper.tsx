@@ -17,7 +17,7 @@ export default function PageTitleWrapper({
 }) {
   const router = useRouter()
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <div className="flex h-screen w-full flex-col overflow-y-hidden">
       <div className="container flex w-full flex-1 flex-col gap-4 p-4">
         {(title || description || icon) && (
           <div className="flex items-center gap-1">

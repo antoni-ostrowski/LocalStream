@@ -33,6 +33,43 @@ func (q *Queries) CreateFavArtist(ctx context.Context, arg CreateFavArtistParams
 	return err
 }
 
+const listArtists = `-- name: ListArtists :many
+SELECT 
+    artist, 
+    COUNT(*) AS track_count
+FROM tracks
+GROUP BY artist
+ORDER BY track_count DESC
+`
+
+type ListArtistsRow struct {
+	Artist     string `json:"artist"`
+	TrackCount int64  `json:"track_count"`
+}
+
+func (q *Queries) ListArtists(ctx context.Context) ([]ListArtistsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listArtists)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListArtistsRow
+	for rows.Next() {
+		var i ListArtistsRow
+		if err := rows.Scan(&i.Artist, &i.TrackCount); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listFavArtists = `-- name: ListFavArtists :many
 SELECT id, created_at, starred, artist FROM favouriteArtists ORDER BY artist
 `
