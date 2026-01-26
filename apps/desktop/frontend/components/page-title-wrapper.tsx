@@ -1,5 +1,9 @@
+import { IconArrowNarrowLeft } from "@tabler/icons-react"
+import { useRouter } from "@tanstack/react-router"
 import type { ReactNode } from "react"
+import { Button } from "./ui/button"
 export const pageTitleIconSize = "h-8 w-8"
+
 export default function PageTitleWrapper({
   title = "",
   icon,
@@ -11,11 +15,20 @@ export default function PageTitleWrapper({
   description?: string
   children: ReactNode
 }) {
+  const router = useRouter()
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen w-full flex-col">
       <div className="container flex w-full flex-1 flex-col gap-4 p-4">
         {(title || description || icon) && (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <Button
+              className={"w-10"}
+              variant={"ghost"}
+              onClick={() => router.history.back()}
+            >
+              <IconArrowNarrowLeft />
+            </Button>
+
             <div className="">{icon}</div>
             <div>
               {title && (
