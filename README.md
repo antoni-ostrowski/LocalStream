@@ -4,6 +4,8 @@ Lightweight, minimalistic, local desktop music player focused on simplicity.
 
 > **Warning** It's a really early alpha version of the app.
 
+https://github.com/user-attachments/assets/17bfed51-99de-4911-ad6a-e0b8a1a8a574
+
 # Getting started
 
 Start by downloading a zip from [latest release](https://github.com/antoni-ostrowski/localStream/releases). It will contain just a compiled app. You just have to unzip it and then you can run the app!
@@ -41,3 +43,7 @@ On the first launch, LocalStream automatically generates this directory, a defau
 
 Contributions are highly appreciated!
 If you decide to try the app and find some problems, feel free to open an issue! I will try my best to fix everything that comes up. This is my first open-source project, so I’m learning as I go, thanks for your patience and support! 😁🙏
+
+
+
+
