@@ -1,18 +1,15 @@
-.PHONY: all mac win  clean mac_arm64 mac_amd64 win_arm64 win_amd64 
+.PHONY: all mac win clean win_arm64 win_amd64 
 
 SRC_DIR := ./src
 APP_NAME := LocalStream
 
 all: mac win 
 
-mac: mac_arm64 mac_amd64
+
+mac:
+	$(MAKE) build PLATFORM=darwin/universal OUTPUT=$(APP_NAME)
+
 win: win_arm64 win_amd64
-
-mac_arm64:
-	$(MAKE) build PLATFORM=darwin/arm64 OUTPUT=$(APP_NAME)-mac-arm64
-
-mac_amd64:
-	$(MAKE) build PLATFORM=darwin/amd64 OUTPUT=$(APP_NAME)-mac-amd64
 
 win_arm64:
 	$(MAKE) build PLATFORM=windows/arm64 OUTPUT=$(APP_NAME)-win-arm64.exe
@@ -22,7 +19,13 @@ win_amd64:
 
 
 build:
-	cd $(SRC_DIR) && wails build -platform $(PLATFORM) -tags "$(TAGS)" -o $(OUTPUT)
+	cd $(SRC_DIR) && wails build -platform $(PLATFORM) -o $(OUTPUT)
 
 clean:
 	cd $(SRC_DIR) && rm -rf ./build
+
+zips:
+	cd ./src/build/bin && tar -czf LocalStream-win-amd64.tar.gz LocalStream-win-amd64.exe
+	cd ./src/build/bin && tar -czf LocalStream-win-arm64.tar.gz LocalStream-win-arm64.exe
+	cd ./src/build/bin && tar -czf LocalStream-mac.tar.gz LocalStream.app
+
