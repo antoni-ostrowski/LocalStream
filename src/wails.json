@@ -1,13 +1,12 @@
 {
   "$schema": "https://wails.io/schemas/config.v2.json",
-  "name": "localStream",
-  "outputfilename": "localStream",
+  "name": "LocalStream",
   "frontend:install": "bun install",
   "frontend:build": "bun run build",
   "frontend:dev:watcher": "bun run dev",
   "frontend:dev:serverUrl": "auto",
   "author": {
     "name": "antoni-ostrowski",
-    "email": "antost360@gmail.com"
+    "email": "antoni.ostrowski.dev@gmail.com"
   }
 }

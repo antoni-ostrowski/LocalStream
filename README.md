@@ -1,17 +1,33 @@
 # LocalStream
 
-Lightweight, minimalistic, local desktop music player focused on simplicity.
+Simple music player.
 
-> **Warning** It's a really early alpha version of the app.
+> **Warning** It's a really early version of the app.
 
 https://github.com/user-attachments/assets/17bfed51-99de-4911-ad6a-e0b8a1a8a574
 
 # Getting started
 
+## Installation
+
 Start by downloading a zip from [latest release](https://github.com/antoni-ostrowski/localStream/releases). It will contain just a compiled app. You just have to unzip it and then you can run the app!
 
-> **Note for Linux users**: LocalStream is built using [Wails](https://wails.io/), which is a fully cross-platform framework. While the app is designed to work everywhere, I have only verified it on macOS and Windows so far. It should only require minor tweaks to get it running perfectly and Linux too, I just don't have any machine with linux at hand.
-> If you'd like to try it now, you can build it from source using the [Wails CLI](https://wails.io/docs/reference/cli/), or you can wait for the official builds coming soon.
+## Building from source
+
+Requires [Go](https://go.dev/) (1.24.0) and the [Wails CLI](https://wails.io/docs/gettingstarted/installation/) (v2.11.0).
+
+```bash
+# (these build for both: amd64 and arm64)
+make all
+make mac
+make win
+make linux
+# Remove build artifacts
+make clean
+# you can also build only for specific CPU arch, example:
+make mac_arm64
+make win_amd64
+```
 
 # General Tips
 
@@ -19,16 +35,6 @@ Start by downloading a zip from [latest release](https://github.com/antoni-ostro
 - You can create playlists and add tracks to them by clicking 3 dots on the track. You can also have favourite playlists.
 - Queue: you can easly add track to the start or the end of the queue.
 - Browse your library by albums and artist views.
-
-# Features I still want to add
-
-- track details page
-- precise listening stats 
-- raycast extension to control the playback 
-- full screen "now playing" view
-- editing tracks metadata directly in app
-- reordering queue
-- playback crossfade
 
 # Details
 
@@ -44,6 +50,12 @@ On the first launch, LocalStream automatically generates this directory, a defau
 Contributions are highly appreciated!
 If you decide to try the app and find some problems, feel free to open an issue! I will try my best to fix everything that comes up. This is my first open-source project, so I’m learning as I go, thanks for your patience and support! 😁🙏
 
+# Features I still want to add
 
-
-
+- track details page
+- precise listening stats
+- raycast extension to control the playback
+- full screen "now playing" view
+- editing tracks metadata directly in app
+- reordering queue
+- playback crossfade
