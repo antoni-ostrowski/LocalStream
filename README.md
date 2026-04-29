@@ -12,6 +12,8 @@ https://github.com/user-attachments/assets/17bfed51-99de-4911-ad6a-e0b8a1a8a574
 
 Start by downloading a zip from [latest release](https://github.com/antoni-ostrowski/localStream/releases). It will contain just a compiled app. You just have to unzip it and then you can run the app!
 
+> On macos you will have to go to `Privacy & Security` and allow app to run, since it's not signed.
+
 ## Building from source
 
 Requires [Go](https://go.dev/) (1.24.0), [Wails CLI](https://wails.io/docs/gettingstarted/installation/) (v2.11.0) and [Bun](https://bun.com/) for frontend.
