@@ -14,20 +14,21 @@ Start by downloading a zip from [latest release](https://github.com/antoni-ostro
 
 ## Building from source
 
-Requires [Go](https://go.dev/) (1.24.0) and the [Wails CLI](https://wails.io/docs/gettingstarted/installation/) (v2.11.0).
+Requires [Go](https://go.dev/) (1.24.0), [Wails CLI](https://wails.io/docs/gettingstarted/installation/) (v2.11.0) and [Bun](https://bun.com/) for frontend.
 
 ```bash
 # (these build for both: amd64 and arm64)
 make all
 make mac
 make win
-make linux
 # Remove build artifacts
 make clean
 # you can also build only for specific CPU arch, example:
 make mac_arm64
 make win_amd64
 ```
+
+> Wails should work on linux too, but i could not get it to work due to some webview crashes (i focus on mac since im on it). You can try building it for yourself.
 
 # General Tips
 
